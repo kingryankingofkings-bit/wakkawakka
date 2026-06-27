@@ -1,0 +1,76 @@
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import type { User } from '@/types';
+
+interface AuthState {
+  user: User | null;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  token: string | null;
+}
+
+interface AuthActions {
+  setUser: (user: User | null) => void;
+  logout: () => void;
+  updateUser: (updates: Partial<User>) => void;
+  setLoading: (isLoading: boolean) => void;
+  setToken: (token: string | null) => void;
+}
+
+type AuthStore = AuthState & AuthActions;
+
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set, get) => ({
+      // Initial state
+      user: null,
+      isLoading: true,
+      isAuthenticated: false,
+      token: null,
+
+      // Actions
+      setUser: (user) =>
+        set({
+          user,
+          isAuthenticated: !!user,
+          isLoading: false,
+        }),
+
+      logout: () =>
+        set({
+          user: null,
+          isAuthenticated: false,
+          token: null,
+          isLoading: false,
+        }),
+
+      updateUser: (updates) => {
+        const current = get().user;
+        if (!current) return;
+        set({
+          user: { ...current, ...updates },
+        });
+      },
+
+      setLoading: (isLoading) => set({ isLoading }),
+
+      setToken: (token) => set({ token }),
+    }),
+    {
+      name: 'wakka-auth',
+      storage: createJSONStorage(() => localStorage),
+      // Only persist user and token, not transient loading state
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated,
+      }),
+      // Rehydrate with isLoading: true so the app can check auth on mount
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.isLoading = false;
+        }
+      },
+    }
+  )
+);
