@@ -1,6 +1,6 @@
 // =============================================================================
 // WakkaWakka — Prisma Schema
-// Provider : SQLite (development) — swap datasource url for PostgreSQL in prod
+// Provider : PostgreSQL
 // Generator: @prisma/client
 // =============================================================================
 
@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = env("DATABASE_PROVIDER")
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -51,13 +51,11 @@ model User {
   location           String?
   birthdate          DateTime?
   isVerified         Boolean   @default(false)
-  /// VerificationTier: NONE | BLUE | GOLD | PLATINUM
   verificationTier   String    @default("NONE")
   isPremium          Boolean   @default(false)
   isPrivate          Boolean   @default(false)
   twoFactorEnabled   Boolean   @default(false)
   twoFactorSecret    String?
-  /// Theme: SYSTEM | LIGHT | DARK
   theme              String    @default("SYSTEM")
   accentColor        String    @default("#3b82f6")
   language           String    @default("en")
@@ -76,67 +74,38 @@ model User {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
-  // Relations — authored content
   posts              Post[]
   comments           Comment[]
   stories            Story[]
   communityPosts     CommunityPost[]
-
-  // Relations — social graph
   followers          Follow[]         @relation("FollowTarget")
   following          Follow[]         @relation("FollowSource")
   blocksGiven        Block[]          @relation("BlockSource")
   blocksReceived     Block[]          @relation("BlockTarget")
-
-  // Relations — messaging
   sentMessages       Message[]
   conversations      ConversationMember[]
-
-  // Relations — reactions
   likes              Like[]
-
-  // Relations — notifications
   notifications      Notification[]   @relation("NotificationRecipient")
   notificationActor  Notification[]   @relation("NotificationActor")
-
-  // Relations — communities
   createdCommunities Community[]      @relation("CommunityCreator")
   communityMembers   CommunityMember[]
-
-  // Relations — live & audio
   liveStreams        LiveStream[]     @relation("LiveStreamHost")
   coHostedStreams    LiveStreamCoHost[]
   audioRoomsHosted   AudioRoom[]      @relation("AudioRoomHost")
   audioRoomSpeakers  AudioRoomSpeaker[]
   audioRoomListeners AudioRoomListener[]
-
-  // Relations — marketplace
   products           Product[]
   buyerOrders        Order[]          @relation("OrderBuyer")
-
-  // Relations — gamification
   badges             Badge[]
   streak             Streak?
-
-  // Relations — monetisation
   subscriptionsGiven Subscription[]   @relation("SubscriptionSubscriber")
   subscriptionsReceived Subscription[] @relation("SubscriptionCreator")
   tipsGiven          Tip[]            @relation("TipSender")
   tipsReceived       Tip[]            @relation("TipReceiver")
-
-  // Relations — moderation
   reportsGiven       Report[]         @relation("ReportSource")
-
-  // Relations — analytics
   analytics          Analytics[]
-
-  // Relations — hashtags
   savedHashtags      UserSavedHashtag[]
-
-  // Relations — post saves / bookmarks
   bookmarks          Bookmark[]
-
-  // Relations — story views
   viewedStories      StoryView[]
 
   @@index([username])
@@ -153,14 +122,12 @@ model Post {
   content         String?
   authorId        String
   author          User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  /// PostType: TEXT | IMAGE | VIDEO | REEL | STORY | AUDIO | LIVE
   type            String    @default("TEXT")
-  /// PostVisibility: PUBLIC | FOLLOWERS | PRIVATE
   visibility      String    @default("PUBLIC")
-  mediaUrls       String    @default("[]")  // JSON array stored as text
-  hashtags        String    @default("[]")  // JSON array of hashtag strings
-  collaboratorIds String    @default("[]")  // JSON array of user IDs
-  productTag      String?   // product ID if this post tags a product
+  mediaUrls       String    @default("[]")
+  hashtags        String    @default("[]")
+  collaboratorIds String    @default("[]")
+  productTag      String?
   isEphemeral     Boolean   @default(false)
   expiresAt       DateTime?
   likesCount      Int       @default(0)
@@ -172,14 +139,12 @@ model Post {
   isDeleted       Boolean   @default(false)
   deletedAt       DateTime?
   editedAt        DateTime?
-  // Reference to original post when sharing
   originalPostId  String?
   originalPost    Post?     @relation("PostShares", fields: [originalPostId], references: [id])
   shares          Post[]    @relation("PostShares")
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  // Relations
   comments        Comment[]
   likes           Like[]
   reports         Report[]  @relation("ReportedPost")
@@ -215,7 +180,6 @@ model Comment {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  // Relations
   likes       Like[]
   reports     Report[]  @relation("ReportedComment")
 
@@ -236,7 +200,6 @@ model Like {
   post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   commentId String?
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  /// LikeType: LIKE | LOVE | HAHA | WOW | SAD | ANGRY
   type      String   @default("LIKE")
   createdAt DateTime @default(now())
 
@@ -256,7 +219,6 @@ model Follow {
   follower    User     @relation("FollowSource", fields: [followerId], references: [id], onDelete: Cascade)
   followingId String
   following   User     @relation("FollowTarget", fields: [followingId], references: [id], onDelete: Cascade)
-  /// FollowStatus: PENDING | ACCEPTED
   status      String   @default("ACCEPTED")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -287,17 +249,16 @@ model Block {
 // Conversation
 // =============================================================================
 model Conversation {
-  id          String   @id @default(cuid())
-  name        String?
-  isGroup     Boolean  @default(false)
-  avatarUrl   String?
-  description String?
-  createdById String?
+  id            String   @id @default(cuid())
+  name          String?
+  isGroup       Boolean  @default(false)
+  avatarUrl     String?
+  description   String?
+  createdById   String?
   lastMessageAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  // Relations
   members     ConversationMember[]
   messages    Message[]
 
@@ -333,7 +294,6 @@ model Message {
   sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
   content        String?
   mediaUrl       String?
-  /// MessageType: TEXT | IMAGE | VIDEO | AUDIO | FILE | STICKER | GIF | SYSTEM
   type           String       @default("TEXT")
   isRead         Boolean      @default(false)
   isDeleted      Boolean      @default(false)
@@ -345,7 +305,6 @@ model Message {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
-  // Message reactions
   reactions      MessageReaction[]
 
   @@index([conversationId])
@@ -373,15 +332,10 @@ model Notification {
   id         String   @id @default(cuid())
   userId     String
   user       User     @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
-  /// NotificationType: LIKE | COMMENT | FOLLOW | MENTION | REPLY | SHARE |
-  ///                   LIVE_START | STORY_VIEW | COMMUNITY_INVITE | BADGE |
-  ///                   SUBSCRIPTION | TIP | PURCHASE | SYSTEM
   type       String
   actorId    String?
   actor      User?    @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
-  /// targetId references the entity the notification is about (postId, commentId, etc.)
   targetId   String?
-  /// TargetType: POST | COMMENT | STORY | COMMUNITY | LIVE_STREAM | USER
   targetType String?
   message    String?
   imageUrl   String?
@@ -403,18 +357,16 @@ model Story {
   authorId  String
   author    User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
   mediaUrl  String
-  /// StoryType: IMAGE | VIDEO | TEXT | BOOMERANG
   type      String      @default("IMAGE")
   caption   String?
   linkUrl   String?
   musicUrl  String?
   filter    String?
-  duration  Int?        // seconds for video stories
+  duration  Int?
   expiresAt DateTime
   isActive  Boolean     @default(true)
   createdAt DateTime    @default(now())
 
-  // Relations
   views     StoryView[]
 
   @@index([authorId])
@@ -448,17 +400,15 @@ model Community {
   creatorId   String
   creator     User     @relation("CommunityCreator", fields: [creatorId], references: [id])
   category    String   @default("GENERAL")
-  /// CommunityVisibility: PUBLIC | PRIVATE | RESTRICTED
   visibility  String   @default("PUBLIC")
-  rules       String?  // JSON array of rule objects
-  tags        String   @default("[]") // JSON array of tag strings
+  rules       String?
+  tags        String   @default("[]")
   isVerified  Boolean  @default(false)
   memberCount Int      @default(0)
   postCount   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Relations
   members     CommunityMember[]
   posts       CommunityPost[]
   reports     Report[]  @relation("ReportedCommunity")
@@ -475,7 +425,6 @@ model CommunityMember {
   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  /// CommunityRole: MEMBER | MODERATOR | ADMIN
   role        String    @default("MEMBER")
   joinedAt    DateTime  @default(now())
   isBanned    Boolean   @default(false)
@@ -497,8 +446,8 @@ model CommunityPost {
   authorId      String
   author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   content       String
-  mediaUrls     String    @default("[]") // JSON array
-  hashtags      String    @default("[]") // JSON array
+  mediaUrls     String    @default("[]")
+  hashtags      String    @default("[]")
   likesCount    Int       @default(0)
   commentsCount Int       @default(0)
   isPinned      Boolean   @default(false)
@@ -508,7 +457,6 @@ model CommunityPost {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  // Relations
   likes         CommunityPostLike[]
   comments      CommunityPostComment[]
 
@@ -529,18 +477,18 @@ model CommunityPostLike {
 }
 
 model CommunityPostComment {
-  id        String        @id @default(cuid())
-  postId    String
-  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  authorId  String
-  content   String
-  parentId  String?
-  parent    CommunityPostComment?  @relation("CommunityCommentReplies", fields: [parentId], references: [id])
-  replies   CommunityPostComment[] @relation("CommunityCommentReplies")
-  likesCount Int          @default(0)
-  isDeleted Boolean       @default(false)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id         String        @id @default(cuid())
+  postId     String
+  post       CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId   String
+  content    String
+  parentId   String?
+  parent     CommunityPostComment?  @relation("CommunityCommentReplies", fields: [parentId], references: [id])
+  replies    CommunityPostComment[] @relation("CommunityCommentReplies")
+  likesCount Int           @default(0)
+  isDeleted  Boolean       @default(false)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
   @@index([postId])
   @@index([authorId])
@@ -566,9 +514,8 @@ model LiveStream {
   isRecorded   Boolean  @default(false)
   recordingUrl String?
   giftTotal    Float    @default(0)
-  tags         String   @default("[]") // JSON array
+  tags         String   @default("[]")
   category     String?
-  /// LiveStreamVisibility: PUBLIC | FOLLOWERS | PRIVATE
   visibility   String   @default("PUBLIC")
   scheduledAt  DateTime?
   startedAt    DateTime?
@@ -576,7 +523,6 @@ model LiveStream {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  // Relations
   coHosts      LiveStreamCoHost[]
   gifts        LiveStreamGift[]
 
@@ -616,24 +562,23 @@ model LiveStreamGift {
 // AudioRoom
 // =============================================================================
 model AudioRoom {
-  id          String   @id @default(cuid())
-  hostId      String
-  host        User     @relation("AudioRoomHost", fields: [hostId], references: [id], onDelete: Cascade)
-  title       String
-  description String?
-  isActive    Boolean  @default(false)
-  isRecorded  Boolean  @default(false)
+  id           String   @id @default(cuid())
+  hostId       String
+  host         User     @relation("AudioRoomHost", fields: [hostId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  isActive     Boolean  @default(false)
+  isRecorded   Boolean  @default(false)
   recordingUrl String?
-  maxSpeakers Int      @default(10)
-  tags        String   @default("[]") // JSON array
-  category    String?
-  scheduledAt DateTime?
-  startedAt   DateTime?
-  endedAt     DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  maxSpeakers  Int      @default(10)
+  tags         String   @default("[]")
+  category     String?
+  scheduledAt  DateTime?
+  startedAt    DateTime?
+  endedAt      DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  // Relations
   speakers    AudioRoomSpeaker[]
   listeners   AudioRoomListener[]
 
@@ -673,28 +618,27 @@ model AudioRoomListener {
 // Product (Marketplace)
 // =============================================================================
 model Product {
-  id          String   @id @default(cuid())
-  sellerId    String
-  seller      User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  name        String
-  description String?
-  price       Float
-  images      String   @default("[]") // JSON array of image URLs
-  category    String
-  tags        String   @default("[]") // JSON array
-  inStock     Boolean  @default(true)
-  stockCount  Int?
-  sku         String?
-  condition   String   @default("NEW") // NEW | USED | REFURBISHED
+  id           String   @id @default(cuid())
+  sellerId     String
+  seller       User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  price        Float
+  images       String   @default("[]")
+  category     String
+  tags         String   @default("[]")
+  inStock      Boolean  @default(true)
+  stockCount   Int?
+  sku          String?
+  condition    String   @default("NEW")
   shippingInfo String?
-  isActive    Boolean  @default(true)
-  isDeleted   Boolean  @default(false)
-  salesCount  Int      @default(0)
-  viewsCount  Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isActive     Boolean  @default(true)
+  isDeleted    Boolean  @default(false)
+  salesCount   Int      @default(0)
+  viewsCount   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  // Relations
   orders      Order[]
   reviews     ProductReview[]
 
@@ -710,7 +654,7 @@ model ProductReview {
   productId  String
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   reviewerId String
-  rating     Int      // 1-5
+  rating     Int
   comment    String?
   createdAt  DateTime @default(now())
 
@@ -730,9 +674,8 @@ model Order {
   quantity        Int      @default(1)
   unitPrice       Float
   total           Float
-  /// OrderStatus: PENDING | CONFIRMED | SHIPPED | DELIVERED | CANCELLED | REFUNDED
   status          String   @default("PENDING")
-  shippingAddress String?  // JSON object stored as text
+  shippingAddress String?
   trackingNumber  String?
   notes           String?
   stripePaymentId String?
@@ -754,13 +697,11 @@ model Badge {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  /// BadgeType: EARLY_ADOPTER | VERIFIED | CONTENT_CREATOR | POPULAR |
-  ///            TOP_FAN | STREAMER | SELLER | COMMUNITY_LEADER | MILESTONE_*
   type        String
   name        String
   description String?
   iconUrl     String?
-  tier        String   @default("BRONZE") // BRONZE | SILVER | GOLD | PLATINUM
+  tier        String   @default("BRONZE")
   awardedAt   DateTime @default(now())
 
   @@index([userId])
@@ -793,13 +734,9 @@ model Report {
   reporterId  String
   reporter    User      @relation("ReportSource", fields: [reporterId], references: [id], onDelete: Cascade)
   targetId    String
-  /// TargetType: POST | COMMENT | STORY | COMMUNITY | LIVE_STREAM | USER
   targetType  String
-  /// ReportReason: SPAM | HARASSMENT | HATE_SPEECH | NUDITY | VIOLENCE |
-  ///               COPYRIGHT | MISINFORMATION | OTHER
   reason      String
   description String?
-  /// ReportStatus: PENDING | REVIEWED | RESOLVED | DISMISSED
   status      String    @default("PENDING")
   resolvedAt  DateTime?
   resolvedBy  String?
@@ -807,10 +744,9 @@ model Report {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  // Optional FK links for convenience (only one will be set based on targetType)
-  post        Post?     @relation("ReportedPost",      fields: [postId], references: [id])
+  post        Post?      @relation("ReportedPost",      fields: [postId], references: [id])
   postId      String?
-  comment     Comment?  @relation("ReportedComment",   fields: [commentId], references: [id])
+  comment     Comment?   @relation("ReportedComment",   fields: [commentId], references: [id])
   commentId   String?
   community   Community? @relation("ReportedCommunity", fields: [communityId], references: [id])
   communityId String?
@@ -825,17 +761,16 @@ model Report {
 // Hashtag
 // =============================================================================
 model Hashtag {
-  id          String   @id @default(cuid())
-  name        String   @unique // lowercase, no leading #
-  postCount   Int      @default(0)
-  isTrending  Boolean  @default(false)
-  trendScore  Float    @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  name       String   @unique
+  postCount  Int      @default(0)
+  isTrending Boolean  @default(false)
+  trendScore Float    @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  // Relations
-  posts       PostHashtag[]
-  savedBy     UserSavedHashtag[]
+  posts   PostHashtag[]
+  savedBy UserSavedHashtag[]
 
   @@index([name])
   @@index([isTrending])
@@ -869,23 +804,21 @@ model UserSavedHashtag {
 // Subscription (Creator monetisation)
 // =============================================================================
 model Subscription {
-  id            String   @id @default(cuid())
-  subscriberId  String
-  subscriber    User     @relation("SubscriptionSubscriber", fields: [subscriberId], references: [id], onDelete: Cascade)
-  creatorId     String
-  creator       User     @relation("SubscriptionCreator", fields: [creatorId], references: [id], onDelete: Cascade)
-  /// SubscriptionTier: BASIC | PRO | PREMIUM | CUSTOM
-  tier          String   @default("BASIC")
-  amount        Float
-  currency      String   @default("USD")
-  /// SubscriptionStatus: ACTIVE | PAST_DUE | CANCELLED | TRIALING | INCOMPLETE
-  status        String   @default("ACTIVE")
-  stripeSubId   String?
+  id                 String   @id @default(cuid())
+  subscriberId       String
+  subscriber         User     @relation("SubscriptionSubscriber", fields: [subscriberId], references: [id], onDelete: Cascade)
+  creatorId          String
+  creator            User     @relation("SubscriptionCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  tier               String   @default("BASIC")
+  amount             Float
+  currency           String   @default("USD")
+  status             String   @default("ACTIVE")
+  stripeSubId        String?
   currentPeriodStart DateTime?
   currentPeriodEnd   DateTime?
-  cancelledAt   DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  cancelledAt        DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   @@unique([subscriberId, creatorId])
   @@index([subscriberId])
@@ -919,22 +852,22 @@ model Tip {
 // Analytics (per-user daily aggregates)
 // =============================================================================
 model Analytics {
-  id              String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date            DateTime // Date only — use start-of-day UTC
-  impressions     Int      @default(0)
-  reach           Int      @default(0)
-  profileViews    Int      @default(0)
-  followerGrowth  Int      @default(0)
-  postLikes       Int      @default(0)
-  postComments    Int      @default(0)
-  postShares      Int      @default(0)
-  videoViews      Int      @default(0)
-  liveViewers     Int      @default(0)
-  revenueUsd      Float    @default(0)
-  linkClicks      Int      @default(0)
-  createdAt       DateTime @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date           DateTime
+  impressions    Int      @default(0)
+  reach          Int      @default(0)
+  profileViews   Int      @default(0)
+  followerGrowth Int      @default(0)
+  postLikes      Int      @default(0)
+  postComments   Int      @default(0)
+  postShares     Int      @default(0)
+  videoViews     Int      @default(0)
+  liveViewers    Int      @default(0)
+  revenueUsd     Float    @default(0)
+  linkClicks     Int      @default(0)
+  createdAt      DateTime @default(now())
 
   @@unique([userId, date])
   @@index([userId])
@@ -945,13 +878,13 @@ model Analytics {
 // Bookmark (Post saves)
 // =============================================================================
 model Bookmark {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  postId      String
-  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  collectionName String? @default("All Bookmarks")
-  createdAt   DateTime @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId         String
+  post           Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  collectionName String?  @default("All Bookmarks")
+  createdAt      DateTime @default(now())
 
   @@unique([userId, postId])
   @@index([userId])
