@@ -2,12 +2,28 @@
 
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { Toaster } from 'react-hot-toast';
+import { useAuthStore } from '@/store/authStore';
+
+const ACCENT_HSL = {
+  blue: '221 83% 53%',
+  purple: '258 90% 66%',
+  pink: '330 81% 60%',
+  red: '0 84% 60%',
+  orange: '24 95% 53%',
+  yellow: '45 93% 47%',
+  green: '142 71% 45%',
+  teal: '173 80% 40%',
+};
 
 interface ThemeProviderProps {
   children: React.ReactNode;
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
+  const user = useAuthStore((s) => s.user);
+  const accentName = user?.accentColor || 'blue';
+  const hsl = ACCENT_HSL[accentName as keyof typeof ACCENT_HSL] || ACCENT_HSL.blue;
+
   return (
     <NextThemesProvider
       attribute="class"
@@ -15,6 +31,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       enableSystem
       disableTransitionOnChange={false}
     >
+      <style dangerouslySetInnerHTML={{ __html: `:root { --primary: ${hsl}; --ring: ${hsl}; } .dark { --primary: ${hsl}; --ring: ${hsl}; }` }} />
       {children}
       <Toaster
         position="top-right"
