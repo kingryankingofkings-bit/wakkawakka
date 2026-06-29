@@ -139,6 +139,38 @@ model User {
   // Relations — story views
   viewedStories      StoryView[]
 
+  // Relations — friends (social graph)
+  friendRequestsSent     FriendRequest[] @relation("FriendRequestSender")
+  friendRequestsReceived FriendRequest[] @relation("FriendRequestReceiver")
+  friendshipsA           Friendship[]    @relation("FriendshipUserA")
+  friendshipsB           Friendship[]    @relation("FriendshipUserB")
+  closeFriendsAdded      CloseFriend[]   @relation("CloseFriendOwner")
+  closeFriendOf          CloseFriend[]   @relation("CloseFriendTarget")
+
+  // Relations — polls
+  pollsCreated           Poll[]
+  pollVotes              PollVote[]
+
+  // Relations — albums & photos
+  albums                 Album[]
+  photos                 Photo[]
+
+  // Relations — events
+  eventsCreated          Event[]         @relation("EventCreator")
+  eventRsvps             EventAttendee[]
+
+  // Relations — pages
+  pagesOwned             Page[]          @relation("PageOwner")
+  pageMemberships        PageMember[]
+  pageFollows            PageFollower[]
+
+  // Relations — community join requests
+  communityJoinRequests  CommunityJoinRequest[]
+
+  // Relations — tagging & timeline
+  taggedInPosts          PostTag[]       @relation("PostTagUser")
+  lifeEvents             LifeEvent[]
+
   @@index([username])
   @@index([email])
   @@index([firebaseUid])
@@ -185,6 +217,8 @@ model Post {
   reports         Report[]  @relation("ReportedPost")
   bookmarks       Bookmark[]
   postHashtags    PostHashtag[]
+  poll            Poll?
+  tags            PostTag[]
 
   @@index([authorId])
   @@index([type])
@@ -459,9 +493,10 @@ model Community {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  members     CommunityMember[]
-  posts       CommunityPost[]
-  reports     Report[]  @relation("ReportedCommunity")
+  members      CommunityMember[]
+  posts        CommunityPost[]
+  reports      Report[]  @relation("ReportedCommunity")
+  joinRequests CommunityJoinRequest[]
 
   @@index([creatorId])
   @@index([category])
@@ -473,7 +508,6 @@ model CommunityMember {
   id          String    @id @default(cuid())
   communityId String
   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
-  userId      String
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   /// CommunityRole: MEMBER | MODERATOR | ADMIN
@@ -957,4 +991,293 @@ model Bookmark {
   @@unique([userId, postId])
   @@index([userId])
   @@index([postId])
+}
+// =============================================================================
+// Friends (social graph — distinct from follows)
+// =============================================================================
+model FriendRequest {
+  id          String   @id @default(cuid())
+  senderId    String
+  sender      User     @relation("FriendRequestSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId  String
+  receiver    User     @relation("FriendRequestReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  /// FriendRequestStatus: PENDING | ACCEPTED | DECLINED
+  status      String   @default("PENDING")
+  message     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([senderId, receiverId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([status])
+}
+
+model Friendship {
+  id        String   @id @default(cuid())
+  // userAId < userBId enforced at app layer to keep pairs unique
+  userAId   String
+  userA     User     @relation("FriendshipUserA", fields: [userAId], references: [id], onDelete: Cascade)
+  userBId   String
+  userB     User     @relation("FriendshipUserB", fields: [userBId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userAId, userBId])
+  @@index([userAId])
+  @@index([userBId])
+}
+
+model CloseFriend {
+  id        String   @id @default(cuid())
+  ownerId   String
+  owner     User     @relation("CloseFriendOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  friendId  String
+  friend    User     @relation("CloseFriendTarget", fields: [friendId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([ownerId, friendId])
+  @@index([ownerId])
+}
+
+// =============================================================================
+// Polls
+// =============================================================================
+model Poll {
+  id            String       @id @default(cuid())
+  postId        String       @unique
+  post          Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  creatorId     String
+  creator       User         @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  question      String
+  allowMultiple Boolean      @default(false)
+  expiresAt     DateTime?
+  isClosed      Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+
+  options       PollOption[]
+  votes         PollVote[]
+
+  @@index([creatorId])
+}
+
+model PollOption {
+  id        String     @id @default(cuid())
+  pollId    String
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  text      String
+  position  Int        @default(0)
+  votesCount Int       @default(0)
+
+  votes     PollVote[]
+
+  @@index([pollId])
+}
+
+model PollVote {
+  id        String     @id @default(cuid())
+  pollId    String
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  optionId  String
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+
+  @@unique([optionId, userId])
+  @@index([pollId])
+  @@index([userId])
+}
+
+// =============================================================================
+// Photo Albums
+// =============================================================================
+model Album {
+  id          String   @id @default(cuid())
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  coverUrl    String?
+  /// AlbumVisibility: PUBLIC | FRIENDS | PRIVATE
+  visibility  String   @default("PUBLIC")
+  photoCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  photos      Photo[]
+
+  @@index([ownerId])
+}
+
+model Photo {
+  id          String   @id @default(cuid())
+  albumId     String
+  album       Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  uploaderId  String
+  uploader    User     @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+  url         String
+  caption     String?
+  width       Int?
+  height      Int?
+  position    Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([albumId])
+  @@index([uploaderId])
+}
+
+// =============================================================================
+// Events
+// =============================================================================
+model Event {
+  id            String          @id @default(cuid())
+  creatorId     String
+  creator       User            @relation("EventCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  title         String
+  description   String?
+  coverImage    String?
+  location      String?
+  isOnline      Boolean         @default(false)
+  onlineUrl     String?
+  /// EventVisibility: PUBLIC | FRIENDS | PRIVATE
+  visibility    String          @default("PUBLIC")
+  category      String?
+  startsAt      DateTime
+  endsAt        DateTime?
+  goingCount    Int             @default(0)
+  interestedCount Int           @default(0)
+  isCancelled   Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  attendees     EventAttendee[]
+
+  @@index([creatorId])
+  @@index([startsAt])
+  @@index([visibility])
+}
+
+model EventAttendee {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// RsvpStatus: GOING | INTERESTED | DECLINED | INVITED
+  status    String   @default("INTERESTED")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+}
+
+// =============================================================================
+// Pages (business / creator pages)
+// =============================================================================
+model Page {
+  id           String         @id @default(cuid())
+  ownerId      String
+  owner        User           @relation("PageOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  name         String
+  slug         String         @unique
+  category     String         @default("GENERAL")
+  description  String?
+  avatarUrl    String?
+  coverImage   String?
+  website      String?
+  isVerified   Boolean        @default(false)
+  followerCount Int           @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  roles        PageMember[]
+  followers    PageFollower[]
+
+  @@index([ownerId])
+  @@index([category])
+}
+
+model PageMember {
+  id        String   @id @default(cuid())
+  pageId    String
+  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// PageRole: ADMIN | EDITOR | MODERATOR | ANALYST
+  role      String   @default("EDITOR")
+  createdAt DateTime @default(now())
+
+  @@unique([pageId, userId])
+  @@index([pageId])
+  @@index([userId])
+}
+
+model PageFollower {
+  id        String   @id @default(cuid())
+  pageId    String
+  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([pageId, userId])
+  @@index([pageId])
+  @@index([userId])
+}
+
+// =============================================================================
+// Community join requests (private group approvals)
+// =============================================================================
+model CommunityJoinRequest {
+  id          String    @id @default(cuid())
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// JoinRequestStatus: PENDING | APPROVED | REJECTED
+  status      String    @default("PENDING")
+  message     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([communityId, userId])
+  @@index([communityId])
+  @@index([userId])
+  @@index([status])
+}
+
+// =============================================================================
+// Post tags (tagging people in posts/photos)
+// =============================================================================
+model PostTag {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation("PostTagUser", fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+  @@index([postId])
+  @@index([userId])
+}
+
+// =============================================================================
+// Life events (profile timeline milestones)
+// =============================================================================
+model LifeEvent {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  category    String   @default("GENERAL")
+  description String?
+  icon        String?
+  occurredAt  DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([occurredAt])
 }
