@@ -12,6 +12,8 @@ import { MOCK_LIVE_STREAMS, MOCK_USERS } from '@/lib/mockData';
 import { LiveComment, LiveStream } from '@/types';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { Modal } from '@/components/ui/Modal';
+import { Copy, Check } from 'lucide-react';
 
 const GIFTS = [
   { emoji: '🎁', name: 'Gift', cost: 10 },
@@ -66,6 +68,13 @@ function LivePageInner() {
   const [showGifts, setShowGifts] = useState(false);
   const [hearts, setHearts] = useState<{ id: number; x: number }[]>([]);
   const [viewerCount, setViewerCount] = useState(MOCK_LIVE_STREAMS[0]?.viewerCount || 0);
+  
+  // Go Live Modal State
+  const [isGoLiveOpen, setIsGoLiveOpen] = useState(false);
+  const [liveTitle, setLiveTitle] = useState('');
+  const [copiedServer, setCopiedServer] = useState(false);
+  const [copiedKey, setCopiedKey] = useState(false);
+
   const commentsEndRef = useRef<HTMLDivElement>(null);
   const heartId = useRef(0);
 
@@ -133,7 +142,7 @@ function LivePageInner() {
       <div className="min-h-screen p-4">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Live</h1>
-          <Button size="sm" onClick={() => alert('Go live feature coming soon!')}>
+          <Button size="sm" onClick={() => setIsGoLiveOpen(true)}>
             <Radio className="h-4 w-4" />
             Go Live
           </Button>
@@ -171,6 +180,45 @@ function LivePageInner() {
             <p className="text-sm text-muted-foreground mt-1">Be the first to go live!</p>
           </div>
         )}
+
+        <Modal isOpen={isGoLiveOpen} onClose={() => setIsGoLiveOpen(false)} title="Broadcast Setup">
+          <div className="p-5 flex flex-col gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Stream Title</label>
+              <input 
+                type="text" 
+                value={liveTitle}
+                onChange={(e) => setLiveTitle(e.target.value)}
+                placeholder="Catchy title for your stream"
+                className="w-full rounded-xl border border-border bg-background px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            <div className="p-4 bg-muted/50 rounded-xl space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Streaming Details</p>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Server URL</p>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 text-xs bg-background border border-border rounded px-2 py-1.5 truncate text-foreground">rtmp://live.wakkawakka.com/app</code>
+                  <Button size="icon" variant="outline" className="flex-shrink-0" onClick={() => { setCopiedServer(true); setTimeout(() => setCopiedServer(false), 2000); }}>
+                    {copiedServer ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Stream Key</p>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 text-xs bg-background border border-border rounded px-2 py-1.5 truncate text-foreground">live_sk_••••••••••••</code>
+                  <Button size="icon" variant="outline" className="flex-shrink-0" onClick={() => { setCopiedKey(true); setTimeout(() => setCopiedKey(false), 2000); }}>
+                    {copiedKey ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <Button className="w-full mt-2" onClick={() => { setIsGoLiveOpen(false); setLiveTitle(''); }}>
+              Start Streaming
+            </Button>
+          </div>
+        </Modal>
       </div>
     );
   }

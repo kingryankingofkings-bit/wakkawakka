@@ -207,6 +207,19 @@ export function MessageBubble({
               minute: '2-digit',
             })}
           </span>
+
+          {/* Reactions */}
+          {message.reactions && Object.keys(message.reactions).length > 0 && (
+            <div className={cn('absolute -bottom-2 flex items-center gap-1 bg-card border border-border shadow-sm rounded-full px-1.5 py-0.5',
+              isOwn ? 'right-2' : 'left-2'
+            )}>
+              {Object.entries(message.reactions).map(([emoji, count]) => (
+                <span key={emoji} className="text-[10px] text-foreground font-medium flex items-center gap-0.5">
+                  {emoji} {count > 1 && count}
+                </span>
+              ))}
+            </div>
+          )}
         </motion.div>
 
         {/* Delivery status & read receipt (own messages only) */}

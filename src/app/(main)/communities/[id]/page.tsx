@@ -12,6 +12,7 @@ import { MOCK_COMMUNITIES, MOCK_POSTS } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { Modal } from '@/components/ui/Modal';
 
 const COMMUNITY_TABS = ['Posts', 'Members', 'Requests', 'About', 'Rules'] as const;
 
@@ -32,6 +33,10 @@ export default function CommunityPage() {
   const [tab, setTab] = useState<typeof COMMUNITY_TABS[number]>('Posts');
   const [joined, setJoined] = useState(community.isMember ?? false);
   const [memberCount, setMemberCount] = useState(community.memberCount);
+
+  // Post Creation Modal State
+  const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
+  const [newPostContent, setNewPostContent] = useState('');
 
   // Members list local state
   const [members, setMembers] = useState<any[]>(community.members || []);
@@ -183,7 +188,7 @@ export default function CommunityPage() {
         <div>
           {joined && (
             <div className="p-4 border-b border-border">
-              <Button variant="outline" className="w-full" onClick={() => alert('Post creation coming soon!')}>
+              <Button variant="outline" className="w-full" onClick={() => setIsCreatePostOpen(true)}>
                 <Plus className="h-4 w-4" />
                 Post to {community.name}
               </Button>
@@ -328,6 +333,31 @@ export default function CommunityPage() {
           ))}
         </div>
       )}
+
+      <Modal isOpen={isCreatePostOpen} onClose={() => setIsCreatePostOpen(false)} title={`Post to ${community.name}`}>
+        <form 
+          className="p-5 flex flex-col gap-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setIsCreatePostOpen(false);
+            setNewPostContent('');
+            toast.success('Post published to community!');
+          }}
+        >
+          <div className="space-y-1.5">
+            <textarea 
+              value={newPostContent}
+              onChange={(e) => setNewPostContent(e.target.value)}
+              placeholder="Share something with the community..."
+              className="w-full rounded-xl border border-border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-primary resize-none h-28 text-sm"
+              required
+            />
+          </div>
+          <Button type="submit" className="w-full mt-2">
+            Publish Post
+          </Button>
+        </form>
+      </Modal>
     </div>
   );
 }

@@ -129,6 +129,7 @@ export interface Message {
   isRead: boolean;
   isDeleted: boolean;
   replyTo?: Message;
+  reactions?: Record<string, number>;
   createdAt: string;
 }
 

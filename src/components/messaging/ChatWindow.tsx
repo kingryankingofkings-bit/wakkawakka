@@ -416,7 +416,16 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
                   showAvatar={isLastInSequence}
                   isGroup={conversation.isGroup}
                   onReply={setReplyTo}
-                  onReact={(m) => console.log('react to', m.id)}
+                  onReact={(m) => {
+                    setLocalMessages(prev => prev.map(msg => {
+                      if (msg.id === m.id) {
+                        const newReactions = { ...(msg.reactions || {}) };
+                        newReactions['❤️'] = (newReactions['❤️'] || 0) + 1;
+                        return { ...msg, reactions: newReactions };
+                      }
+                      return msg;
+                    }));
+                  }}
                   onCopy={handleCopy}
                   onDelete={handleDeleteMessage}
                 />

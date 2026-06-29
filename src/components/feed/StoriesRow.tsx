@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Plus } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { Avatar } from '@/components/ui/Avatar';
 import { StoryViewer } from './StoryViewer';
 import { MOCK_STORIES, CURRENT_USER } from '@/lib/mockData';
 
 export function StoriesRow() {
   const [viewingIndex, setViewingIndex] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const stories = MOCK_STORIES;
 
   return (
@@ -16,7 +18,7 @@ export function StoriesRow() {
         {/* Add story */}
         <button
           className="flex flex-col items-center gap-1.5 flex-shrink-0"
-          onClick={() => alert('Story creation coming soon!')}
+          onClick={() => fileInputRef.current?.click()}
         >
           <div className="relative h-16 w-16">
             <Avatar src={CURRENT_USER.avatar} name={CURRENT_USER.displayName} size="lg" />
@@ -26,6 +28,19 @@ export function StoriesRow() {
           </div>
           <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">Your story</span>
         </button>
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          className="hidden" 
+          accept="image/*,video/*"
+          onChange={(e) => {
+            if (e.target.files && e.target.files.length > 0) {
+              toast.success('Story uploaded successfully!');
+              // Clear the input so the same file can be uploaded again if needed
+              e.target.value = '';
+            }
+          }}
+        />
 
         {/* Stories */}
         {stories.map((story, i) => (

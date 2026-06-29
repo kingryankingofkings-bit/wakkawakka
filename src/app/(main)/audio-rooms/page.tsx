@@ -11,6 +11,7 @@ import { formatCount, cn } from '@/lib/utils';
 import { MOCK_AUDIO_ROOMS, MOCK_USERS } from '@/lib/mockData';
 import { AudioRoom } from '@/types';
 import { useSearchParams } from 'next/navigation';
+import { Modal } from '@/components/ui/Modal';
 
 function SpeakerAvatar({ user, isSpeaking }: { user: typeof MOCK_USERS[0]; isSpeaking: boolean }) {
   return (
@@ -52,6 +53,11 @@ function AudioRoomsInner() {
   const [isMuted, setIsMuted] = useState(true);
   const [handRaised, setHandRaised] = useState(false);
   const [speakingUserId, setSpeakingUserId] = useState<string>(MOCK_AUDIO_ROOMS[0]?.speakers[0]?.id || '');
+  
+  // Creation Modal State
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newDesc, setNewDesc] = useState('');
 
   // Cycle through speakers "speaking"
   useEffect(() => {
@@ -169,7 +175,7 @@ function AudioRoomsInner() {
     <div className="min-h-screen">
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-bold">Audio Rooms</h1>
-        <Button size="sm" onClick={() => alert('Create room coming soon!')}>
+        <Button size="sm" onClick={() => setIsCreateOpen(true)}>
           <Plus className="h-4 w-4" />
           Create Room
         </Button>
@@ -213,6 +219,43 @@ function AudioRoomsInner() {
           ))
         )}
       </div>
+
+      <Modal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="Start an Audio Room">
+        <form 
+          className="p-5 flex flex-col gap-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            // Mock API success behavior
+            setIsCreateOpen(false);
+            setNewTitle('');
+            setNewDesc('');
+          }}
+        >
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">Room Topic</label>
+            <input 
+              type="text" 
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              placeholder="What do you want to talk about?"
+              className="w-full rounded-xl border border-border bg-background px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary"
+              required 
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">Description (Optional)</label>
+            <textarea 
+              value={newDesc}
+              onChange={(e) => setNewDesc(e.target.value)}
+              placeholder="Add some details..."
+              className="w-full rounded-xl border border-border bg-background px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary resize-none h-20"
+            />
+          </div>
+          <Button type="submit" className="w-full mt-2">
+            Start Broadcasting
+          </Button>
+        </form>
+      </Modal>
     </div>
   );
 }

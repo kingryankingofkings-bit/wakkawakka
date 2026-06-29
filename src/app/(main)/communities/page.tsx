@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/Card';
 import { formatCount } from '@/lib/utils';
 import { MOCK_COMMUNITIES } from '@/lib/mockData';
 import Link from 'next/link';
+import { Modal } from '@/components/ui/Modal';
 
 const CATEGORIES = ['All', 'Art & Design', 'Technology', 'Health & Wellness', 'Music', 'Gaming', 'Education', 'Sports'];
 
@@ -15,6 +16,11 @@ export default function CommunitiesPage() {
   const [joined, setJoined] = useState<Set<string>>(
     new Set(MOCK_COMMUNITIES.filter(c => c.isMember).map(c => c.id))
   );
+  
+  // Creation Modal State
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newCommName, setNewCommName] = useState('');
+  const [newCommDesc, setNewCommDesc] = useState('');
 
   const myCommunities = MOCK_COMMUNITIES.filter(c => joined.has(c.id));
   const discover = MOCK_COMMUNITIES.filter(c =>
@@ -25,7 +31,7 @@ export default function CommunitiesPage() {
     <div className="min-h-screen">
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-bold">Communities</h1>
-        <Button size="sm" onClick={() => alert('Community creation coming soon!')}>
+        <Button size="sm" onClick={() => setIsCreateOpen(true)}>
           <Plus className="h-4 w-4" />
           Create
         </Button>
@@ -120,6 +126,43 @@ export default function CommunitiesPage() {
           </div>
         </section>
       </div>
+
+      <Modal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="Create a Community">
+        <form 
+          className="p-5 flex flex-col gap-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setIsCreateOpen(false);
+            setNewCommName('');
+            setNewCommDesc('');
+          }}
+        >
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">Community Name</label>
+            <input 
+              type="text" 
+              value={newCommName}
+              onChange={(e) => setNewCommName(e.target.value)}
+              placeholder="e.g. Next.js Developers"
+              className="w-full rounded-xl border border-border bg-background px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary"
+              required 
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">Description</label>
+            <textarea 
+              value={newCommDesc}
+              onChange={(e) => setNewCommDesc(e.target.value)}
+              placeholder="What is this community about?"
+              className="w-full rounded-xl border border-border bg-background px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary resize-none h-20"
+              required
+            />
+          </div>
+          <Button type="submit" className="w-full mt-2">
+            Create Community
+          </Button>
+        </form>
+      </Modal>
     </div>
   );
 }

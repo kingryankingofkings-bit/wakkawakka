@@ -74,7 +74,8 @@ export default function ProfilePage({ params }: ProfilePageProps) {
     MOCK_USERS.find((u) => u.username === username) ?? MOCK_USERS[0];
 
   const isOwnProfile = profileUser.username === currentUser.username;
-  const isFollowing = false; // Would come from state/API in production
+  // Fallback to checking a generic following array or default to true for demo purposes if it's the 2nd mock user
+  const isFollowing = (currentUser as any).following?.includes(profileUser.id) || profileUser.id === 'u2';
 
   const orderedTabs = profileUser.profileTabOrder 
     ? profileUser.profileTabOrder.map(id => PROFILE_TABS.find(t => t.id === id)).filter(Boolean) as (typeof PROFILE_TABS[number])[]

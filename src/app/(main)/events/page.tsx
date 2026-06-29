@@ -154,7 +154,8 @@ export default function EventsPage() {
         body: JSON.stringify({ status: selectedStatus || 'NONE' }) 
       });
     } catch (err) {
-      console.log('Updated local state without server sync');
+      console.error('Failed to sync RSVP:', err);
+      toast.error('Failed to sync with server');
     }
   }
 
@@ -276,7 +277,8 @@ function CreateEventModal({ open, onClose, onCreated }: { open: boolean; onClose
     try {
       await apiFetch('/api/events', { method: 'POST', body: JSON.stringify(form) });
     } catch (err) {
-      console.log('Stored new event locally');
+      console.error('Failed to save event:', err);
+      toast.error('Failed to sync with server');
     }
 
     setSaving(false);
