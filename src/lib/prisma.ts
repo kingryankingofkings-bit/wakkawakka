@@ -1,5 +1,10 @@
-// Prisma client stub — run `npx prisma generate` before using in production
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const prisma: any = null;
+import { PrismaClient } from '@prisma/client';
+
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+
+const prisma = globalForPrisma.prisma ?? new PrismaClient({ log: ['error'] });
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+
 export { prisma };
 export default prisma;
