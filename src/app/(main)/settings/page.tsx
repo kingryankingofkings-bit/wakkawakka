@@ -10,6 +10,7 @@ import { useAuthStore } from '@/store/authStore';
 import { CURRENT_USER } from '@/lib/mockData';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { useTheme } from 'next-themes';
 
 type SettingsSection = 'account' | 'privacy' | 'notifications' | 'appearance' | 'security' | 'monetization' | 'accessibility' | 'fediverse';
 
@@ -83,7 +84,7 @@ export default function SettingsPage() {
     subscriptionsEnabled: true,
   });
 
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(user.theme);
+  const { theme, setTheme } = useTheme();
   const [accentColor, setAccentColor] = useState(user.accentColor || 'blue');
   const [dmPermission, setDmPermission] = useState<'EVERYONE' | 'FOLLOWERS' | 'NONE'>('EVERYONE');
   const [fontSize, setFontSize] = useState(16);

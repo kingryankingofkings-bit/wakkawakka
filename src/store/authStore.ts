@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { User } from '@/types';
+import { CURRENT_USER } from '@/lib/mockData';
 
 interface AuthState {
   user: User | null;
@@ -23,10 +24,10 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
       // Initial state
-      user: null,
+      user: CURRENT_USER,
       isLoading: true,
-      isAuthenticated: false,
-      token: null,
+      isAuthenticated: true,
+      token: 'mock-token-123',
 
       // Actions
       setUser: (user) =>
