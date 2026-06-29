@@ -71,7 +71,9 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   const currentUser = authUser ?? CURRENT_USER;
 
   const profileUser =
-    MOCK_USERS.find((u) => u.username === username) ?? MOCK_USERS[0];
+    currentUser.username === username
+      ? currentUser
+      : (MOCK_USERS.find((u) => u.username === username) ?? MOCK_USERS[0]);
 
   const isOwnProfile = profileUser.username === currentUser.username;
   // Fallback to checking a generic following array or default to true for demo purposes if it's the 2nd mock user
