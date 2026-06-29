@@ -16,7 +16,8 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.3.4",
+    "@hookform/resolvers": "^5.4.0",
+    "@next/swc-win32-x64-msvc": "^16.2.9",
     "@prisma/client": "^5.13.0",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-avatar": "^1.0.4",
@@ -38,8 +39,8 @@
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
-    "firebase": "^10.11.0",
-    "framer-motion": "^11.1.7",
+    "firebase": "^12.15.0",
+    "framer-motion": "^12.42.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.372.0",
     "multer": "^1.4.5-lts.1",
@@ -49,15 +50,15 @@
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "react-dropzone": "^14.2.3",
-    "react-hook-form": "^7.51.3",
+    "react-hook-form": "^7.80.0",
     "react-hot-toast": "^2.4.1",
     "sharp": "^0.33.3",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
     "tailwind-merge": "^2.3.0",
     "uuid": "^9.0.1",
-    "zustand": "^4.5.2",
-    "zod": "^3.23.4"
+    "zod": "^3.23.4",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
