@@ -1,15 +1,16 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Camera, Globe, MapPin, Link2, User, FileText, Calendar, Palette } from 'lucide-react';
+import { X, Camera, Globe, MapPin, Link2, User as UserIcon, FileText, Calendar, Palette, LayoutDashboard, Settings2, Music, EyeOff, ChevronUp, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import { cn, getInitials } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
 import { User as UserType } from '@/types';
+import toast from 'react-hot-toast';
 
 const ACCENT_COLORS = [
   { name: 'blue', hex: '#3B82F6' },
@@ -22,35 +23,36 @@ const ACCENT_COLORS = [
   { name: 'teal', hex: '#14B8A6' },
 ];
 
+const PROFILE_THEMES = [
+  { id: 'none', label: 'Default', bg: 'bg-background border-border' },
+  { id: 'ocean', label: 'Ocean Depth', bg: 'bg-gradient-to-br from-blue-900/40 to-teal-900/40 border-blue-500/20' },
+  { id: 'sunset', label: 'Warm Sunset', bg: 'bg-gradient-to-br from-orange-500/30 to-pink-500/30 border-orange-500/20' },
+  { id: 'aurora', label: 'Neon Aurora', bg: 'bg-gradient-to-br from-purple-600/30 via-pink-500/30 to-blue-500/30 border-purple-500/20' },
+  { id: 'midnight', label: 'Midnight Glass', bg: 'bg-black/60 backdrop-blur-2xl border-white/10' },
+];
+
 const LANGUAGES = [
   { code: 'en', label: 'English' },
   { code: 'es', label: 'Español' },
   { code: 'fr', label: 'Français' },
-  { code: 'de', label: 'Deutsch' },
-  { code: 'pt', label: 'Português' },
   { code: 'ja', label: '日本語' },
-  { code: 'ko', label: '한국어' },
-  { code: 'zh', label: '中文' },
-  { code: 'ar', label: 'العربية' },
-  { code: 'hi', label: 'हिंदी' },
 ];
+
+const ALL_TABS = ['posts', 'albums', 'reels', 'tagged', 'liked', 'communities'];
 
 const editProfileSchema = z.object({
   displayName: z.string().min(1, 'Name is required').max(50, 'Max 50 characters'),
-  username: z
-    .string()
-    .min(3, 'Min 3 characters')
-    .max(30, 'Max 30 characters')
-    .regex(/^[a-zA-Z0-9_]+$/, 'Only letters, numbers, and underscores'),
-  bio: z.string().max(160, 'Max 160 characters').optional(),
-  website: z
-    .string()
-    .optional()
-    .refine((v) => !v || v === '' || /^https?:\/\/.+/.test(v), { message: 'Must be a valid URL' }),
+  username: z.string().min(3).max(30).regex(/^[a-zA-Z0-9_]+$/),
+  bio: z.string().max(160).optional(),
+  website: z.string().optional().refine((v) => !v || /^https?:\/\/.+/.test(v), 'Invalid URL'),
   location: z.string().max(50).optional(),
   birthdate: z.string().optional(),
   language: z.string(),
   accentColor: z.string(),
+  profileTheme: z.string().optional(),
+  profileSoundtrack: z.string().optional(),
+  hideFollowerCount: z.boolean().optional(),
+  profileTabOrder: z.array(z.string()).optional(),
 });
 
 type EditProfileFormData = z.infer<typeof editProfileSchema>;
@@ -60,23 +62,18 @@ interface EditProfileModalProps {
   onClose: () => void;
 }
 
+type TabSection = 'basic' | 'theme' | 'widgets';
+
 export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
   const updateUser = useAuthStore((s) => s.updateUser);
+  const [activeSection, setActiveSection] = useState<TabSection>('basic');
   const [avatarPreview, setAvatarPreview] = useState<string>(user.avatar ?? '');
   const [coverPreview, setCoverPreview] = useState<string>(user.coverImage ?? '');
   const [isSaving, setIsSaving] = useState(false);
-  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
-  const usernameCheckTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<EditProfileFormData>({
+  const { register, handleSubmit, watch, setValue, control, formState: { errors } } = useForm<EditProfileFormData>({
     resolver: zodResolver(editProfileSchema),
     defaultValues: {
       displayName: user.displayName,
@@ -87,11 +84,15 @@ export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
       birthdate: user.birthdate ?? '',
       language: user.language ?? 'en',
       accentColor: user.accentColor ?? 'blue',
+      profileTheme: user.profileTheme ?? 'none',
+      profileSoundtrack: user.profileSoundtrack ?? '',
+      hideFollowerCount: user.hideFollowerCount ?? false,
+      profileTabOrder: user.profileTabOrder ?? ALL_TABS,
     },
   });
 
-  const watchedBio = watch('bio') ?? '';
-  const watchedAccentColor = watch('accentColor');
+  const watchedTheme = watch('profileTheme');
+  const watchedTabs = watch('profileTabOrder') ?? ALL_TABS;
 
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -109,298 +110,296 @@ export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
     reader.readAsDataURL(file);
   }
 
-  function handleUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const val = e.target.value;
-    if (usernameCheckTimeout.current) clearTimeout(usernameCheckTimeout.current);
-    setUsernameAvailable(null);
-    if (val && val !== user.username && val.length >= 3) {
-      usernameCheckTimeout.current = setTimeout(() => {
-        // Mock availability check — in a real app, this would be an API call
-        const taken = ['admin', 'alex_creates', 'tech_sam', 'maya_lifestyle', 'jordan_music'];
-        setUsernameAvailable(!taken.includes(val.toLowerCase()));
-      }, 600);
-    }
-  }
+  const moveTab = (idx: number, dir: -1 | 1) => {
+    const newTabs = [...watchedTabs];
+    const targetIdx = idx + dir;
+    if (targetIdx < 0 || targetIdx >= newTabs.length) return;
+    [newTabs[idx], newTabs[targetIdx]] = [newTabs[targetIdx], newTabs[idx]];
+    setValue('profileTabOrder', newTabs, { shouldDirty: true });
+  };
 
   async function onSubmit(data: EditProfileFormData) {
     setIsSaving(true);
-    // Simulate API call
     await new Promise((r) => setTimeout(r, 800));
     updateUser({
-      displayName: data.displayName,
-      username: data.username,
-      bio: data.bio,
-      website: data.website,
-      location: data.location,
-      birthdate: data.birthdate,
-      language: data.language,
-      accentColor: data.accentColor,
+      ...user,
+      ...data,
       avatar: avatarPreview || user.avatar,
       coverImage: coverPreview || user.coverImage,
       updatedAt: new Date().toISOString(),
     });
     setIsSaving(false);
+    toast.success('Profile customized successfully!');
     onClose();
   }
 
+  const sectionVariants = {
+    hidden: { opacity: 0, x: 20 },
+    visible: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -20 }
+  };
+
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
         {/* Backdrop */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          className="absolute inset-0 bg-background/80 backdrop-blur-md"
           onClick={onClose}
         />
 
-        {/* Modal */}
+        {/* Modal Container */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className="relative w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+          className="relative w-full max-w-4xl bg-card border border-border rounded-3xl shadow-2xl overflow-hidden h-[85vh] max-h-[800px] flex flex-col sm:flex-row"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
-            <h2 className="text-lg font-semibold">Edit Profile</h2>
+          {/* Sidebar */}
+          <div className="w-full sm:w-64 bg-muted/30 border-r border-border shrink-0 flex flex-col">
+            <div className="p-5 border-b border-border">
+              <h2 className="text-xl font-bold text-foreground">Customize</h2>
+            </div>
+            <div className="p-3 space-y-1 flex-1">
+              <SidebarBtn 
+                active={activeSection === 'basic'} 
+                onClick={() => setActiveSection('basic')} 
+                icon={UserIcon} label="Profile & Bio" 
+              />
+              <SidebarBtn 
+                active={activeSection === 'theme'} 
+                onClick={() => setActiveSection('theme')} 
+                icon={Palette} label="Theme & Layout" 
+              />
+              <SidebarBtn 
+                active={activeSection === 'widgets'} 
+                onClick={() => setActiveSection('widgets')} 
+                icon={Settings2} label="Widgets & Privacy" 
+              />
+            </div>
+            {/* Mobile close button visible only on small screens inside sidebar area */}
+            <div className="p-4 sm:hidden">
+              <button onClick={onClose} className="w-full py-2 bg-muted rounded-xl text-sm font-semibold">Close</button>
+            </div>
+          </div>
+
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col relative overflow-hidden bg-background">
             <button
               onClick={onClose}
-              className="p-1.5 rounded-full hover:bg-muted transition-colors"
-              aria-label="Close"
+              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
             >
               <X className="w-5 h-5" />
             </button>
-          </div>
 
-          {/* Scrollable body */}
-          <div className="overflow-y-auto flex-1">
-            <form id="edit-profile-form" onSubmit={handleSubmit(onSubmit)}>
-              {/* Cover image */}
-              <div className="relative h-32 bg-muted overflow-hidden cursor-pointer group" onClick={() => coverInputRef.current?.click()}>
-                {coverPreview ? (
-                  <Image src={coverPreview} alt="Cover" fill className="object-cover" />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-primary/20 to-purple-500/20" />
-                )}
-                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Camera className="w-6 h-6 text-white" />
-                </div>
-                <input
-                  ref={coverInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleCoverChange}
-                />
-              </div>
+            <div className="flex-1 overflow-y-auto">
+              <form id="customize-form" onSubmit={handleSubmit(onSubmit)} className="pb-24">
+                <AnimatePresence mode="wait">
+                  {/* BASIC SECTION */}
+                  {activeSection === 'basic' && (
+                    <motion.div key="basic" variants={sectionVariants} initial="hidden" animate="visible" exit="exit" transition={{ duration: 0.2 }} className="p-6">
+                      <div className="mb-8">
+                        <h3 className="text-lg font-bold mb-1">Public Profile</h3>
+                        <p className="text-sm text-muted-foreground">This is how others will see you on Wakka.</p>
+                      </div>
 
-              {/* Avatar */}
-              <div className="px-5 -mt-10 mb-4">
-                <div
-                  className="relative w-20 h-20 rounded-full ring-4 ring-card overflow-hidden cursor-pointer group"
-                  onClick={() => avatarInputRef.current?.click()}
-                >
-                  {avatarPreview ? (
-                    <Image src={avatarPreview} alt="Avatar" fill className="object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-muted flex items-center justify-center text-xl font-bold text-primary">
-                      {getInitials(user.displayName)}
-                    </div>
+                      {/* Cover & Avatar */}
+                      <div className="mb-10 relative">
+                        <div className="h-40 bg-muted rounded-2xl overflow-hidden relative cursor-pointer group border border-border" onClick={() => coverInputRef.current?.click()}>
+                          {coverPreview ? <Image src={coverPreview} alt="Cover" fill className="object-cover" /> : <div className="w-full h-full bg-gradient-to-br from-primary/20 to-purple-500/20" />}
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Camera className="w-6 h-6 text-white" />
+                          </div>
+                          <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={handleCoverChange} />
+                        </div>
+                        <div className="absolute -bottom-8 left-6">
+                          <div className="w-24 h-24 rounded-full ring-4 ring-background bg-card overflow-hidden cursor-pointer group relative" onClick={() => avatarInputRef.current?.click()}>
+                            {avatarPreview ? <Image src={avatarPreview} alt="Avatar" fill className="object-cover" /> : <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-primary bg-primary/10">{getInitials(user.displayName)}</div>}
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <Camera className="w-6 h-6 text-white" />
+                            </div>
+                            <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Fields */}
+                      <div className="space-y-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                          <div>
+                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Display Name</label>
+                            <input {...register('displayName')} className="w-full px-4 py-2.5 bg-muted/40 border border-border rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all" />
+                            {errors.displayName && <p className="text-xs text-destructive mt-1">{errors.displayName.message}</p>}
+                          </div>
+                          <div>
+                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Username</label>
+                            <input {...register('username')} className="w-full px-4 py-2.5 bg-muted/40 border border-border rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all" />
+                            {errors.username && <p className="text-xs text-destructive mt-1">{errors.username.message}</p>}
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Bio</label>
+                          <textarea {...register('bio')} rows={3} className="w-full px-4 py-3 bg-muted/40 border border-border rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all resize-none" />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                          <div>
+                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Website</label>
+                            <input {...register('website')} type="url" placeholder="https://" className="w-full px-4 py-2.5 bg-muted/40 border border-border rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all" />
+                          </div>
+                          <div>
+                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Location</label>
+                            <input {...register('location')} className="w-full px-4 py-2.5 bg-muted/40 border border-border rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all" />
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
                   )}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Camera className="w-5 h-5 text-white" />
-                  </div>
-                  <input
-                    ref={avatarInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleAvatarChange}
-                  />
-                </div>
-              </div>
 
-              {/* Fields */}
-              <div className="px-5 pb-5 space-y-4">
-                {/* Display Name */}
-                <div>
-                  <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground mb-1.5">
-                    <User className="w-3.5 h-3.5" /> Display Name
-                  </label>
-                  <input
-                    {...register('displayName')}
-                    type="text"
-                    placeholder="Your display name"
-                    className="w-full px-3 py-2 text-sm bg-muted/50 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all"
-                  />
-                  {errors.displayName && (
-                    <p className="text-xs text-destructive mt-1">{errors.displayName.message}</p>
+                  {/* THEME SECTION */}
+                  {activeSection === 'theme' && (
+                    <motion.div key="theme" variants={sectionVariants} initial="hidden" animate="visible" exit="exit" transition={{ duration: 0.2 }} className="p-6">
+                      <div className="mb-8">
+                        <h3 className="text-lg font-bold mb-1">Aesthetics & Layout</h3>
+                        <p className="text-sm text-muted-foreground">Make your profile truly yours with custom colors and tab arrangements.</p>
+                      </div>
+
+                      <div className="space-y-8">
+                        {/* Profile Theme Gradients */}
+                        <div>
+                          <label className="text-sm font-bold text-foreground mb-3 flex items-center gap-2"><Palette className="w-4 h-4 text-primary" /> Profile Background Theme</label>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {PROFILE_THEMES.map(theme => (
+                              <div
+                                key={theme.id}
+                                onClick={() => setValue('profileTheme', theme.id)}
+                                className={cn(
+                                  'relative h-20 rounded-2xl border-2 cursor-pointer overflow-hidden transition-all flex items-end p-2',
+                                  theme.bg,
+                                  watchedTheme === theme.id ? 'border-primary ring-2 ring-primary/20 scale-[1.02] shadow-md' : 'hover:scale-[1.02] border-border/50'
+                                )}
+                              >
+                                <span className="text-xs font-bold text-foreground/90 bg-background/50 backdrop-blur-sm px-2 py-0.5 rounded-lg">{theme.label}</span>
+                                {watchedTheme === theme.id && <div className="absolute top-2 right-2 w-3 h-3 bg-primary rounded-full shadow-sm" />}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Accent Colors */}
+                        <div>
+                          <label className="text-sm font-bold text-foreground mb-3 flex items-center gap-2"><Palette className="w-4 h-4 text-primary" /> UI Accent Color</label>
+                          <div className="flex gap-3 flex-wrap bg-muted/20 p-4 rounded-2xl border border-border">
+                            <Controller
+                              name="accentColor"
+                              control={control}
+                              render={({ field }) => (
+                                <>
+                                  {ACCENT_COLORS.map(c => (
+                                    <button
+                                      key={c.name}
+                                      type="button"
+                                      onClick={() => field.onChange(c.name)}
+                                      className={cn('w-10 h-10 rounded-full transition-transform', field.value === c.name ? 'scale-110 ring-4 ring-background shadow-lg' : 'hover:scale-110 opacity-70')}
+                                      style={{ backgroundColor: c.hex }}
+                                    />
+                                  ))}
+                                </>
+                              )}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Tab Reordering */}
+                        <div>
+                          <label className="text-sm font-bold text-foreground mb-3 flex items-center gap-2"><LayoutDashboard className="w-4 h-4 text-primary" /> Tab Layout Order</label>
+                          <div className="bg-muted/20 border border-border rounded-2xl overflow-hidden divide-y divide-border">
+                            {watchedTabs.map((tab, idx) => (
+                              <div key={tab} className="flex items-center justify-between p-3 bg-card hover:bg-muted/50 transition-colors">
+                                <span className="text-sm font-semibold capitalize">{tab}</span>
+                                <div className="flex items-center gap-1">
+                                  <button type="button" onClick={() => moveTab(idx, -1)} disabled={idx === 0} className="p-1.5 rounded-lg hover:bg-muted disabled:opacity-30"><ChevronUp className="w-4 h-4" /></button>
+                                  <button type="button" onClick={() => moveTab(idx, 1)} disabled={idx === watchedTabs.length - 1} className="p-1.5 rounded-lg hover:bg-muted disabled:opacity-30"><ChevronDown className="w-4 h-4" /></button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
                   )}
-                </div>
 
-                {/* Username */}
-                <div>
-                  <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground mb-1.5">
-                    @ Username
-                  </label>
-                  <div className="relative">
-                    <input
-                      {...register('username', {
-                        onChange: handleUsernameChange,
-                      })}
-                      type="text"
-                      placeholder="username"
-                      className="w-full px-3 py-2 text-sm bg-muted/50 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all pr-8"
-                    />
-                    {usernameAvailable !== null && (
-                      <span className={cn('absolute right-2 top-1/2 -translate-y-1/2 text-xs font-medium', usernameAvailable ? 'text-green-500' : 'text-destructive')}>
-                        {usernameAvailable ? '✓' : '✗'}
-                      </span>
-                    )}
-                  </div>
-                  {errors.username && (
-                    <p className="text-xs text-destructive mt-1">{errors.username.message}</p>
+                  {/* WIDGETS SECTION */}
+                  {activeSection === 'widgets' && (
+                    <motion.div key="widgets" variants={sectionVariants} initial="hidden" animate="visible" exit="exit" transition={{ duration: 0.2 }} className="p-6">
+                      <div className="mb-8">
+                        <h3 className="text-lg font-bold mb-1">Widgets & Privacy</h3>
+                        <p className="text-sm text-muted-foreground">Add interactive elements and control visibility on your profile.</p>
+                      </div>
+
+                      <div className="space-y-6">
+                        {/* Profile Soundtrack */}
+                        <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 p-5 rounded-2xl relative overflow-hidden">
+                          <Music className="absolute right-4 top-4 w-24 h-24 text-purple-500/10 -rotate-12" />
+                          <label className="text-sm font-bold text-foreground mb-2 flex items-center gap-2"><Music className="w-4 h-4 text-purple-500" /> Profile Soundtrack Widget</label>
+                          <p className="text-xs text-muted-foreground mb-4 max-w-sm">Paste a Spotify, SoundCloud, or direct audio link. A beautiful music player will appear on your profile header!</p>
+                          <input {...register('profileSoundtrack')} placeholder="https://..." className="w-full max-w-md px-4 py-2.5 bg-background border border-border rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition-all relative z-10" />
+                        </div>
+
+                        {/* Privacy Toggles */}
+                        <div className="border border-border p-5 rounded-2xl space-y-4">
+                          <label className="text-sm font-bold text-foreground flex items-center gap-2"><EyeOff className="w-4 h-4 text-primary" /> Profile Data Visibility</label>
+                          
+                          <label className="flex items-center justify-between cursor-pointer p-3 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors">
+                            <div>
+                              <span className="text-sm font-semibold block">Hide Follower Count</span>
+                              <span className="text-xs text-muted-foreground">Your follower count will be hidden from everyone except you.</span>
+                            </div>
+                            <input type="checkbox" {...register('hideFollowerCount')} className="w-5 h-5 accent-primary rounded cursor-pointer" />
+                          </label>
+                        </div>
+                      </div>
+                    </motion.div>
                   )}
-                  {usernameAvailable === true && (
-                    <p className="text-xs text-green-500 mt-1">Username is available</p>
-                  )}
-                  {usernameAvailable === false && (
-                    <p className="text-xs text-destructive mt-1">Username is taken</p>
-                  )}
-                </div>
+                </AnimatePresence>
+              </form>
+            </div>
 
-                {/* Bio */}
-                <div>
-                  <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground mb-1.5">
-                    <FileText className="w-3.5 h-3.5" /> Bio
-                  </label>
-                  <textarea
-                    {...register('bio')}
-                    rows={3}
-                    placeholder="Tell the world about yourself..."
-                    className="w-full px-3 py-2 text-sm bg-muted/50 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all resize-none"
-                  />
-                  <div className="flex justify-end mt-1">
-                    <span className={cn('text-xs', watchedBio.length > 140 ? 'text-orange-500' : 'text-muted-foreground')}>
-                      {watchedBio.length}/160
-                    </span>
-                  </div>
-                  {errors.bio && (
-                    <p className="text-xs text-destructive">{errors.bio.message}</p>
-                  )}
-                </div>
-
-                {/* Website */}
-                <div>
-                  <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground mb-1.5">
-                    <Link2 className="w-3.5 h-3.5" /> Website
-                  </label>
-                  <input
-                    {...register('website')}
-                    type="url"
-                    placeholder="https://yourwebsite.com"
-                    className="w-full px-3 py-2 text-sm bg-muted/50 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all"
-                  />
-                  {errors.website && (
-                    <p className="text-xs text-destructive mt-1">{errors.website.message}</p>
-                  )}
-                </div>
-
-                {/* Location */}
-                <div>
-                  <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground mb-1.5">
-                    <MapPin className="w-3.5 h-3.5" /> Location
-                  </label>
-                  <input
-                    {...register('location')}
-                    type="text"
-                    placeholder="City, Country"
-                    className="w-full px-3 py-2 text-sm bg-muted/50 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all"
-                  />
-                </div>
-
-                {/* Birthdate */}
-                <div>
-                  <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground mb-1.5">
-                    <Calendar className="w-3.5 h-3.5" /> Birthdate
-                  </label>
-                  <input
-                    {...register('birthdate')}
-                    type="date"
-                    className="w-full px-3 py-2 text-sm bg-muted/50 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all"
-                  />
-                </div>
-
-                {/* Language */}
-                <div>
-                  <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground mb-1.5">
-                    <Globe className="w-3.5 h-3.5" /> Language
-                  </label>
-                  <select
-                    {...register('language')}
-                    className="w-full px-3 py-2 text-sm bg-muted/50 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all"
-                  >
-                    {LANGUAGES.map((l) => (
-                      <option key={l.code} value={l.code}>{l.label}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Accent Color */}
-                <div>
-                  <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground mb-2">
-                    <Palette className="w-3.5 h-3.5" /> Accent Color
-                  </label>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {ACCENT_COLORS.map((color) => (
-                      <button
-                        key={color.name}
-                        type="button"
-                        onClick={() => setValue('accentColor', color.name)}
-                        className={cn(
-                          'w-7 h-7 rounded-full ring-offset-2 ring-offset-card transition-all',
-                          watchedAccentColor === color.name ? 'ring-2 ring-foreground scale-110' : 'hover:scale-110'
-                        )}
-                        style={{ backgroundColor: color.hex }}
-                        aria-label={`Select ${color.name}`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-
-          {/* Footer */}
-          <div className="px-5 py-4 border-t border-border flex items-center justify-end gap-3 shrink-0 bg-card">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm rounded-lg border border-border hover:bg-muted transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              form="edit-profile-form"
-              disabled={isSaving}
-              className="px-5 py-2 text-sm font-semibold rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              {isSaving ? (
-                <>
-                  <span className="w-3.5 h-3.5 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
-                  Saving…
-                </>
-              ) : (
-                'Save changes'
-              )}
-            </button>
+            {/* Bottom Floating Save Bar */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-xl border-t border-border flex justify-end gap-3 z-20">
+              <button onClick={onClose} className="px-6 py-2.5 text-sm font-semibold rounded-xl hover:bg-muted transition-colors">Cancel</button>
+              <button
+                type="submit"
+                form="customize-form"
+                disabled={isSaving}
+                className="px-8 py-2.5 text-sm font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95 disabled:opacity-70 shadow-lg shadow-primary/20 flex items-center gap-2"
+              >
+                {isSaving ? <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" /> : 'Save Profile'}
+              </button>
+            </div>
           </div>
         </motion.div>
       </div>
     </AnimatePresence>
+  );
+}
+
+function SidebarBtn({ active, onClick, icon: Icon, label }: { active: boolean; onClick: () => void; icon: any; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all relative overflow-hidden',
+        active ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+      )}
+    >
+      {active && <motion.div layoutId="active-sidebar" className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-full" />}
+      <Icon className={cn('w-4 h-4', active && 'fill-primary/20')} />
+      {label}
+    </button>
   );
 }

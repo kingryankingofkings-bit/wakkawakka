@@ -45,28 +45,30 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', className
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden">
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
             onClick={onClose}
             aria-hidden="true"
           />
+          {/* Modal Content Card */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ duration: 0.2, type: 'spring', stiffness: 300, damping: 30 }}
             role="dialog"
             aria-modal="true"
             aria-labelledby={title ? 'modal-title' : undefined}
             className={cn(
-              'fixed left-1/2 top-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2',
+              'relative z-50 w-full',
               'bg-card border border-border rounded-2xl shadow-2xl',
-              'overflow-hidden flex flex-col',
+              'overflow-hidden flex flex-col max-h-[90vh]',
               sizeClasses[size],
               className
             )}
@@ -91,7 +93,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', className
             )}
             <div className="flex-1 overflow-y-auto">{children}</div>
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>,
     document.body

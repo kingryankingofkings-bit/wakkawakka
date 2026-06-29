@@ -28,6 +28,11 @@ export interface User {
   theme: Theme;
   accentColor: string;
   language: string;
+  profileTheme?: string;
+  profileSoundtrack?: string;
+  profileTabOrder?: string[];
+  hideFollowerCount?: boolean;
+  pinnedPostId?: string;
   followersCount: number;
   followingCount: number;
   postsCount: number;
@@ -59,8 +64,27 @@ export interface Post {
   isShared?: boolean;
   originalPost?: Post;
   musicTrack?: MusicTrack;
+  poll?: Poll;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PollOption {
+  id: string;
+  pollId: string;
+  text: string;
+  votesCount: number;
+}
+
+export interface Poll {
+  id: string;
+  postId: string;
+  question: string;
+  options: PollOption[];
+  allowMultiple: boolean;
+  expiresAt?: string;
+  isClosed: boolean;
+  userVotes?: string[]; // array of option IDs voted by the current user
 }
 
 export interface Comment {

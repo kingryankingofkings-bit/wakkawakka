@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Image, Video, Globe, Users, Lock, X, Music, Hash, AtSign, Clock, Tag, ChevronDown } from 'lucide-react';
+import { Image, Video, Globe, Users, Lock, X, Music, Hash, AtSign, Clock, Tag, ChevronDown, Smile, BarChart2, PlusCircle, MinusCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
@@ -21,6 +21,8 @@ const VISIBILITY_OPTIONS: { value: Visibility; label: string; icon: typeof Globe
 
 const POST_TABS = ['Post', 'Reel', 'Story'] as const;
 
+const POPULAR_EMOJIS = ['😀', '😂', '😍', '👍', '🔥', '🎉', '👏', '🙌', '✨', '❤️', '🤔', '😎', '💡', '🚀', '👀'];
+
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -33,6 +35,15 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const [showVisibility, setShowVisibility] = useState(false);
   const [previews, setPreviews] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Poll States
+  const [showPollCreator, setShowPollCreator] = useState(false);
+  const [pollQuestion, setPollQuestion] = useState('');
+  const [pollOptions, setPollOptions] = useState<string[]>(['', '']);
+  
+  // Emoji Picker State
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const addPost = useFeedStore(s => s.addPost);
 
@@ -53,17 +64,59 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const charLimit = 2200;
   const hashtags = extractHashtags(content);
 
+  const handleEmojiClick = (emoji: string) => {
+    setContent(prev => prev + emoji);
+    textareaRef.current?.focus();
+  };
+
+  const handleAddPollOption = () => {
+    if (pollOptions.length < 5) {
+      setPollOptions(prev => [...prev, '']);
+    }
+  };
+
+  const handleRemovePollOption = (index: number) => {
+    if (pollOptions.length > 2) {
+      setPollOptions(prev => prev.filter((_, i) => i !== index));
+    }
+  };
+
+  const handlePollOptionChange = (index: number, val: string) => {
+    setPollOptions(prev => prev.map((o, i) => (i === index ? val : o)));
+  };
+
   function handleSubmit() {
-    if (!content.trim() && previews.length === 0) return;
+    if (!content.trim() && previews.length === 0 && !showPollCreator) return;
     setIsLoading(true);
     setTimeout(() => {
+      // Build poll if filled
+      let pollData = undefined;
+      const filteredOptions = pollOptions.filter(o => o.trim() !== '');
+      if (showPollCreator && pollQuestion.trim() !== '' && filteredOptions.length >= 2) {
+        const pollId = `poll_${Date.now()}`;
+        pollData = {
+          id: pollId,
+          postId: `post_${Date.now()}`,
+          question: pollQuestion.trim(),
+          options: filteredOptions.map((opt, idx) => ({
+            id: `opt_${Date.now()}_${idx}`,
+            pollId,
+            text: opt.trim(),
+            votesCount: 0,
+          })),
+          allowMultiple: false,
+          isClosed: false,
+          userVotes: [],
+        };
+      }
+
       const newPost: Post = {
         id: `post_${Date.now()}`,
         content: content.trim(),
         author: CURRENT_USER,
         authorId: CURRENT_USER.id,
         mediaUrls: previews,
-        type: previews.length > 0 ? 'IMAGE' : 'TEXT',
+        type: previews.length > 0 ? 'IMAGE' : pollData ? 'TEXT' : 'TEXT', // default fallback
         visibility,
         isEphemeral: tab === 'Story',
         expiresAt: tab === 'Story' ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : undefined,
@@ -73,6 +126,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
         viewsCount: 0,
         hashtags,
         collaborators: [],
+        poll: pollData,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -80,6 +134,9 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
       toast.success('Post published!');
       setContent('');
       setPreviews([]);
+      setShowPollCreator(false);
+      setPollQuestion('');
+      setPollOptions(['', '']);
       setIsLoading(false);
       onClose();
     }, 800);
@@ -89,7 +146,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Create" size="lg">
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 max-h-[85vh] overflow-y-auto">
         {/* Tabs */}
         <div className="flex gap-1 bg-muted rounded-xl p-1">
           {POST_TABS.map(t => (
@@ -109,7 +166,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
         {/* Author row */}
         <div className="flex items-center gap-3">
           <Avatar src={CURRENT_USER.avatar} name={CURRENT_USER.displayName} size="md" />
-          <div>
+          <div className="relative">
             <p className="text-sm font-semibold">{CURRENT_USER.displayName}</p>
             <button
               onClick={() => setShowVisibility(!showVisibility)}
@@ -125,7 +182,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -5 }}
-                  className="absolute mt-1 bg-card border border-border rounded-xl shadow-xl z-10 py-1 min-w-36"
+                  className="absolute left-0 mt-1 bg-card border border-border rounded-xl shadow-xl z-50 py-1 min-w-36"
                 >
                   {VISIBILITY_OPTIONS.map(opt => (
                     <button
@@ -147,22 +204,24 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
         </div>
 
         {/* Text area */}
-        <textarea
-          ref={textareaRef}
-          value={content}
-          onChange={e => setContent(e.target.value)}
-          placeholder={
-            tab === 'Story' ? "Create a story..." :
-            tab === 'Reel' ? "Add a caption for your Reel..." :
-            "What's on your mind?"
-          }
-          className="w-full min-h-[120px] resize-none bg-transparent text-foreground text-base placeholder:text-muted-foreground focus:outline-none leading-relaxed"
-          maxLength={charLimit}
-        />
+        <div className="relative">
+          <textarea
+            ref={textareaRef}
+            value={content}
+            onChange={e => setContent(e.target.value)}
+            placeholder={
+              tab === 'Story' ? "Create a story..." :
+              tab === 'Reel' ? "Add a caption for your Reel..." :
+              "What's on your mind?"
+            }
+            className="w-full min-h-[120px] resize-none bg-transparent text-foreground text-base placeholder:text-muted-foreground focus:outline-none leading-relaxed"
+            maxLength={charLimit}
+          />
+        </div>
 
-        {/* Char counter */}
+        {/* Char counter & Emoji Button */}
         <div className="flex justify-between items-center text-xs text-muted-foreground">
-          <div className="flex gap-3">
+          <div className="flex gap-2 items-center">
             {hashtags.length > 0 && (
               <span className="flex items-center gap-1 text-primary">
                 <Hash className="h-3 w-3" />
@@ -170,11 +229,104 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                 {hashtags.length > 3 && `+${hashtags.length - 3}`}
               </span>
             )}
+            <button
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className={cn("p-1 rounded-lg hover:bg-muted transition-colors", showEmojiPicker && "text-primary bg-muted")}
+              title="Add Emoji"
+            >
+              <Smile className="h-4 w-4" />
+            </button>
           </div>
           <span className={cn(charCount > charLimit * 0.9 && 'text-destructive')}>
             {charCount}/{charLimit}
           </span>
         </div>
+
+        {/* Inline Emoji Picker Panel */}
+        <AnimatePresence>
+          {showEmojiPicker && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="flex flex-wrap gap-2 p-2.5 bg-muted/50 border border-border rounded-xl">
+                {POPULAR_EMOJIS.map(emoji => (
+                  <button
+                    key={emoji}
+                    onClick={() => handleEmojiClick(emoji)}
+                    className="text-lg p-1 hover:scale-125 transition-transform"
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Dynamic Poll Creator Component */}
+        <AnimatePresence>
+          {showPollCreator && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-card border border-border rounded-xl p-4 space-y-3"
+            >
+              <div className="flex items-center justify-between border-b border-border pb-2 mb-1">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Create a Poll</h4>
+                <button
+                  onClick={() => setShowPollCreator(false)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <input
+                type="text"
+                placeholder="Ask a question..."
+                value={pollQuestion}
+                onChange={e => setPollQuestion(e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-border bg-muted/30 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+
+              <div className="space-y-2">
+                {pollOptions.map((opt, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder={`Option ${i + 1}`}
+                      value={opt}
+                      onChange={e => handlePollOptionChange(i, e.target.value)}
+                      className="flex-1 h-9 px-3 rounded-lg border border-border bg-transparent text-sm focus:outline-none"
+                    />
+                    {pollOptions.length > 2 && (
+                      <button
+                        onClick={() => handleRemovePollOption(i)}
+                        className="text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        <MinusCircle className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {pollOptions.length < 5 && (
+                <button
+                  onClick={handleAddPollOption}
+                  className="flex items-center gap-1.5 text-xs text-primary font-semibold hover:text-primary/80 transition-colors pt-1"
+                >
+                  <PlusCircle className="h-4 w-4" />
+                  Add Option
+                </button>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Media previews */}
         {previews.length > 0 && (
@@ -194,26 +346,38 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
         )}
 
         {/* Dropzone */}
-        <div
-          {...getRootProps()}
-          className={cn(
-            'border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors',
-            isDragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-muted-foreground/50'
-          )}
-        >
-          <input {...getInputProps()} />
-          <div className="flex justify-center gap-4 mb-2">
-            <Image className="h-6 w-6 text-muted-foreground" />
-            <Video className="h-6 w-6 text-muted-foreground" />
+        {!showPollCreator && (
+          <div
+            {...getRootProps()}
+            className={cn(
+              'border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors',
+              isDragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-muted-foreground/50'
+            )}
+          >
+            <input {...getInputProps()} />
+            <div className="flex justify-center gap-4 mb-2">
+              <Image className="h-6 w-6 text-muted-foreground" />
+              <Video className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {isDragActive ? 'Drop files here' : 'Drag photos/videos or click to upload'}
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground">
-            {isDragActive ? 'Drop files here' : 'Drag photos/videos or click to upload'}
-          </p>
-        </div>
+        )}
 
         {/* Action bar */}
         <div className="flex items-center gap-2 pt-1 border-t border-border">
           <div className="flex-1 flex gap-2">
+            <button
+              onClick={() => {
+                setShowPollCreator(!showPollCreator);
+                if (previews.length > 0) setPreviews([]);
+              }}
+              className={cn("p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-colors", showPollCreator && "text-primary bg-muted")}
+              title="Add Poll"
+            >
+              <BarChart2 className="h-4 w-4" />
+            </button>
             {[{ icon: Hash, label: 'Tag' }, { icon: AtSign, label: 'Mention' }, { icon: Music, label: 'Music' }, { icon: Tag, label: 'Product' }, { icon: Clock, label: 'Schedule' }].map(({ icon: Icon, label }) => (
               <button key={label} title={label} className="p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
                 <Icon className="h-4 w-4" />
@@ -223,7 +387,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
           <Button
             onClick={handleSubmit}
             isLoading={isLoading}
-            disabled={!content.trim() && previews.length === 0}
+            disabled={!content.trim() && previews.length === 0 && !showPollCreator}
             size="sm"
           >
             {tab === 'Story' ? 'Share Story' : 'Post'}

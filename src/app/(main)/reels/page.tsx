@@ -196,6 +196,8 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
   const [muted, setMuted] = useState(true);
   const [commentOpen, setCommentOpen] = useState(false);
   const [floatingHearts, setFloatingHearts] = useState<{ id: number; x: number }[]>([]);
+  const [heartPops, setHeartPops] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [showMuteOverlay, setShowMuteOverlay] = useState(false);
   const [progress, setProgress] = useState(0);
   const heartIdRef = useRef(0);
 
@@ -228,11 +230,38 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
     }, 1200);
   };
 
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.detail === 1) {
+      setMuted((m) => !m);
+      setShowMuteOverlay(true);
+      setTimeout(() => setShowMuteOverlay(false), 800);
+    }
+  };
+
+  const handleCardDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!liked) {
+      setLiked(true);
+      setLikesCount((c) => c + 1);
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const id = Date.now();
+    setHeartPops((prev) => [...prev, { id, x, y }]);
+    setTimeout(() => {
+      setHeartPops((prev) => prev.filter((hp) => hp.id !== id));
+    }, 800);
+  };
+
   const musicTitle = `${reel.musicTrack.title} - ${reel.musicTrack.artist}`;
   const repeated = `${musicTitle}     •     ${musicTitle}     •     `;
 
   return (
-    <div className="relative w-full h-screen shrink-0 overflow-hidden bg-black select-none">
+    <div
+      onClick={handleCardClick}
+      onDoubleClick={handleCardDoubleClick}
+      className="relative w-full h-screen shrink-0 overflow-hidden bg-black select-none cursor-pointer"
+    >
       {/* Progress bar */}
       <div className="absolute top-0 left-0 right-0 z-10 h-0.5 bg-white/20">
         <motion.div
@@ -274,6 +303,37 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
         ))}
       </AnimatePresence>
 
+      {/* Double click heart pops */}
+      <AnimatePresence>
+        {heartPops.map((hp) => (
+          <motion.div
+            key={hp.id}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: [0.5, 1.3, 1], opacity: [0, 1, 0] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="absolute z-20 pointer-events-none -translate-x-1/2 -translate-y-1/2"
+            style={{ left: hp.x, top: hp.y }}
+          >
+            <Heart size={80} fill="#ef4444" className="text-red-500 drop-shadow-2xl" />
+          </motion.div>
+        ))}
+      </AnimatePresence>
+
+      {/* Mute Overlay Notification */}
+      <AnimatePresence>
+        {showMuteOverlay && (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            className="absolute inset-0 m-auto w-16 h-16 rounded-full bg-black/60 flex items-center justify-center text-white pointer-events-none z-20"
+          >
+            {muted ? <VolumeX size={32} /> : <Volume2 size={32} />}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Comment drawer */}
       <CommentDrawer
         open={commentOpen}
@@ -284,7 +344,7 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
       {/* Bottom overlay: author info + music ticker */}
       <div className="absolute bottom-0 left-0 right-0 z-10 pb-6 px-4 pointer-events-none">
         {/* Author */}
-        <div className="flex items-center gap-3 mb-3 pointer-events-auto">
+        <div className="flex items-center gap-3 mb-3 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
           <img
             src={reel.author.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${reel.author.id}`}
             alt={reel.author.displayName}
@@ -320,7 +380,7 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
       </div>
 
       {/* Right side actions */}
-      <div className="absolute right-3 bottom-24 z-10 flex flex-col items-center gap-6">
+      <div className="absolute right-3 bottom-24 z-10 flex flex-col items-center gap-6" onClick={(e) => e.stopPropagation()}>
         {/* Like */}
         <button onClick={handleLike} className="flex flex-col items-center gap-1">
           <motion.div

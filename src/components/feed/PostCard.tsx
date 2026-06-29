@@ -38,6 +38,9 @@ import { useFeedStore } from '@/store/feedStore';
 import { ReactionPicker } from './ReactionPicker';
 import { CommentsSection } from './CommentsSection';
 import { ShareModal } from './ShareModal';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
+import toast from 'react-hot-toast';
 
 interface PostCardProps {
   post: Post;
@@ -260,9 +263,17 @@ export function PostCard({ post }: PostCardProps) {
   const [isLikeAnimating, setIsLikeAnimating] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
 
+  // Block & Report States
+  const [isHidden, setIsHidden] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState('SPAM');
+  const [reportText, setReportText] = useState('');
+
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  if (isHidden) return null;
 
   const isOwnPost = post.authorId === CURRENT_USER.id;
 
@@ -326,6 +337,39 @@ export function PostCard({ post }: PostCardProps) {
 
   const handleShare = () => {
     updatePost(post.id, { sharesCount: post.sharesCount + 1 });
+  };
+
+  const handleBlockUser = () => {
+    setIsHidden(true);
+    setShowMenu(false);
+    toast.success(`Blocked @${post.author.username}. Hiding post.`);
+  };
+
+  const handleReportSubmit = () => {
+    toast.success('Thank you for reporting. Our moderators will review this post shortly.');
+    setShowReportModal(false);
+  };
+
+  const handleVote = (optionId: string) => {
+    if (!post.poll) return;
+    const hasVoted = post.poll.userVotes && post.poll.userVotes.length > 0;
+    if (hasVoted) return;
+
+    const updatedOptions = post.poll.options.map(opt => {
+      if (opt.id === optionId) {
+        return { ...opt, votesCount: opt.votesCount + 1 };
+      }
+      return opt;
+    });
+
+    const updatedPoll = {
+      ...post.poll,
+      options: updatedOptions,
+      userVotes: [optionId]
+    };
+
+    updatePost(post.id, { poll: updatedPoll });
+    toast.success('Vote submitted!');
   };
 
   // Close menu on outside click
@@ -477,14 +521,14 @@ export function PostCard({ post }: PostCardProps) {
                       <>
                         <div className="h-px bg-border mx-2 my-1" />
                         <button
-                          onClick={() => setShowMenu(false)}
+                          onClick={() => { setShowReportModal(true); setShowMenu(false); }}
                           className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
                         >
                           <Flag className="w-4 h-4 text-muted-foreground" />
                           Report post
                         </button>
                         <button
-                          onClick={() => setShowMenu(false)}
+                          onClick={handleBlockUser}
                           className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors"
                         >
                           <UserX className="w-4 h-4" />
@@ -525,6 +569,66 @@ export function PostCard({ post }: PostCardProps) {
           />
         </div>
       )}
+
+      {/* Poll Visual Widget */}
+      {post.poll && (() => {
+        const poll = post.poll;
+        const hasVoted = poll.userVotes && poll.userVotes.length > 0;
+        const totalVotes = poll.options.reduce((sum, o) => sum + o.votesCount, 0) || 1;
+        
+        return (
+          <div className="px-4 pb-4">
+            <div className="bg-muted/40 border border-border/80 rounded-2xl p-4 space-y-3">
+              <h4 className="text-sm font-semibold text-foreground">{poll.question}</h4>
+              <div className="space-y-2">
+                {poll.options.map((opt) => {
+                  const percent = Math.round((opt.votesCount / totalVotes) * 100);
+                  const isUserChoice = poll.userVotes?.includes(opt.id);
+                  
+                  return (
+                    <button
+                      key={opt.id}
+                      disabled={hasVoted || poll.isClosed}
+                      onClick={() => handleVote(opt.id)}
+                      className={cn(
+                        "w-full text-left relative overflow-hidden rounded-xl h-10 border transition-all text-xs font-semibold px-4 flex items-center justify-between",
+                        hasVoted 
+                          ? "border-border/60 bg-transparent cursor-default" 
+                          : "border-border hover:bg-muted active:scale-[0.99] cursor-pointer"
+                      )}
+                    >
+                      {/* Voted progress indicator bar */}
+                      {hasVoted && (
+                        <div
+                          className={cn(
+                            "absolute left-0 top-0 bottom-0 z-0 transition-all duration-500",
+                            isUserChoice ? "bg-primary/15" : "bg-muted/80"
+                          )}
+                          style={{ width: `${percent}%` }}
+                        />
+                      )}
+                      
+                      <span className="relative z-10 flex items-center gap-2 text-foreground">
+                        {opt.text}
+                        {isUserChoice && <span className="text-primary text-[10px] bg-primary/10 rounded px-1 py-0.5">Your Vote</span>}
+                      </span>
+                      {hasVoted && (
+                        <span className="relative z-10 text-muted-foreground font-mono">
+                          {percent}% ({opt.votesCount})
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="text-[10px] text-muted-foreground pt-1 flex justify-between">
+                <span>{poll.options.reduce((sum, o) => sum + o.votesCount, 0)} total votes</span>
+                {poll.isClosed && <span className="text-destructive font-semibold">Closed</span>}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Media */}
       {(post.mediaUrls.length > 0 || post.type === 'VIDEO') && (
@@ -708,6 +812,46 @@ export function PostCard({ post }: PostCardProps) {
         onClose={() => setShowShareModal(false)}
         onShare={handleShare}
       />
+
+      {/* Report Post Modal */}
+      <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)} title="Report Post" size="md">
+        <div className="p-4 space-y-4">
+          <p className="text-sm text-muted-foreground">Select a reason for reporting this post. We review all reports within 24 hours.</p>
+          <div className="space-y-2">
+            {['SPAM', 'HARASSMENT', 'INAPPROPRIATE', 'OTHER'].map(reason => (
+              <label
+                key={reason}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-all",
+                  reportReason === reason ? "border-primary bg-primary/5" : "border-border hover:bg-muted"
+                )}
+              >
+                <input
+                  type="radio"
+                  name="reportReason"
+                  value={reason}
+                  checked={reportReason === reason}
+                  onChange={() => setReportReason(reason)}
+                  className="accent-primary h-4 w-4"
+                />
+                <span className="text-sm font-semibold capitalize text-foreground">{reason.toLowerCase()}</span>
+              </label>
+            ))}
+          </div>
+
+          <textarea
+            placeholder="Add details (optional)..."
+            value={reportText}
+            onChange={e => setReportText(e.target.value)}
+            className="w-full min-h-[80px] p-3 rounded-xl border border-border bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
+          />
+
+          <div className="flex gap-3 justify-end pt-2">
+            <Button variant="ghost" onClick={() => setShowReportModal(false)}>Cancel</Button>
+            <Button onClick={handleReportSubmit} variant="destructive">Submit Report</Button>
+          </div>
+        </div>
+      </Modal>
     </motion.article>
   );
 }
