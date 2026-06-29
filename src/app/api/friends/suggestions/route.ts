@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
       select: { userAId: true, userBId: true },
     });
     const friendIds = new Set<string>();
-    friendships.forEach(f => friendIds.add(f.userAId === userId ? f.userBId : f.userAId));
+    friendships.forEach((f: any) => friendIds.add(f.userAId === userId ? f.userBId : f.userAId));
 
     // friends-of-friends
     const fof = await prisma.friendship.findMany({
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
       select: { userAId: true, userBId: true },
     });
     const candidateScores = new Map<string, number>();
-    fof.forEach(f => {
+    fof.forEach((f: any) => {
       [f.userAId, f.userBId].forEach(id => {
         if (id !== userId && !friendIds.has(id)) {
           candidateScores.set(id, (candidateScores.get(id) ?? 0) + 1);
@@ -57,13 +57,13 @@ export async function GET(req: NextRequest) {
       select: { senderId: true, receiverId: true },
     });
     const excluded = new Set<string>([userId, ...friendIds]);
-    pending.forEach(p => { excluded.add(p.senderId); excluded.add(p.receiverId); });
+    pending.forEach((p: any) => { excluded.add(p.senderId); excluded.add(p.receiverId); });
 
     const blocks = await prisma.block.findMany({
       where: { OR: [{ blockerId: userId }, { blockedId: userId }] },
       select: { blockerId: true, blockedId: true },
     });
-    blocks.forEach(b => { excluded.add(b.blockerId); excluded.add(b.blockedId); });
+    blocks.forEach((b: any) => { excluded.add(b.blockerId); excluded.add(b.blockedId); });
 
     let rankedIds = [...candidateScores.entries()]
       .filter(([id]) => !excluded.has(id))
@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
         take: 12 - rankedIds.length,
         select: { id: true },
       });
-      rankedIds = [...rankedIds, ...popular.map(u => u.id)];
+      rankedIds = [...rankedIds, ...popular.map((u: any) => u.id)];
     }
 
     const users = await prisma.user.findMany({
@@ -88,8 +88,8 @@ export async function GET(req: NextRequest) {
     });
     // preserve ranking order and attach mutual count
     const ordered = rankedIds
-      .map(id => {
-        const u = users.find(x => x.id === id);
+      .map((id: string) => {
+        const u = users.find((x: any) => x.id === id);
         if (!u) return null;
         return { ...u, mutualFriends: candidateScores.get(id) ?? 0 };
       })

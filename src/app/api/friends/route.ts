@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    const friends = friendships.map(f => (f.userAId === userId ? f.userB : f.userA));
+    const friends = friendships.map((f: any) => (f.userAId === userId ? f.userB : f.userA));
     return NextResponse.json({ data: friends, meta: { total: friends.length } });
   } catch (err) {
     return NextResponse.json({ data: [], meta: { total: 0 }, detail: String(err) });

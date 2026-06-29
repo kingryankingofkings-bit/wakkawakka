@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   const sort = sp.get('sort') ?? 'recent';
 
   try {
-    const where: Record<string, unknown> = { isActive: true, isDeleted: false };
+    const where: any = { isActive: true, isDeleted: false };
     if (category && category !== 'all') where.category = category;
     if (condition) where.condition = condition;
     if (q) where.OR = [
@@ -26,8 +26,8 @@ export async function GET(req: NextRequest) {
     ];
     if (min || max) {
       where.price = {};
-      if (min) (where.price as Record<string, number>).gte = parseFloat(min);
-      if (max) (where.price as Record<string, number>).lte = parseFloat(max);
+      if (min) where.price.gte = parseFloat(min);
+      if (max) where.price.lte = parseFloat(max);
     }
 
     const orderBy =

@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   const now = new Date();
 
   try {
-    let where: Record<string, unknown> = { isCancelled: false };
+    let where: any = { isCancelled: false };
     if (filter === 'upcoming') where = { ...where, startsAt: { gte: now }, visibility: 'PUBLIC' };
     if (filter === 'past') where = { ...where, startsAt: { lt: now } };
     if (filter === 'hosting' && userId) where = { creatorId: userId };
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
       where,
       include: {
         creator: { select: creatorSelect },
-        attendees: userId ? { where: { userId }, select: { status: true } } : false,
+        attendees: { where: { userId: userId ?? '__none__' }, select: { status: true } },
         _count: { select: { attendees: true } },
       },
       orderBy: { startsAt: filter === 'past' ? 'desc' : 'asc' },

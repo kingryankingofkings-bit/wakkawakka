@@ -21,7 +21,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     if (poll.isClosed || (poll.expiresAt && poll.expiresAt < new Date())) {
       return NextResponse.json({ error: 'Poll is closed' }, { status: 409 });
     }
-    if (!poll.options.some(o => o.id === optionId)) {
+    if (!poll.options.some((o: any) => o.id === optionId)) {
       return NextResponse.json({ error: 'Option does not belong to this poll' }, { status: 400 });
     }
 
@@ -43,8 +43,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       _count: { optionId: true },
     });
     await Promise.all(
-      poll.options.map(o => {
-        const t = tallies.find(x => x.optionId === o.id);
+      poll.options.map((o: any) => {
+        const t = tallies.find((x: any) => x.optionId === o.id);
         return prisma.pollOption.update({
           where: { id: o.id },
           data: { votesCount: t?._count.optionId ?? 0 },

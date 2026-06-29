@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
       where: { postId },
       include: {
         options: { orderBy: { position: 'asc' } },
-        votes: userId ? { where: { userId }, select: { optionId: true } } : false,
+        votes: { where: { userId: userId ?? '__none__' }, select: { optionId: true } },
         _count: { select: { votes: true } },
       },
     });

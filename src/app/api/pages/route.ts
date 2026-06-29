@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   const category = req.nextUrl.searchParams.get('category');
 
   try {
-    let where: Record<string, unknown> = {};
+    let where: any = {};
     if (category) where.category = category;
     if (filter === 'mine' && userId) where = { ...where, ownerId: userId };
     if (filter === 'following' && userId) where = { ...where, followers: { some: { userId } } };
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
       where,
       include: {
         owner: { select: ownerSelect },
-        followers: userId ? { where: { userId }, select: { id: true } } : false,
+        followers: { where: { userId: userId ?? '__none__' }, select: { id: true } },
         _count: { select: { followers: true } },
       },
       orderBy: { followerCount: 'desc' },

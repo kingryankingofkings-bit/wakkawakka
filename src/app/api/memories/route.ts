@@ -29,11 +29,11 @@ export async function GET(req: NextRequest) {
     });
 
     const memories = posts
-      .filter(p => {
+      .filter((p: any) => {
         const d = new Date(p.createdAt);
         return d.getUTCMonth() === month && d.getUTCDate() === day;
       })
-      .map(p => ({ ...p, yearsAgo: thisYear - new Date(p.createdAt).getUTCFullYear() }));
+      .map((p: any) => ({ ...p, yearsAgo: thisYear - new Date(p.createdAt).getUTCFullYear() }));
 
     return NextResponse.json({ data: memories, meta: { total: memories.length } });
   } catch (err) {
