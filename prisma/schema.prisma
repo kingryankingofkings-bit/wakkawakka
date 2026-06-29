@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = env("DATABASE_PROVIDER")
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -473,6 +473,7 @@ model CommunityMember {
   id          String    @id @default(cuid())
   communityId String
   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  userId      String
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   /// CommunityRole: MEMBER | MODERATOR | ADMIN
