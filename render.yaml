@@ -4,7 +4,7 @@ services:
     runtime: node
     region: oregon
     plan: free
-    buildCommand: npm install && npx prisma generate && npm run build
+    buildCommand: npm install --include=dev && npx prisma generate && npx prisma db push --accept-data-loss && npm run build
     startCommand: npm start
     healthCheckPath: /
     envVars:
@@ -15,6 +15,8 @@ services:
           name: wakka-db
           property: connectionString
       - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_SETUP_SECRET
         generateValue: true
       - key: NEXT_PUBLIC_APP_URL
         sync: false
