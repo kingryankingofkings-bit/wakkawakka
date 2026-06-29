@@ -55,6 +55,7 @@ function SettingRow({ label, description, children }: { label: string; descripti
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState<SettingsSection>('account');
   const user = useAuthStore(s => s.user) || CURRENT_USER;
+  const updateUser = useAuthStore(s => s.updateUser);
 
   // Toggles state
   const [toggles, setToggles] = useState({
@@ -94,6 +95,9 @@ export default function SettingsPage() {
 
   function setToggle(key: keyof typeof toggles, value: boolean) {
     setToggles(prev => ({ ...prev, [key]: value }));
+    if (key === 'privateAccount') {
+      updateUser({ isPrivate: value });
+    }
     toast.success('Settings saved');
   }
 
@@ -106,6 +110,7 @@ export default function SettingsPage() {
       setShow2FAWizard(true);
     } else {
       setToggles(prev => ({ ...prev, twoFactor: false }));
+      updateUser({ twoFactorEnabled: false });
       toast.success('Two-factor authentication disabled');
     }
   };
@@ -121,6 +126,7 @@ export default function SettingsPage() {
 
   const handleFinish2FA = () => {
     setToggles(prev => ({ ...prev, twoFactor: true }));
+    updateUser({ twoFactorEnabled: true });
     setShow2FAWizard(false);
     toast.success('2FA successfully enabled!');
   };
@@ -306,7 +312,7 @@ export default function SettingsPage() {
                     ] as const).map(opt => (
                       <button
                         key={opt.value}
-                        onClick={() => { setTheme(opt.value); toast.success(`${opt.label} theme applied`); }}
+                        onClick={() => { setTheme(opt.value); updateUser({ theme: opt.value }); toast.success(`${opt.label} theme applied`); }}
                         className={cn(
                           'flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all',
                           theme === opt.value ? 'border-primary bg-primary/5' : 'border-border hover:border-muted-foreground/50 text-foreground'
@@ -330,7 +336,7 @@ export default function SettingsPage() {
                       return (
                         <button
                           key={color}
-                          onClick={() => { setAccentColor(color); toast.success(`${color} accent applied`); }}
+                          onClick={() => { setAccentColor(color); updateUser({ accentColor: color }); toast.success(`${color} accent applied`); }}
                           className={cn('h-9 w-9 rounded-full transition-all', accentColor === color && 'ring-2 ring-offset-2 ring-foreground scale-110')}
                           style={{ backgroundColor: colorMap[color] }}
                           title={color}
