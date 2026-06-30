@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { User, Lock, Bell, Eye, Shield, DollarSign, Accessibility, Globe, Smartphone, ChevronRight, Moon, Sun, Monitor, Check, Download, Trash2, LogOut, Key, Copy } from 'lucide-react';
+import { User, Lock, Bell, Eye, Shield, DollarSign, Accessibility, Globe, Smartphone, ChevronRight, Moon, Sun, Monitor, Check, Download, Trash2, LogOut, Key, Copy, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
@@ -11,8 +11,9 @@ import { CURRENT_USER } from '@/lib/mockData';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useTheme } from 'next-themes';
+import FeatureRegistry from '@/components/settings/FeatureRegistry';
 
-type SettingsSection = 'account' | 'privacy' | 'notifications' | 'appearance' | 'security' | 'monetization' | 'accessibility' | 'fediverse';
+type SettingsSection = 'account' | 'privacy' | 'notifications' | 'appearance' | 'security' | 'monetization' | 'accessibility' | 'fediverse' | 'advanced';
 
 const SECTIONS = [
   { id: 'account' as const, icon: User, label: 'Account' },
@@ -23,6 +24,7 @@ const SECTIONS = [
   { id: 'monetization' as const, icon: DollarSign, label: 'Monetization' },
   { id: 'accessibility' as const, icon: Accessibility, label: 'Accessibility' },
   { id: 'fediverse' as const, icon: Globe, label: 'Fediverse' },
+  { id: 'advanced' as const, icon: ShieldAlert, label: 'Advanced Settings & Features' },
 ];
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
@@ -535,6 +537,11 @@ export default function SettingsPage() {
                 </div>
               )}
             </div>
+          )}
+
+          {/* Advanced Settings & Features */}
+          {activeSection === 'advanced' && (
+            <FeatureRegistry />
           )}
         </div>
       </div>

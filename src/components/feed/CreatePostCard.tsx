@@ -17,7 +17,7 @@ export function CreatePostCard({ onOpenModal }: CreatePostCardProps) {
           onClick={onOpenModal}
           className="w-full text-left rounded-2xl border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground hover:bg-muted transition-colors"
         >
-          What's on your mind, {CURRENT_USER.displayName.split(' ')[0]}?
+          What&apos;s on your mind, {CURRENT_USER.displayName.split(' ')[0]}?
         </button>
         <div className="flex mt-2 gap-1">
           {[

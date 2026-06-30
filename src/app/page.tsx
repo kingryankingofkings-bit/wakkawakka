@@ -171,7 +171,7 @@ export default function LandingPage() {
             ].map(({ quote, name, role }) => (
               <div key={name} className="rounded-2xl border border-border bg-card p-6">
                 <div className="flex mb-3">{[1,2,3,4,5].map(i => <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" />)}</div>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">"{quote}"</p>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">&quot;{quote}&quot;</p>
                 <div className="flex items-center gap-3">
                   <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary to-purple-500" />
                   <div>

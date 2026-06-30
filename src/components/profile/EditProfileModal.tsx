@@ -5,8 +5,9 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Camera, Globe, MapPin, Link2, User as UserIcon, FileText, Calendar, Palette, LayoutDashboard, Settings2, Music, EyeOff, ChevronUp, ChevronDown } from 'lucide-react';
+import { X, Camera, Globe, MapPin, Link2, User as UserIcon, FileText, Calendar, Palette, LayoutDashboard, Settings2, Music, EyeOff, ChevronUp, ChevronDown, Sparkles } from 'lucide-react';
 import Image from 'next/image';
+import ProfileCommunityConsole from './ProfileCommunityConsole';
 import { cn, getInitials } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
 import { User as UserType } from '@/types';
@@ -62,7 +63,7 @@ interface EditProfileModalProps {
   onClose: () => void;
 }
 
-type TabSection = 'basic' | 'theme' | 'widgets';
+type TabSection = 'basic' | 'theme' | 'widgets' | 'console';
 
 export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
   const updateUser = useAuthStore((s) => s.updateUser);
@@ -178,6 +179,11 @@ export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
                 active={activeSection === 'widgets'} 
                 onClick={() => setActiveSection('widgets')} 
                 icon={Settings2} label="Widgets & Privacy" 
+              />
+              <SidebarBtn 
+                active={activeSection === 'console'} 
+                onClick={() => setActiveSection('console')} 
+                icon={Sparkles} label="Interpersonal Console" 
               />
             </div>
             {/* Mobile close button visible only on small screens inside sidebar area */}
@@ -362,6 +368,20 @@ export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
                             <input type="checkbox" {...register('hideFollowerCount')} className="w-5 h-5 accent-primary rounded cursor-pointer" />
                           </label>
                         </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* CONSOLE SECTION */}
+                  {activeSection === 'console' && (
+                    <motion.div key="console" variants={sectionVariants} initial="hidden" animate="visible" exit="exit" transition={{ duration: 0.2 }} className="p-6">
+                      <div className="mb-6">
+                        <h3 className="text-lg font-bold mb-1">Profiles & Communities Console</h3>
+                        <p className="text-sm text-muted-foreground font-medium">Test and customize interpersonal interactive components for profiles and communities.</p>
+                      </div>
+
+                      <div className="space-y-4">
+                        <ProfileCommunityConsole />
                       </div>
                     </motion.div>
                   )}

@@ -10,8 +10,9 @@ import { Card } from '@/components/ui/Card';
 import { formatCount, cn } from '@/lib/utils';
 import { MOCK_USERS, MOCK_POSTS, MOCK_HASHTAGS, MOCK_COMMUNITIES, MOCK_LIVE_STREAMS, MOCK_AUDIO_ROOMS } from '@/lib/mockData';
 import Link from 'next/link';
+import { ContentFeedConsole } from '@/components/feed/ContentFeedConsole';
 
-const EXPLORE_TABS = ['All', 'People', 'Posts', 'Tags', 'Communities', 'Live', 'Audio'] as const;
+const EXPLORE_TABS = ['All', 'People', 'Posts', 'Tags', 'Communities', 'Live', 'Audio', 'Feed Console'] as const;
 type ExploreTab = typeof EXPLORE_TABS[number];
 
 interface InterestCategory {
@@ -154,6 +155,13 @@ export default function ExplorePage() {
       </div>
 
       <div className="p-4 space-y-8">
+        {/* Feed Console */}
+        {tab === 'Feed Console' && (
+          <section className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
+            <ContentFeedConsole />
+          </section>
+        )}
+
         {/* People */}
         {(tab === 'All' || tab === 'People') && filteredUsers.length > 0 && (
           <section>
@@ -347,7 +355,8 @@ export default function ExplorePage() {
         )}
 
         {/* Empty state */}
-        {filteredUsers.length === 0 &&
+        {tab !== 'Feed Console' &&
+         filteredUsers.length === 0 &&
          filteredPosts.length === 0 &&
          filteredTags.length === 0 &&
          filteredCommunities.length === 0 && (

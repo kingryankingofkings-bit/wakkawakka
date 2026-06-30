@@ -1,0 +1,1931 @@
+export interface FeatureItem {
+  id: string;
+  type: string;
+  category: string;
+  name: string;
+  batch: string;
+  status: string;
+}
+
+export const BATCH2_FEATURES: FeatureItem[] = [
+  {
+    "id": "F-235",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "\"Add Yours\" Interactive Prompts",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-236",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Affiliation Badge (Verified Organizations)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-237",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Auto-Follow / Auto-Like Rules",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-238",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Birthday Calendar & Auto-congratulations",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-239",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Bitmoji Outfits & Customization",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-240",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Broadcast Channels",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-241",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Channel Discussion Groups",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-242",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Channel Emote Selection",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-243",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Channel Membership",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-244",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Channel Points Rewards",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-245",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Chat Predictions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-246",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Co-AR Call Effects",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-247",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Co-Host / Channel Administrator Delegation",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-248",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Collaborative Posts (Collabs)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-249",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Comment Auto-Responder (Auto-Comment On Post)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-250",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Comments & Pinning",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-251",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Communities",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-252",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Communities Hub",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-253",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Community Karma",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-254",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Community Moderation Rules",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-255",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Community Posts",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-256",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Compliments Tool",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-257",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Connections System",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-258",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Contact Sync Friend Discovery",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-259",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Creator Raid Redirect",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-260",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Cross-Platform Post Export",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-261",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Custom Lists",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-262",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Custom Member Onboarding Questionnaires",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-263",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Customer Sentiment Tagging",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-264",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Decoupled Quote Posts",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-265",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Direct Link Content Sharing",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-266",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Direct Reblogs",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-267",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Emoji Voice Reactions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-268",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Event Attendance Tracker",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-269",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Event RSVP List",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-270",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Events & Live Audio",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-271",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Events Scheduler",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-272",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Extend Match Timer",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-273",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Follow System",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-274",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Follower Syncing",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-275",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Forum Channels",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-276",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Accounts",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-277",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Call Hand-raise",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-278",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Call Screen Sharing",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-279",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Chats",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-280",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Discussions & Comments",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-281",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Photo Album Contributions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-282",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Topic",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-283",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Groups & Admin Tools",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-284",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Groups Directory",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-285",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Heart Reactions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-286",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Hype Train Event",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-287",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "InMail Messaging",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-288",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Interactive Polls",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-289",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Interactive Shared Scribble",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-290",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "LIVE Q&A",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-291",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Level / Roles Administration",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-292",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Link In Bio (Linkin.bio Page Creator)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-293",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Lists",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-294",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Live Chat & Moderation",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-295",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Live Chat Window",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-296",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Live Rooms (Up To 4 Users)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-297",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Live Stage Broadcasts",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-298",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Live Voice Listener List",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-299",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Local Server Rules",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-300",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Loyalty Badge System",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-301",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Member Onboarding Screens",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-302",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Member Profiles & Bio Cards",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-303",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Mention Control",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-304",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Message Reactions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-305",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Mod Queue & Tools",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-306",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Multi-option Surveys",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-307",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Opening Moves",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-308",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Organizer Roles & Permissions Delegation",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-309",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Pages For Business",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-310",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Pinned Posts In Communities",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-311",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Post Comments",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-312",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Premiere Chat",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-313",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Profile Verification Badge",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-314",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Profile View History",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-315",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Public Profiles",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-316",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Quote Posts",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-317",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "RSVP Event Calendar",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-318",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "RealMoji Customization Panel",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-319",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "RealMojis Reactions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-320",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Recommendations And Endorsements",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-321",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Reply Thread Views",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-322",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Repost & Quote",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-323",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Repost Button",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-324",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Role Hierarchy And Permissions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-325",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Scheduled Spaces",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-326",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Server Events",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-327",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Server Migration Tool",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-328",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Share To Stories",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-329",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Shared Audio Playlist",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-330",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Shared Group Albums",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-331",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Shout-outs & Badges",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-332",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Spaces",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-333",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Spaces (Live Audio)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-334",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Speed Dating (Blind Chat Event)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-335",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Stage Channels",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-336",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Starter Packs",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-337",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Stories (My Story)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-338",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Streaks",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-339",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Subreddit Creation",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-340",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Supergroups",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-341",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Template Application",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-342",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Unified Social Inbox",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-343",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Upvote/Downvote System",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-344",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "User Flairs",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-345",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Video Playlists (Collections)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-346",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Video Replies To Comments",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-347",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Walkie-Talkie Group Channel",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-348",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Watch Together Co-Viewing",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "F-349",
+    "type": "Feature",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Women-Initiate-First Match Control",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-235",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "\"Add Yours\" Interactive Prompts",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-236",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Affiliation Badge (Verified Organizations)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-237",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Auto-Follow / Auto-Like Rules",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-238",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Birthday Calendar & Auto-congratulations",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-239",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Bitmoji Outfits & Customization",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-240",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Broadcast Channels",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-241",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Channel Discussion Groups",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-242",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Channel Emote Selection",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-243",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Channel Membership",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-244",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Channel Points Rewards",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-245",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Chat Predictions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-246",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Co-AR Call Effects",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-247",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Co-Host / Channel Administrator Delegation",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-248",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Collaborative Posts (Collabs)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-249",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Comment Auto-Responder (Auto-Comment On Post)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-250",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Comments & Pinning",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-251",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Communities",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-252",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Communities Hub",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-253",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Community Karma",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-254",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Community Moderation Rules",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-255",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Community Posts",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-256",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Compliments Tool",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-257",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Connections System",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-258",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Contact Sync Friend Discovery",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-259",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Creator Raid Redirect",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-260",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Cross-Platform Post Export",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-261",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Custom Lists",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-262",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Custom Member Onboarding Questionnaires",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-263",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Customer Sentiment Tagging",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-264",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Decoupled Quote Posts",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-265",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Direct Link Content Sharing",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-266",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Direct Reblogs",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-267",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Emoji Voice Reactions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-268",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Event Attendance Tracker",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-269",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Event RSVP List",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-270",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Events & Live Audio",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-271",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Events Scheduler",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-272",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Extend Match Timer",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-273",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Follow System",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-274",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Follower Syncing",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-275",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Forum Channels",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-276",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Accounts",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-277",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Call Hand-raise",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-278",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Call Screen Sharing",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-279",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Chats",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-280",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Discussions & Comments",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-281",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Photo Album Contributions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-282",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Group Topic",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-283",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Groups & Admin Tools",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-284",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Groups Directory",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-285",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Heart Reactions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-286",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Hype Train Event",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-287",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "InMail Messaging",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-288",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Interactive Polls",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-289",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Interactive Shared Scribble",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-290",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "LIVE Q&A",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-291",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Level / Roles Administration",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-292",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Link In Bio (Linkin.bio Page Creator)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-293",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Lists",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-294",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Live Chat & Moderation",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-295",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Live Chat Window",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-296",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Live Rooms (Up To 4 Users)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-297",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Live Stage Broadcasts",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-298",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Live Voice Listener List",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-299",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Local Server Rules",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-300",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Loyalty Badge System",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-301",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Member Onboarding Screens",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-302",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Member Profiles & Bio Cards",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-303",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Mention Control",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-304",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Message Reactions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-305",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Mod Queue & Tools",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-306",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Multi-option Surveys",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-307",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Opening Moves",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-308",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Organizer Roles & Permissions Delegation",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-309",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Pages For Business",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-310",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Pinned Posts In Communities",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-311",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Post Comments",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-312",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Premiere Chat",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-313",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Profile Verification Badge",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-314",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Profile View History",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-315",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Public Profiles",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-316",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Quote Posts",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-317",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "RSVP Event Calendar",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-318",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "RealMoji Customization Panel",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-319",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "RealMojis Reactions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-320",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Recommendations And Endorsements",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-321",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Reply Thread Views",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-322",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Repost & Quote",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-323",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Repost Button",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-324",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Role Hierarchy And Permissions",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-325",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Scheduled Spaces",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-326",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Server Events",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-327",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Server Migration Tool",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-328",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Share To Stories",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-329",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Shared Audio Playlist",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-330",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Shared Group Albums",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-331",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Shout-outs & Badges",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-332",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Spaces",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-333",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Spaces (Live Audio)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-334",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Speed Dating (Blind Chat Event)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-335",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Stage Channels",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-336",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Starter Packs",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-337",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Stories (My Story)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-338",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Streaks",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-339",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Subreddit Creation",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-340",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Supergroups",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-341",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Template Application",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-342",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Unified Social Inbox",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-343",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Upvote/Downvote System",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-344",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "User Flairs",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-345",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Video Playlists (Collections)",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-346",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Video Replies To Comments",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-347",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Walkie-Talkie Group Channel",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-348",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Watch Together Co-Viewing",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "IMP-349",
+    "type": "Improvement",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Women-Initiate-First Match Control",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "INN-21",
+    "type": "Innovation",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Decentralized Dispute Resolution Tribunals",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "INN-22",
+    "type": "Innovation",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Reputation-Weighted Discussion Threads",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "INN-23",
+    "type": "Innovation",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Interactive Community Sandbox",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "INN-24",
+    "type": "Innovation",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Micro-Chapters for Localized Groups",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "INN-25",
+    "type": "Innovation",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Collaborative Knowledge Wikis",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "INN-26",
+    "type": "Innovation",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Live Dialogue Panels",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "INN-27",
+    "type": "Innovation",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Inter-Group Diplomacy Portals",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "INN-28",
+    "type": "Innovation",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Dynamic Role Ascension System",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "INN-29",
+    "type": "Innovation",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Community Goal Trackers",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  },
+  {
+    "id": "INN-30",
+    "type": "Innovation",
+    "category": "Interpersonal & Community Engagement",
+    "name": "Shared Digital Archives",
+    "batch": "Batch 2",
+    "status": "Implemented"
+  }
+];

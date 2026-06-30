@@ -1,13 +1,15 @@
 'use client';
 
 import { Suspense } from 'react';
-import { useState, useEffect, useRef } from 'react';
-import { RefreshCw, ChevronUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { RefreshCw, ChevronUp, Sliders } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StoriesRow } from '@/components/feed/StoriesRow';
 import { PostCard } from '@/components/feed/PostCard';
 import { CreatePostCard } from '@/components/feed/CreatePostCard';
 import { CreatePostModal } from '@/components/feed/CreatePostModal';
+import { Modal } from '@/components/ui/Modal';
+import { ContentFeedConsole } from '@/components/feed/ContentFeedConsole';
 import { useFeedStore } from '@/store/feedStore';
 import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
@@ -30,6 +32,7 @@ function FeedPageInner() {
   const { posts, feedType, setFeedType } = useFeedStore();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showNewPosts, setShowNewPosts] = useState(false);
+  const [showConsole, setShowConsole] = useState(false);
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -48,25 +51,34 @@ function FeedPageInner() {
     <div className="min-h-screen">
       {/* Sticky header */}
       <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="flex">
-          {FEED_TABS.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setFeedType(tab.id)}
-              className={cn(
-                'flex-1 py-3.5 text-sm font-semibold transition-colors relative',
-                feedType === tab.id ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
-              )}
-            >
-              {tab.label}
-              {feedType === tab.id && (
-                <motion.div
-                  layoutId="feed-tab-indicator"
-                  className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-primary"
-                />
-              )}
-            </button>
-          ))}
+        <div className="flex items-center justify-between px-4">
+          <div className="flex flex-1">
+            {FEED_TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setFeedType(tab.id)}
+                className={cn(
+                  'flex-1 py-3.5 text-sm font-semibold transition-colors relative',
+                  feedType === tab.id ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {tab.label}
+                {feedType === tab.id && (
+                  <motion.div
+                    layoutId="feed-tab-indicator"
+                    className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-primary"
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => setShowConsole(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary transition-colors text-xs font-bold shrink-0 ml-2"
+          >
+            <Sliders className="h-3.5 w-3.5" />
+            Launch Console
+          </button>
         </div>
       </div>
 
@@ -126,6 +138,12 @@ function FeedPageInner() {
 
       {/* Create post modal */}
       <CreatePostModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} />
+
+      {/* Feed console modal */}
+      <Modal isOpen={showConsole} onClose={() => setShowConsole(false)} title="Batch 3 Content Creation, Feeds & Discovery Console" size="full">
+        <ContentFeedConsole />
+      </Modal>
     </div>
   );
 }
+

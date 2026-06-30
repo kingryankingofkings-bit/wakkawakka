@@ -1,0 +1,61 @@
+import json
+import os
+
+def parse_tracker():
+    tracker_path = r"C:\Users\Kingr\OneDrive\Documents\wakkawakka-local\implementation_tracker.md"
+    output_path = r"C:\Users\Kingr\OneDrive\Documents\wakkawakka-local\src\components\commerce\batch5Data.ts"
+    
+    if not os.path.exists(tracker_path):
+        print(f"Error: {tracker_path} not found")
+        return
+        
+    items = []
+    seen_names = set()
+    categories_to_include = {
+        "Monetization & E-Commerce",
+        "Analytics, Business & Creator Tools",
+        "Developer APIs & Integrations"
+    }
+    
+    with open(tracker_path, "r", encoding="utf-8") as f:
+        for line in f:
+            if not line.startswith("|"):
+                continue
+            parts = [p.strip() for p in line.split("|")]
+            if len(parts) >= 6 and parts[5] == "Batch 5":
+                item_id = parts[1]
+                item_type = parts[2]
+                category = parts[3]
+                name = parts[4]
+                
+                if category in categories_to_include:
+                    if name not in seen_names:
+                        seen_names.add(name)
+                        items.append({
+                            "id": item_id,
+                            "type": item_type,
+                            "category": category,
+                            "name": name
+                        })
+                
+    print(f"Parsed {len(items)} unique items from Batch 5.")
+    
+    # Generate batch5Data.ts content
+    content = f"""// Generated automatically from implementation_tracker.md. Do not edit manually.
+export interface Batch5Item {{
+  id: string;
+  type: string;
+  category: string;
+  name: string;
+}}
+
+export const batch5Items: Batch5Item[] = {json.dumps(items, indent=2)};
+"""
+    
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(content)
+    print(f"Successfully wrote {output_path}")
+
+if __name__ == "__main__":
+    parse_tracker()

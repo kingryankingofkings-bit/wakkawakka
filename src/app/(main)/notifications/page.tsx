@@ -84,7 +84,7 @@ export default function NotificationsPage() {
             <div className="flex flex-col items-center justify-center py-20 text-center px-8">
               <Bell className="h-12 w-12 text-muted-foreground/40 mb-3" />
               <p className="font-semibold">No notifications yet</p>
-              <p className="text-sm text-muted-foreground mt-1">When someone interacts with you, you'll see it here</p>
+              <p className="text-sm text-muted-foreground mt-1">When someone interacts with you, you&apos;ll see it here</p>
             </div>
           ) : (
             filtered.map((notif, i) => {

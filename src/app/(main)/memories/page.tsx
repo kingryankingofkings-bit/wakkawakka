@@ -259,7 +259,7 @@ export default function MemoriesPage() {
             <div className="space-y-4 relative z-10">
               {activeMemory.content && (
                 <p className="text-sm text-white font-medium text-center px-4 leading-relaxed">
-                  "{activeMemory.content}"
+                  &quot;{activeMemory.content}&quot;
                 </p>
               )}
 

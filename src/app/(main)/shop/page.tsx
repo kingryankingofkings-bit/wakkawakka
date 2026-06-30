@@ -12,6 +12,8 @@ import { formatCurrency, formatCount, cn } from '@/lib/utils';
 import { MOCK_PRODUCTS, MOCK_USERS } from '@/lib/mockData';
 import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
+import CommerceToolsConsole from '@/components/commerce/CommerceToolsConsole';
+
 
 const CATEGORIES = ['All', 'Digital Downloads', 'Music', 'Art', 'Physical', 'Services'];
 
@@ -43,6 +45,7 @@ export default function ShopPage() {
   const [cardNumber, setCardNumber] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
   const [cardCVC, setCardCVC] = useState('');
+  const [showToolsConsole, setShowToolsConsole] = useState(false);
 
   const cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
   const subtotal = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
@@ -143,6 +146,23 @@ export default function ShopPage() {
             </Button>
           </div>
         </div>
+
+        {/* Commerce Tools Console Launcher Card */}
+        <Card padding="md" hover onClick={() => setShowToolsConsole(true)} className="bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border-indigo-500/30 flex items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+              <ShoppingBag className="h-4 w-4 text-primary" />
+              Advanced Commerce & Creator Tools
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Simulate premium subscriptions, digital tipping, FAQ bots, and developer webhooks.
+            </p>
+          </div>
+          <Button size="sm" onClick={(e) => { e.stopPropagation(); setShowToolsConsole(true); }}>
+            Open Console
+          </Button>
+        </Card>
+
 
         {/* Products grid */}
         <div>
@@ -401,6 +421,13 @@ export default function ShopPage() {
             </motion.div>
           )}
         </AnimatePresence>
+      </Modal>
+
+      {/* Commerce & Developer Tools Console Modal */}
+      <Modal isOpen={showToolsConsole} onClose={() => setShowToolsConsole(false)} title="Commerce & Developer Tools Console" size="full">
+        <div className="p-4 overflow-y-auto">
+          <CommerceToolsConsole />
+        </div>
       </Modal>
     </div>
   );

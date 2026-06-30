@@ -15,6 +15,7 @@ import {
   X,
   Image as ImageIcon,
   FileText,
+  Sliders,
 } from 'lucide-react';
 import { cn, formatRelativeTime } from '@/lib/utils';
 import { CURRENT_USER } from '@/lib/mockData';
@@ -22,6 +23,7 @@ import { useMessageStore } from '@/store/messageStore';
 import { useSocket } from '@/hooks/useSocket';
 import { MessageBubble } from './MessageBubble';
 import type { Message, Conversation } from '@/types';
+import MessagingFeaturesConsole from './MessagingFeaturesConsole';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -190,6 +192,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
 
   const [inputValue, setInputValue] = useState('');
   const [showEmoji, setShowEmoji] = useState(false);
+  const [showConsole, setShowConsole] = useState(false);
   const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [isTypingRemote, setIsTypingRemote] = useState(false);
   const [localMessages, setLocalMessages] = useState<Message[]>(messages);
@@ -354,8 +357,9 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
   const dateGroups = groupMessagesByDate(localMessages);
 
   return (
-    <div className="flex h-full flex-col bg-background">
-      {/* ── Header ── */}
+    <div className="flex h-full w-full bg-background overflow-hidden relative">
+      <div className="flex-1 min-w-0 flex flex-col h-full bg-background">
+        {/* ── Header ── */}
       <div className="flex items-center gap-3 border-b border-border px-4 py-3 bg-card/60 backdrop-blur-sm flex-shrink-0">
         <Link
           href="/messages"
@@ -379,6 +383,17 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
         </div>
 
         <div className="flex items-center gap-1">
+          <button
+            onClick={() => setShowConsole(v => !v)}
+            className={cn(
+              "rounded-full p-2 hover:bg-muted transition-colors flex items-center gap-1",
+              showConsole ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
+            )}
+            title="Launch Features Console"
+          >
+            <Sliders className="h-5 w-5" />
+            <span className="text-xs font-bold hidden sm:inline">Console</span>
+          </button>
           <button className="rounded-full p-2 hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
             <Phone className="h-5 w-5" />
           </button>
@@ -541,6 +556,57 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
           </motion.button>
         </div>
       </div>
+      </div>
+
+      <AnimatePresence>
+        {showConsole && (
+          <motion.div
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 450, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="hidden md:flex flex-col w-[450px] border-l border-border bg-card h-full flex-shrink-0 relative z-20"
+          >
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h3 className="font-bold text-sm">Batch 4 Messaging Features</h3>
+              <button
+                onClick={() => setShowConsole(false)}
+                className="p-1 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <MessagingFeaturesConsole />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showConsole && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden fixed inset-0 z-50 bg-background flex flex-col"
+          >
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h3 className="font-bold text-sm">Batch 4 Messaging Features</h3>
+              <button
+                onClick={() => setShowConsole(false)}
+                className="p-1 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <MessagingFeaturesConsole />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

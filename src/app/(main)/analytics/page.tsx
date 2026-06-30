@@ -9,6 +9,8 @@ import { formatCount, formatRelativeTime } from '@/lib/utils';
 import { MOCK_POSTS, CURRENT_USER } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import CommerceToolsConsole from '@/components/commerce/CommerceToolsConsole';
+
 
 const DATE_RANGES = ['7d', '30d', '90d'] as const;
 type DateRange = typeof DATE_RANGES[number];
@@ -96,6 +98,7 @@ function DonutChart({ segments }: { segments: { label: string; value: number; co
 }
 
 export default function AnalyticsPage() {
+  const [activeTab, setActiveTab] = useState<'overview' | 'advanced'>('overview');
   const [range, setRange] = useState<DateRange>('30d');
   const stats = generateStats(range);
   const barData = generateBarData(range);
@@ -118,8 +121,30 @@ export default function AnalyticsPage() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between">
-        <h1 className="text-xl font-bold">Analytics</h1>
+      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-bold">Analytics</h1>
+          <div className="flex bg-muted rounded-full p-0.5 border border-border">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={cn(
+                'px-3 py-1 rounded-full text-xs font-bold transition-all',
+                activeTab === 'overview' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              Overview
+            </button>
+            <button
+              onClick={() => setActiveTab('advanced')}
+              className={cn(
+                'px-3 py-1 rounded-full text-xs font-bold transition-all',
+                activeTab === 'advanced' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              Advanced Tools
+            </button>
+          </div>
+        </div>
         <Button variant="outline" size="sm" onClick={() => toast.success('CSV export started!')}>
           <FileDown className="h-4 w-4" />
           Export
@@ -127,7 +152,9 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="p-4 space-y-6">
-        {/* Date range */}
+        {activeTab === 'overview' ? (
+          <>
+            {/* Date range */}
         <div className="flex gap-2">
           {DATE_RANGES.map(r => (
             <button
@@ -269,6 +296,10 @@ export default function AnalyticsPage() {
             ))}
           </div>
         </div>
+          </>
+        ) : (
+          <CommerceToolsConsole />
+        )}
       </div>
     </div>
   );

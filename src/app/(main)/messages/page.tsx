@@ -1,16 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { MessageCircle, Search, Edit } from 'lucide-react';
+import { MessageCircle, Search, Edit, Sliders } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
 import { Input } from '@/components/ui/Input';
 import { useMessageStore } from '@/store/messageStore';
 import { formatRelativeTime, cn } from '@/lib/utils';
 import Link from 'next/link';
+import { Modal } from '@/components/ui/Modal';
+import MessagingFeaturesConsole from '@/components/messaging/MessagingFeaturesConsole';
 
 export default function MessagesPage() {
   const { conversations } = useMessageStore();
   const [query, setQuery] = useState('');
+  const [showConsole, setShowConsole] = useState(false);
 
   const filtered = conversations.filter(c =>
     c.name?.toLowerCase().includes(query.toLowerCase()) ||
@@ -19,12 +22,21 @@ export default function MessagesPage() {
 
   return (
     <div className="flex flex-col h-screen">
-      {/* Header */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-bold">Messages</h1>
-        <button className="p-2 rounded-xl hover:bg-muted transition-colors" title="New message">
-          <Edit className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setShowConsole(true)}
+            className="p-2 rounded-xl hover:bg-muted transition-colors text-muted-foreground hover:text-foreground flex items-center gap-1.5"
+            title="Launch Features Console"
+          >
+            <Sliders className="h-5 w-5 text-primary" />
+            <span className="text-xs font-bold text-primary hidden sm:inline">Launch Console</span>
+          </button>
+          <button className="p-2 rounded-xl hover:bg-muted transition-colors" title="New message">
+            <Edit className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {/* Search */}
@@ -105,6 +117,10 @@ export default function MessagesPage() {
           })
         )}
       </div>
+
+      <Modal isOpen={showConsole} onClose={() => setShowConsole(false)} title="Batch 4 Messaging Features Console" size="full">
+        <MessagingFeaturesConsole />
+      </Modal>
     </div>
   );
 }
