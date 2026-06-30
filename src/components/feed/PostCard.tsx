@@ -35,6 +35,7 @@ import {
   REACTION_EMOJIS,
 } from '@/lib/utils';
 import { useFeedStore } from '@/store/feedStore';
+import { useSafetyStore, type ReportReason } from '@/store/safetyStore';
 import { ReactionPicker } from './ReactionPicker';
 import { CommentsSection } from './CommentsSection';
 import { ShareModal } from './ShareModal';
@@ -250,6 +251,7 @@ function MediaGrid({ urls, type }: { urls: string[]; type: string }) {
 
 export function PostCard({ post }: PostCardProps) {
   const { updatePost, removePost } = useFeedStore();
+  const { blockUser, addReport } = useSafetyStore();
 
   const [showReactionPicker, setShowReactionPicker] = useState(false);
   const [showComments, setShowComments] = useState(false);
@@ -340,14 +342,23 @@ export function PostCard({ post }: PostCardProps) {
   };
 
   const handleBlockUser = () => {
+    blockUser({ id: post.author.id, username: post.author.username, displayName: post.author.displayName });
     setIsHidden(true);
     setShowMenu(false);
-    toast.success(`Blocked @${post.author.username}. Hiding post.`);
+    toast.success(`Blocked @${post.author.username}. Hiding their posts.`);
   };
 
   const handleReportSubmit = () => {
+    addReport({
+      targetType: 'post',
+      targetId: post.id,
+      targetLabel: `Post by @${post.author.username}`,
+      reason: reportReason as ReportReason,
+      detail: reportText.trim() || undefined,
+    });
     toast.success('Thank you for reporting. Our moderators will review this post shortly.');
     setShowReportModal(false);
+    setReportText('');
   };
 
   const handleVote = (optionId: string) => {

@@ -13,6 +13,7 @@ import {
   Paperclip,
   Send,
   X,
+  Pin,
   Image as ImageIcon,
   FileText,
 } from 'lucide-react';
@@ -193,15 +194,22 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
   const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [isTypingRemote, setIsTypingRemote] = useState(false);
   const [localMessages, setLocalMessages] = useState<Message[]>(messages);
+  const [pinnedId, setPinnedId] = useState<string | null>(null);
+  const [editedIds, setEditedIds] = useState<Set<string>>(new Set());
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Sync store messages into local state
+  // Sync store messages into local state. Merge rather than replace so local-only
+  // edits (reactions, inline edits, deletions, pins) survive when the store list
+  // changes (e.g. after sending a new message).
   useEffect(() => {
-    setLocalMessages(messages);
+    setLocalMessages((prev) => {
+      const localById = new Map(prev.map((m) => [m.id, m]));
+      return messages.map((m) => localById.get(m.id) ?? m);
+    });
   }, [messages]);
 
   // Mark as read on open
@@ -329,11 +337,40 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
     setLocalMessages((prev) =>
       prev.map((m) => (m.id === id ? { ...m, isDeleted: true } : m))
     );
+    setPinnedId((prev) => (prev === id ? null : prev));
   };
 
   const handleCopy = (content: string) => {
     navigator.clipboard.writeText(content).catch(() => {});
   };
+
+  // Toggle an emoji reaction on a message (mock: increment, or remove at 1).
+  const handleReact = (target: Message, emoji: string) => {
+    setLocalMessages((prev) =>
+      prev.map((m) => {
+        if (m.id !== target.id) return m;
+        const reactions = { ...(m.reactions || {}) };
+        const current = reactions[emoji] || 0;
+        if (current >= 1) {
+          delete reactions[emoji];
+        } else {
+          reactions[emoji] = 1;
+        }
+        return { ...m, reactions };
+      })
+    );
+  };
+
+  const handleEditMessage = (id: string, content: string) => {
+    setLocalMessages((prev) => prev.map((m) => (m.id === id ? { ...m, content } : m)));
+    setEditedIds((prev) => new Set(prev).add(id));
+  };
+
+  const handlePin = (target: Message) => {
+    setPinnedId((prev) => (prev === target.id ? null : target.id));
+  };
+
+  const pinnedMessage = localMessages.find((m) => m.id === pinnedId && !m.isDeleted) || null;
 
   if (!conversation) {
     return (
@@ -391,6 +428,33 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
         </div>
       </div>
 
+      {/* ── Pinned message banner ── */}
+      <AnimatePresence>
+        {pinnedMessage && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="border-b border-border bg-primary/5 px-4 py-2 flex items-center gap-2 overflow-hidden flex-shrink-0"
+          >
+            <Pin className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-semibold text-primary">Pinned message</p>
+              <p className="text-xs text-muted-foreground truncate">
+                {pinnedMessage.content || (pinnedMessage.mediaType ? `[${pinnedMessage.mediaType}]` : '')}
+              </p>
+            </div>
+            <button
+              onClick={() => setPinnedId(null)}
+              className="rounded-full p-1 hover:bg-muted transition-colors flex-shrink-0"
+              title="Unpin"
+            >
+              <X className="h-3.5 w-3.5 text-muted-foreground" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Messages list ── */}
       <div className="flex-1 overflow-y-auto py-2 scrollbar-thin">
         {dateGroups.map(({ dateLabel, msgs }) => (
@@ -415,19 +479,14 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
                   isOwn={isOwn}
                   showAvatar={isLastInSequence}
                   isGroup={conversation.isGroup}
+                  isPinned={msg.id === pinnedId}
+                  isEdited={editedIds.has(msg.id)}
                   onReply={setReplyTo}
-                  onReact={(m) => {
-                    setLocalMessages(prev => prev.map(msg => {
-                      if (msg.id === m.id) {
-                        const newReactions = { ...(msg.reactions || {}) };
-                        newReactions['❤️'] = (newReactions['❤️'] || 0) + 1;
-                        return { ...msg, reactions: newReactions };
-                      }
-                      return msg;
-                    }));
-                  }}
+                  onReact={handleReact}
                   onCopy={handleCopy}
                   onDelete={handleDeleteMessage}
+                  onEdit={handleEditMessage}
+                  onPin={handlePin}
                 />
               );
             })}

@@ -11,6 +11,7 @@ import { Modal } from '@/components/ui/Modal';
 import { formatCurrency, formatCount, cn } from '@/lib/utils';
 import { MOCK_PRODUCTS, MOCK_USERS } from '@/lib/mockData';
 import { useCartStore } from '@/store/cartStore';
+import { useCommerceStore } from '@/store/commerceStore';
 import toast from 'react-hot-toast';
 
 const CATEGORIES = ['All', 'Digital Downloads', 'Music', 'Art', 'Physical', 'Services'];
@@ -35,6 +36,7 @@ export default function ShopPage() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
   const { addItem, items, isOpen, toggleCart, clearCart } = useCartStore();
+  const placeOrder = useCommerceStore(s => s.placeOrder);
 
   // Checkout States
   const [showCheckout, setShowCheckout] = useState(false);
@@ -67,6 +69,8 @@ export default function ShopPage() {
 
     setCheckoutStep('processing');
     setTimeout(() => {
+      // Record the order before the cart is cleared on finish.
+      placeOrder(items);
       setCheckoutStep('success');
       toast.success('Payment authorized successfully!');
     }, 2000);

@@ -13,6 +13,7 @@
     "db:generate": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
     "type-check": "tsc --noEmit",
+    "extract:bible": "node scripts/extract-feature-bible.mjs",
     "format": "prettier --write ."
   },
   "dependencies": {
