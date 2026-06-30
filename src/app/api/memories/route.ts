@@ -4,50 +4,66 @@ import { getRequestUserId } from "@/lib/currentUser";
 
 export const dynamic = "force-dynamic";
 
-// GET /api/memories — "On This Day": the current user's posts from previous
-// years that share today's month/day.
+// GET /api/memories — retrieves memories for the authenticated user
 export async function GET(req: NextRequest) {
   const userId = getRequestUserId(req);
-  if (!userId)
+  if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
 
   try {
-    const now = new Date();
-    const month = now.getUTCMonth();
-    const day = now.getUTCDate();
-    const thisYear = now.getUTCFullYear();
+    const onThisDay = req.nextUrl.searchParams.get("onThisDay") === "true";
 
-    // Pull this user's older posts and filter by month/day in JS (portable across DBs).
-    const posts = await prisma.post.findMany({
-      where: {
-        authorId: userId,
-        isDeleted: false,
-        createdAt: { lt: new Date(Date.UTC(thisYear, month, day)) },
-      },
-      include: {
-        author: {
-          select: {
-            id: true,
-            username: true,
-            displayName: true,
-            avatar: true,
-            isVerified: true,
-          },
-        },
-      },
+    const dbMemories = await prisma.savedMemory.findMany({
+      where: { userId },
       orderBy: { createdAt: "desc" },
-      take: 300,
     });
 
-    const memories = posts
-      .filter((p: any) => {
-        const d = new Date(p.createdAt);
-        return d.getUTCMonth() === month && d.getUTCDate() === day;
-      })
-      .map((p: any) => ({
-        ...p,
-        yearsAgo: thisYear - new Date(p.createdAt).getUTCFullYear(),
-      }));
+    const now = new Date();
+    const currentMonth = now.getUTCMonth();
+    const currentDay = now.getUTCDate();
+    const currentYear = now.getUTCFullYear();
+
+    let filtered = dbMemories;
+
+    if (onThisDay) {
+      filtered = dbMemories.filter((m) => {
+        const d = new Date(m.createdAt);
+        return (
+          d.getUTCMonth() === currentMonth &&
+          d.getUTCDate() === currentDay &&
+          d.getUTCFullYear() < currentYear
+        );
+      });
+    }
+
+    const memories = filtered.map((m) => {
+      let pipUrl = null;
+      let location = "";
+      let tags: string[] = [];
+
+      if (m.caption) {
+        try {
+          const parsed = JSON.parse(m.caption);
+          pipUrl = parsed.pipUrl || null;
+          location = parsed.location || "";
+          tags = parsed.tags || [];
+        } catch (e) {
+          location = m.caption;
+        }
+      }
+
+      return {
+        id: m.id,
+        url: m.mediaUrl,
+        pipUrl,
+        mode: m.type,
+        date: m.createdAt.toISOString().split("T")[0],
+        createdAt: m.createdAt.toISOString(),
+        location,
+        tags,
+      };
+    });
 
     return NextResponse.json({
       data: memories,
@@ -58,6 +74,58 @@ export async function GET(req: NextRequest) {
       data: [],
       meta: { total: 0 },
       detail: String(err),
+    }, { status: 500 });
+  }
+}
+
+// POST /api/memories — creates a new saved memory
+export async function POST(req: NextRequest) {
+  const userId = getRequestUserId(req);
+  if (!userId) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
+  try {
+    const body = await req.json();
+    const { url, pipUrl, mode, location, tags, latitude, longitude } = body;
+
+    if (!url || !mode) {
+      return NextResponse.json({ error: "url and mode are required" }, { status: 400 });
+    }
+
+    const captionJson = JSON.stringify({
+      pipUrl: pipUrl || null,
+      location: location || "",
+      tags: tags || [],
     });
+
+    const savedMemory = await prisma.savedMemory.create({
+      data: {
+        userId,
+        mediaUrl: url,
+        type: mode,
+        caption: captionJson,
+        latitude: typeof latitude === "number" ? latitude : null,
+        longitude: typeof longitude === "number" ? longitude : null,
+      },
+    });
+
+    const responseData = {
+      id: savedMemory.id,
+      url: savedMemory.mediaUrl,
+      pipUrl: pipUrl || null,
+      mode: savedMemory.type,
+      date: savedMemory.createdAt.toISOString().split("T")[0],
+      createdAt: savedMemory.createdAt.toISOString(),
+      location: location || "",
+      tags: tags || [],
+    };
+
+    return NextResponse.json({ data: responseData }, { status: 201 });
+  } catch (err) {
+    return NextResponse.json({
+      error: "Failed to save memory",
+      detail: String(err),
+    }, { status: 500 });
   }
 }

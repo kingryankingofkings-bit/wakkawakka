@@ -16,6 +16,8 @@ interface AuthActions {
   updateUser: (updates: Partial<User>) => void;
   setLoading: (isLoading: boolean) => void;
   setToken: (token: string | null) => void;
+  incrementStreak: () => void;
+  resetStreak: () => void;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -50,6 +52,22 @@ export const useAuthStore = create<AuthStore>()(
         if (!current) return;
         set({
           user: { ...current, ...updates },
+        });
+      },
+
+      incrementStreak: () => {
+        const current = get().user;
+        if (!current) return;
+        set({
+          user: { ...current, streakDays: current.streakDays + 1 },
+        });
+      },
+
+      resetStreak: () => {
+        const current = get().user;
+        if (!current) return;
+        set({
+          user: { ...current, streakDays: 0 },
         });
       },
 

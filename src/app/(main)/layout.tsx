@@ -12,7 +12,11 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isFullWidthWorkspace = pathname ? (pathname.startsWith("/servers") || pathname.startsWith("/reddit")) : false;
+  const isFullWidthWorkspace = pathname
+    ? pathname.startsWith("/servers") ||
+      pathname.startsWith("/reddit") ||
+      pathname.startsWith("/camera")
+    : false;
 
   return (
     <div className="min-h-screen bg-background">
@@ -30,10 +34,10 @@ export default function MainLayout({
       >
         <main
           className={cn(
-            "flex-1 w-full py-0 pb-16 md:pb-0",
+            "flex-1 w-full py-0",
             isFullWidthWorkspace
-              ? "max-w-none px-0"
-              : "max-w-2xl mx-auto px-0 sm:px-4",
+              ? "max-w-none px-0 pb-0"
+              : "max-w-2xl mx-auto px-0 sm:px-4 pb-16 md:pb-0",
           )}
         >
           {children}

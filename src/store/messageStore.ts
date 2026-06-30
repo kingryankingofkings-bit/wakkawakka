@@ -14,6 +14,7 @@ interface MessageActions {
   addMessage: (message: Message) => void;
   markConversationRead: (conversationId: string) => void;
   addConversation: (conversation: Conversation) => void;
+  viewDisappearingMessage: (conversationId: string, messageId: string) => void;
 }
 
 type MessageStore = MessageState & MessageActions;
@@ -225,4 +226,24 @@ export const useMessageStore = create<MessageStore>((set) => ({
       conversations: [conversation, ...state.conversations],
       messages: { ...state.messages, [conversation.id]: [] },
     })),
+
+  viewDisappearingMessage: (conversationId, messageId) =>
+    set((state) => {
+      const conversationMessages = state.messages[conversationId] ?? [];
+      const updatedMessages = {
+        ...state.messages,
+        [conversationId]: conversationMessages.map((m) => {
+          if (m.id === messageId) {
+            return {
+              ...m,
+              isRead: true,
+              mediaUrl: undefined,
+              content: "Media has disappeared",
+            };
+          }
+          return m;
+        }),
+      };
+      return { messages: updatedMessages };
+    }),
 }));

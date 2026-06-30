@@ -1,364 +1,349 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import {
-  Clock,
-  Sparkles,
-  Share2,
-  Play,
-  ChevronLeft,
-  ChevronRight,
-  X,
-  Heart,
-  MessageCircle,
+import { useEffect, useState } from "react";
+import { 
+  Clock, 
+  Calendar, 
+  Tag, 
+  Trash2, 
+  MapPin, 
+  X, 
+  Eye, 
+  Info, 
+  Camera 
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card } from "@/components/ui/Card";
-import { Avatar } from "@/components/ui/Avatar";
-import { Button } from "@/components/ui/Button";
-import { apiGet } from "@/lib/apiClient";
-import { cn } from "@/lib/utils";
-import toast from "react-hot-toast";
+import { format, parseISO } from "date-fns";
+import { useAuthStore } from "@/store/authStore";
 
 interface Memory {
   id: string;
-  content?: string;
-  mediaUrls: string; // JSON serialized array
+  url: string;
+  pipUrl?: string | null;
+  mode: string;
+  date: string;
   createdAt: string;
-  yearsAgo: number;
-  author: {
-    id: string;
-    displayName: string;
-    username: string;
-    avatar?: string;
-  };
+  location: string;
+  tags: string[];
 }
 
-function parseMedia(m: string): string[] {
-  try {
-    const a = JSON.parse(m);
-    return Array.isArray(a) ? a : [];
-  } catch {
-    return [];
-  }
-}
-
-const MOCK_MEMORIES: Memory[] = [
+const MOCK_DEFAULT_MEMORIES: Memory[] = [
   {
-    id: "m1",
-    content: "Cozy morning workspace vibes. Ready to push some commits 💻☕",
-    mediaUrls: JSON.stringify([
-      "https://picsum.photos/seed/workspace1/800/800",
-    ]),
-    createdAt: new Date(Date.now() - 365 * 24 * 3600 * 1000).toISOString(),
-    yearsAgo: 1,
-    author: {
-      id: "u_current",
-      displayName: "You",
-      username: "you",
-      avatar: "https://picsum.photos/seed/you/100/100",
-    },
+    id: "mem-1",
+    url: "https://picsum.photos/seed/sfmem1/1080/1920",
+    pipUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=selfie1",
+    mode: "BE_REAL",
+    date: "2026-06-29",
+    createdAt: "2026-06-29T18:32:00.000Z",
+    location: "San Francisco, CA",
+    tags: ["bereal", "goldengate"],
   },
   {
-    id: "m2",
-    content: "Finally visited the Grand Canyon! Breathtaking views 🏔️✨",
-    mediaUrls: JSON.stringify([
-      "https://picsum.photos/seed/grandcanyon1/800/800",
-      "https://picsum.photos/seed/grandcanyon2/800/800",
-    ]),
-    createdAt: new Date(Date.now() - 3 * 365 * 24 * 3600 * 1000).toISOString(),
-    yearsAgo: 3,
-    author: {
-      id: "u_current",
-      displayName: "You",
-      username: "you",
-      avatar: "https://picsum.photos/seed/you/100/100",
-    },
+    id: "mem-2",
+    url: "https://picsum.photos/seed/sfmem2/1080/1920",
+    mode: "NORMAL",
+    date: "2026-06-28",
+    createdAt: "2026-06-28T22:15:00.000Z",
+    location: "Silicon Valley",
+    tags: ["smooth-skin", "neon-glow", "tech"],
+  },
+  {
+    id: "mem-3",
+    url: "https://picsum.photos/seed/sfmem3/1080/1920",
+    mode: "DISAPPEARING",
+    date: "2026-06-27",
+    createdAt: "2026-06-27T10:04:00.000Z",
+    location: "Oakland, CA",
+    tags: ["dog-ears", "friends"],
   },
 ];
 
 export default function MemoriesPage() {
   const [memories, setMemories] = useState<Memory[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeSlideshowIndex, setActiveSlideshowIndex] = useState<
-    number | null
-  >(null);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [activeMemory, setActiveMemory] = useState<Memory | null>(null);
+  const { user } = useAuthStore();
 
+  // Initialize and load memories from backend API
   useEffect(() => {
-    apiGet<Memory[]>("/api/memories", [])
-      .then((m) => {
-        if (m && m.length > 0) {
-          setMemories(m);
-        } else {
-          setMemories(MOCK_MEMORIES);
+    async function loadMemories() {
+      try {
+        const headers: Record<string, string> = {};
+        if (user?.id) {
+          headers["x-user-id"] = user.id;
         }
-        setLoading(false);
-      })
-      .catch(() => {
-        setMemories(MOCK_MEMORIES);
-        setLoading(false);
+        const res = await fetch("/api/memories", { headers });
+        if (res.ok) {
+          const result = await res.json();
+          setMemories(result.data || []);
+        }
+      } catch (err) {
+        console.error("Failed to load memories:", err);
+      }
+    }
+    loadMemories();
+  }, [user?.id]);
+
+  // Get all unique geofilter tags from saved memories
+  const allTags = Array.from(
+    new Set(memories.flatMap((m) => m.tags || []))
+  );
+
+  // Handle deleting a memory
+  const handleDeleteMemory = async (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    try {
+      const headers: Record<string, string> = {};
+      if (user?.id) {
+        headers["x-user-id"] = user.id;
+      }
+      const res = await fetch(`/api/memories/${id}`, {
+        method: "DELETE",
+        headers,
       });
-  }, []);
-
-  const today = useMemo(() => {
-    return new Date().toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-    });
-  }, []);
-
-  const handleShareMemory = (m: Memory) => {
-    toast.success(
-      `Memory from ${m.yearsAgo} year${m.yearsAgo > 1 ? "s" : ""} ago reposted to your feed!`,
-    );
+      if (res.ok) {
+        const updated = memories.filter((m) => m.id !== id);
+        setMemories(updated);
+        if (activeMemory?.id === id) {
+          setActiveMemory(null);
+        }
+      } else {
+        alert("Failed to delete memory");
+      }
+    } catch (err) {
+      console.error("Failed to delete memory:", err);
+    }
   };
 
-  const handlePrevSlide = () => {
-    if (activeSlideshowIndex === null) return;
-    setActiveSlideshowIndex((prev) =>
-      prev === 0 ? memories.length - 1 : (prev || 0) - 1,
-    );
+  // Format date helper with fallback
+  const formatDateSafe = (dateStr: string) => {
+    try {
+      return format(parseISO(dateStr), "PPP");
+    } catch {
+      return dateStr;
+    }
   };
 
-  const handleNextSlide = () => {
-    if (activeSlideshowIndex === null) return;
-    setActiveSlideshowIndex((prev) =>
-      prev === memories.length - 1 ? 0 : (prev || 0) + 1,
-    );
-  };
-
-  const activeMemory =
-    activeSlideshowIndex !== null ? memories[activeSlideshowIndex] : null;
+  // Filtered Memories List
+  const filteredMemories = memories.filter((memory) => {
+    const matchesTag = selectedTag ? memory.tags?.includes(selectedTag) : true;
+    const matchesDate = selectedDate ? memory.date === selectedDate : true;
+    return matchesTag && matchesDate;
+  });
 
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between">
+    <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-6 bg-neutral-950/20 rounded-3xl min-h-screen text-white">
+      {/* Title */}
+      <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
         <div>
-          <h1 className="text-xl font-bold flex items-center gap-2 text-foreground">
-            <Clock className="h-5 w-5 text-primary" /> On This Day
+          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+            <Clock className="h-6 w-6 text-primary" />
+            Memories Vault
           </h1>
-          <p className="text-xs text-muted-foreground">
-            Looking back at {today}
+          <p className="text-sm text-neutral-400">
+            A secure archive of your stories, BeReals, and captured moments.
           </p>
         </div>
-        {memories.length > 0 && (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setActiveSlideshowIndex(0)}
-            className="flex items-center gap-1 font-semibold"
-          >
-            <Play className="h-3.5 w-3.5 fill-current" />
-            Play Slideshow
-          </Button>
-        )}
+        <div className="text-xs bg-neutral-800/80 px-3 py-1.5 rounded-full border border-neutral-700/50 flex items-center gap-1.5">
+          <Info className="h-3.5 w-3.5 text-neutral-400" />
+          <span>{memories.length} saved</span>
+        </div>
       </div>
 
-      {/* Main Grid */}
-      <div className="p-4 space-y-4">
-        {loading && (
-          <p className="text-center text-muted-foreground py-12">
-            Loading memories…
-          </p>
-        )}
-        {!loading && memories.length === 0 && (
-          <div className="flex flex-col items-center py-20 text-center bg-card border border-border border-dashed rounded-3xl space-y-4">
-            <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-              <Sparkles className="h-8 w-8" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-semibold text-lg text-foreground">
-                No memories found
-              </h3>
-              <p className="text-xs text-muted-foreground max-w-sm">
-                No memories from this day yet. As you post over time, they’ll
-                resurface here.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {memories.map((m) => {
-          const imgs = parseMedia(m.mediaUrls);
-          return (
-            <Card
-              key={m.id}
-              padding="md"
-              className="hover:shadow-md transition-shadow relative overflow-hidden"
-            >
-              <div className="flex items-center justify-between mb-3 border-b border-border/50 pb-2">
-                <div className="flex items-center gap-1.5 text-primary font-bold text-xs">
-                  <Sparkles className="h-4 w-4" />
-                  <span>
-                    {m.yearsAgo} year{m.yearsAgo > 1 ? "s" : ""} ago today
-                  </span>
-                </div>
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  onClick={() => handleShareMemory(m)}
-                  className="flex items-center gap-1 text-muted-foreground hover:text-foreground text-xs"
-                >
-                  <Share2 className="h-3.5 w-3.5" />
-                  <span>Share</span>
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-3 mb-3">
-                <Avatar
-                  src={m.author.avatar}
-                  name={m.author.displayName}
-                  size="sm"
-                />
-                <div>
-                  <p className="text-sm font-semibold text-foreground">
-                    {m.author.displayName}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground">
-                    {new Date(m.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-
-              {m.content && (
-                <p className="text-sm text-foreground leading-relaxed mb-3">
-                  {m.content}
-                </p>
-              )}
-
-              {imgs.length > 0 && (
-                <div className="grid grid-cols-2 gap-1.5 rounded-2xl overflow-hidden bg-muted/20">
-                  {imgs.slice(0, 4).map((u, i) => (
-                    <img
-                      key={i}
-                      src={u}
-                      alt=""
-                      className="w-full h-40 object-cover hover:scale-102 transition-transform duration-300"
-                    />
-                  ))}
-                </div>
-              )}
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Story Slideshow Overlay */}
-      {activeMemory && (
-        <div className="fixed inset-0 z-50 bg-black/98 backdrop-blur-md flex flex-col items-center justify-center p-4">
-          {/* Top Header */}
-          <div className="absolute top-4 left-6 right-6 flex items-center justify-between text-white z-10">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="font-extrabold text-sm">
-                {activeMemory.yearsAgo} Year
-                {activeMemory.yearsAgo > 1 ? "s" : ""} Ago Today
-              </span>
-            </div>
+      {/* Filter Toolbar */}
+      <div className="bg-neutral-900/60 border border-neutral-800 p-4 rounded-2xl flex flex-col md:flex-row gap-4 items-center justify-between">
+        
+        {/* Date Filter */}
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <Calendar className="h-4 w-4 text-neutral-400 flex-shrink-0" />
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="w-full md:w-44 bg-neutral-800 text-sm py-1.5 px-3 rounded-xl focus:outline-none border border-neutral-700/50 text-white"
+          />
+          {selectedDate && (
             <button
-              onClick={() => setActiveSlideshowIndex(null)}
-              className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2.5 transition-colors"
+              onClick={() => setSelectedDate("")}
+              className="text-xs text-primary hover:underline font-bold"
             >
-              <X className="h-5 w-5" />
+              Clear
             </button>
-          </div>
+          )}
+        </div>
 
-          {/* Progress indicators */}
-          <div className="absolute top-16 left-6 right-6 flex gap-1 z-10">
-            {memories.map((m, idx) => (
-              <div
-                key={m.id}
-                className={cn(
-                  "h-1 rounded-full flex-1 transition-all duration-300",
-                  idx <= (activeSlideshowIndex || 0)
-                    ? "bg-primary"
-                    : "bg-white/20",
-                )}
-              />
+        {/* Tags filter carousel */}
+        <div className="flex items-center gap-2 w-full md:w-auto overflow-hidden">
+          <Tag className="h-4 w-4 text-neutral-400 flex-shrink-0" />
+          <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
+            <button
+              onClick={() => setSelectedTag(null)}
+              className={`px-3 py-1 rounded-xl text-xs font-semibold border transition flex-shrink-0 ${
+                selectedTag === null
+                  ? "bg-primary border-primary text-white"
+                  : "bg-neutral-800 border-neutral-700/50 text-neutral-400 hover:text-white"
+              }`}
+            >
+              All Tags
+            </button>
+            {allTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setSelectedTag(tag)}
+                className={`px-3 py-1 rounded-xl text-xs font-semibold border transition flex-shrink-0 ${
+                  selectedTag === tag
+                    ? "bg-primary border-primary text-white"
+                    : "bg-neutral-800 border-neutral-700/50 text-neutral-400 hover:text-white"
+                }`}
+              >
+                #{tag}
+              </button>
             ))}
           </div>
+        </div>
 
-          {/* Main Visual Slide Card */}
-          <div className="relative w-full max-w-lg aspect-[3/4] flex flex-col justify-between bg-card/5 border border-white/10 rounded-3xl overflow-hidden p-6 shadow-2xl">
-            {/* Background blurred cover */}
-            {parseMedia(activeMemory.mediaUrls)[0] && (
-              <div
-                className="absolute inset-0 bg-cover bg-center opacity-10 filter blur-xl scale-110 pointer-events-none"
-                style={{
-                  backgroundImage: `url(${parseMedia(activeMemory.mediaUrls)[0]})`,
-                }}
+      </div>
+
+      {/* Grid of Memories */}
+      {filteredMemories.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-neutral-800 rounded-3xl p-6 bg-neutral-900/10">
+          <Camera className="h-12 w-12 text-neutral-500 mb-3 animate-pulse" />
+          <h3 className="font-semibold text-lg">No Memories Found</h3>
+          <p className="text-sm text-neutral-400 max-w-xs mt-1">
+            Try adjusting your search filters or start capturing new posts using the Camera tab.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {filteredMemories.map((memory) => (
+            <div
+              key={memory.id}
+              onClick={() => setActiveMemory(memory)}
+              className="group aspect-[3/4] rounded-2xl overflow-hidden border border-neutral-850 bg-neutral-900 relative shadow-md hover:shadow-primary/5 cursor-pointer transform hover:-translate-y-0.5 transition duration-200"
+            >
+              {/* Main Media Preview */}
+              <img
+                src={memory.url}
+                alt="Memory"
+                className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                loading="lazy"
               />
-            )}
 
-            {/* Slide Navigation Controls */}
-            {memories.length > 1 && (
-              <>
-                <button
-                  onClick={handlePrevSlide}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-2.5 transition-colors z-20"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={handleNextSlide}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-2.5 transition-colors z-20"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-              </>
-            )}
-
-            {/* Author info */}
-            <div className="flex items-center gap-3 relative z-10">
-              <Avatar
-                src={activeMemory.author.avatar}
-                name={activeMemory.author.displayName}
-                size="sm"
-                className="ring-2 ring-primary"
-              />
-              <div>
-                <p className="text-sm font-bold text-white">
-                  {activeMemory.author.displayName}
-                </p>
-                <p className="text-[10px] text-white/60">
-                  {new Date(activeMemory.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-
-            {/* Image content */}
-            <div className="flex-1 flex items-center justify-center py-4 relative z-10 overflow-hidden">
-              {parseMedia(activeMemory.mediaUrls)[0] ? (
-                <img
-                  src={parseMedia(activeMemory.mediaUrls)[0]}
-                  alt=""
-                  className="max-w-full max-h-[45vh] object-contain rounded-2xl shadow-xl border border-white/5"
-                />
-              ) : (
-                <div className="h-32 w-32 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-                  <Sparkles className="h-12 w-12" />
+              {/* BeReal overlay selfie */}
+              {memory.mode === "BE_REAL" && memory.pipUrl && (
+                <div className="absolute top-2 left-2 w-10 aspect-[3/4] rounded-lg overflow-hidden border border-white shadow-md bg-neutral-900 z-10">
+                  <img
+                    src={memory.pipUrl}
+                    alt="Selfie"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               )}
-            </div>
 
-            {/* Text description */}
-            <div className="space-y-4 relative z-10">
-              {activeMemory.content && (
-                <p className="text-sm text-white font-medium text-center px-4 leading-relaxed">
-                  &quot;{activeMemory.content}&quot;
-                </p>
-              )}
-
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => handleShareMemory(activeMemory)}
-                  className="w-full flex items-center justify-center gap-1.5 font-bold"
-                >
-                  <Share2 className="h-4 w-4" /> Share Story
-                </Button>
+              {/* Hover Overlay info */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition duration-200 flex flex-col justify-end p-3">
+                <div className="flex items-center justify-between text-[10px] font-bold text-neutral-300">
+                  <span className="flex items-center gap-1">
+                    <MapPin className="h-3 w-3 text-red-500" />
+                    {memory.location.split(",")[0]}
+                  </span>
+                  <span>{memory.date}</span>
+                </div>
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10">
+                  <span className="text-[10px] text-primary uppercase font-bold">
+                    {memory.mode}
+                  </span>
+                  <button
+                    onClick={(e) => handleDeleteMemory(memory.id, e)}
+                    className="p-1 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition"
+                    title="Delete Memory"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
               </div>
             </div>
+          ))}
+        </div>
+      )}
+
+      {/* Lightbox / Memory detail view Modal */}
+      {activeMemory && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="max-w-md w-full bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl relative">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-neutral-800">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-primary" />
+                <span className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+                  {activeMemory.mode} Memory
+                </span>
+              </div>
+              <button
+                onClick={() => setActiveMemory(null)}
+                className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center transition"
+              >
+                <X className="h-4 w-4 text-white" />
+              </button>
+            </div>
+
+            {/* Media Area */}
+            <div className="relative aspect-[3/4] bg-neutral-950 flex items-center justify-center">
+              <img
+                src={activeMemory.url}
+                alt="Captured Memory"
+                className="w-full h-full object-cover"
+              />
+
+              {/* PIP selfie */}
+              {activeMemory.mode === "BE_REAL" && activeMemory.pipUrl && (
+                <div className="absolute top-4 left-4 w-20 aspect-[3/4] rounded-xl overflow-hidden border-2 border-white shadow-2xl bg-neutral-900 z-10">
+                  <img
+                    src={activeMemory.pipUrl}
+                    alt="Selfie"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
+              {/* Location Badge */}
+              <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center gap-1 pointer-events-none z-10">
+                <MapPin className="h-3.5 w-3.5 text-red-500 fill-red-500" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-white">
+                  {activeMemory.location}
+                </span>
+              </div>
+            </div>
+
+            {/* Meta details footer */}
+            <div className="p-4 space-y-3 bg-neutral-900">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold text-neutral-200">
+                  {formatDateSafe(activeMemory.createdAt)}
+                </div>
+                <button
+                  onClick={() => handleDeleteMemory(activeMemory.id)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition text-xs font-bold"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Delete
+                </button>
+              </div>
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-1.5 pt-2 border-t border-neutral-800">
+                {activeMemory.tags?.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
       )}

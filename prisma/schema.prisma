@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -96,6 +96,9 @@ model User {
   audioRoomsHosted   AudioRoom[]      @relation("AudioRoomHost")
   audioRoomSpeakers  AudioRoomSpeaker[]
   audioRoomListeners AudioRoomListener[]
+  podcasts           Podcast[]
+  playlists          AudioPlaylist[]
+  transcriptSegments AudioRoomTranscriptSegment[]
   products           Product[]
   buyerOrders        Order[]          @relation("OrderBuyer")
   badges             Badge[]
@@ -768,8 +771,10 @@ model AudioRoom {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  speakers    AudioRoomSpeaker[]
-  listeners   AudioRoomListener[]
+  speakers           AudioRoomSpeaker[]
+  listeners          AudioRoomListener[]
+  transcripts        AudioRoomTranscript[]
+  transcriptSegments AudioRoomTranscriptSegment[]
 
   @@index([hostId])
   @@index([isActive])
@@ -796,6 +801,7 @@ model AudioRoomListener {
   audioRoom   AudioRoom @relation(fields: [audioRoomId], references: [id], onDelete: Cascade)
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  handRaised  Boolean   @default(false)
   joinedAt    DateTime  @default(now())
   leftAt      DateTime?
 
@@ -2217,6 +2223,92 @@ model SavedMemory {
 
   @@index([userId])
   @@index([createdAt])
+}
+
+// =============================================================================
+// Batch 11 — Podcasts, Playlists, Transcripts
+// =============================================================================
+
+model Podcast {
+  id          String           @id @default(cuid())
+  title       String
+  description String?
+  coverUrl    String?
+  authorId    String
+  author      User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category    String?
+  episodes    PodcastEpisode[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([authorId])
+}
+
+model PodcastEpisode {
+  id          String   @id @default(cuid())
+  podcastId   String
+  podcast     Podcast  @relation(fields: [podcastId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  audioUrl    String
+  duration    Int      @default(0)
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([podcastId])
+}
+
+model AudioPlaylist {
+  id          String               @id @default(cuid())
+  name        String
+  description String?
+  coverUrl    String?
+  userId      String
+  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tracks      AudioPlaylistTrack[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@index([userId])
+}
+
+model AudioPlaylistTrack {
+  id         String        @id @default(cuid())
+  playlistId String
+  playlist   AudioPlaylist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  title      String
+  artist     String?
+  audioUrl   String
+  duration   Int           @default(0)
+  position   Int           @default(0)
+  createdAt  DateTime      @default(now())
+
+  @@index([playlistId])
+}
+
+model AudioRoomTranscript {
+  id          String    @id @default(cuid())
+  audioRoomId String
+  audioRoom   AudioRoom @relation(fields: [audioRoomId], references: [id], onDelete: Cascade)
+  fullText    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([audioRoomId])
+}
+
+model AudioRoomTranscriptSegment {
+  id          String    @id @default(cuid())
+  audioRoomId String
+  audioRoom   AudioRoom @relation(fields: [audioRoomId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  text        String
+  timestamp   DateTime  @default(now())
+
+  @@index([audioRoomId])
+  @@index([userId])
 }
 
 

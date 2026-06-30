@@ -15,6 +15,7 @@ interface UIState {
   accentColor: string;
   sidebarOpen: boolean;
   activeModal: ActiveModal;
+  userLocation: { latitude: number; longitude: number } | null;
 }
 
 interface UIActions {
@@ -24,6 +25,7 @@ interface UIActions {
   setSidebarOpen: (open: boolean) => void;
   setActiveModal: (modal: ActiveModal) => void;
   closeModal: () => void;
+  setUserLocation: (location: { latitude: number; longitude: number } | null) => void;
 }
 
 type UIStore = UIState & UIActions;
@@ -36,6 +38,7 @@ export const useUIStore = create<UIStore>()(
       accentColor: "blue",
       sidebarOpen: true,
       activeModal: null,
+      userLocation: { latitude: 37.7749, longitude: -122.4194 },
 
       // Actions
       setTheme: (theme) => set({ theme }),
@@ -50,6 +53,8 @@ export const useUIStore = create<UIStore>()(
       setActiveModal: (activeModal) => set({ activeModal }),
 
       closeModal: () => set({ activeModal: null }),
+
+      setUserLocation: (userLocation) => set({ userLocation }),
     }),
     {
       name: "wakka-ui",
@@ -59,6 +64,7 @@ export const useUIStore = create<UIStore>()(
         theme: state.theme,
         accentColor: state.accentColor,
         sidebarOpen: state.sidebarOpen,
+        userLocation: state.userLocation,
       }),
     },
   ),

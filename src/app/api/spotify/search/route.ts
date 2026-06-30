@@ -39,6 +39,59 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const q = (searchParams.get("q") || "").toLowerCase().trim();
 
+  const clientId = process.env.SPOTIFY_CLIENT_ID;
+  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+
+  if (clientId && clientSecret && q) {
+    try {
+      const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+      const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${auth}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: "grant_type=client_credentials",
+      });
+
+      if (!tokenRes.ok) {
+        throw new Error(`Failed to fetch Spotify token: ${tokenRes.statusText}`);
+      }
+
+      const tokenData = await tokenRes.json();
+      const accessToken = tokenData.access_token;
+
+      if (!accessToken) {
+        throw new Error("No access token returned from Spotify");
+      }
+
+      const searchRes = await fetch(
+        `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (!searchRes.ok) {
+        throw new Error(`Spotify search failed: ${searchRes.statusText}`);
+      }
+
+      const searchData = await searchRes.json();
+      const tracks = searchData.tracks?.items?.map((item: any) => ({
+        id: item.id,
+        title: item.name,
+        artist: item.artists?.map((a: any) => a.name).join(", "),
+        previewUrl: item.preview_url || "",
+      })) || [];
+
+      return NextResponse.json({ data: tracks });
+    } catch (error) {
+      console.error("Spotify API error, falling back to mock search:", error);
+    }
+  }
+
   if (!q) {
     return NextResponse.json({ data: MOCK_TRACKS });
   }

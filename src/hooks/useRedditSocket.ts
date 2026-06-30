@@ -7,6 +7,13 @@ import { useRedditStore } from "@/store/redditStore";
 export function useRedditSocket(postId?: string, subredditId?: string) {
   const { socket } = useSocket();
   const store = useRedditStore();
+  const setSocket = useRedditStore((s) => s.setSocket);
+
+  useEffect(() => {
+    if (socket) {
+      setSocket(socket);
+    }
+  }, [socket, setSocket]);
 
   useEffect(() => {
     if (!socket) return;

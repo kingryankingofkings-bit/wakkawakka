@@ -119,6 +119,7 @@ interface RedditState {
   activeCommentVotes: Record<string, "UPVOTE" | "DOWNVOTE" | null>;
   loading: boolean;
   error: string | null;
+  socket: any | null;
 }
 
 interface RedditActions {
@@ -127,6 +128,7 @@ interface RedditActions {
   createSubreddit: (data: { name: string; description?: string; rules?: string[]; customTheme?: any; isNSFW?: boolean; isSpoiler?: boolean }) => Promise<Subreddit>;
   joinSubreddit: (subredditId: string) => Promise<void>;
   leaveSubreddit: (subredditId: string) => Promise<void>;
+  setSocket: (socket: any) => void;
   
   fetchPosts: (filters?: { subredditId?: string; sort?: string; query?: string }) => Promise<void>;
   fetchPostById: (id: string) => Promise<SubredditPost | null>;
@@ -164,6 +166,9 @@ export const useRedditStore = create<RedditState & RedditActions>((set, get) => 
   activeCommentVotes: {},
   loading: false,
   error: null,
+  socket: null,
+
+  setSocket: (socket) => set({ socket }),
 
   clearActiveData: () => set({ activePost: null, comments: [], activePostVotes: {}, activeCommentVotes: {} }),
 
@@ -433,6 +438,19 @@ export const useRedditStore = create<RedditState & RedditActions>((set, get) => 
         body: JSON.stringify({ type }),
       });
       if (!res.ok) throw new Error("Failed to vote");
+      const json = await res.json();
+      const socket = get().socket;
+      if (socket && json.data) {
+        const { score, upvotes, downvotes, userKarma } = json.data;
+        socket.emit("reddit-new-vote", {
+          targetId: postId,
+          targetType: "POST",
+          score,
+          upvotes,
+          downvotes,
+          userKarma,
+        });
+      }
     } catch (err: any) {
       // Revert optimistic update
       set((state) => ({
@@ -502,6 +520,19 @@ export const useRedditStore = create<RedditState & RedditActions>((set, get) => 
         body: JSON.stringify({ type }),
       });
       if (!res.ok) throw new Error("Failed to vote comment");
+      const json = await res.json();
+      const socket = get().socket;
+      if (socket && json.data) {
+        const { score, upvotes, downvotes, userKarma } = json.data;
+        socket.emit("reddit-new-vote", {
+          targetId: commentId,
+          targetType: "COMMENT",
+          score,
+          upvotes,
+          downvotes,
+          userKarma,
+        });
+      }
     } catch (err: any) {
       // Revert
       set((state) => {
@@ -570,6 +601,14 @@ export const useRedditStore = create<RedditState & RedditActions>((set, get) => 
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to give award");
+      const socket = get().socket;
+      if (socket && data.data) {
+        socket.emit("reddit-new-award", {
+          targetId: postIdOrCommentId,
+          targetType,
+          award: data.data,
+        });
+      }
     } catch (err: any) {
       set({ error: err.message });
       throw err;
@@ -623,6 +662,11 @@ export const useRedditStore = create<RedditState & RedditActions>((set, get) => 
         
         return { comments: addReplyToTree(state.comments) };
       });
+
+      const socket = get().socket;
+      if (socket) {
+        socket.emit("reddit-new-comment", { postId, comment: newComment });
+      }
       
       return newComment;
     } catch (err: any) {
@@ -655,6 +699,12 @@ export const useRedditStore = create<RedditState & RedditActions>((set, get) => 
           
         return { posts, activePost };
       });
+
+      const socket = get().socket;
+      if (socket) {
+        const subId = subredditId || data.data?.subredditId;
+        socket.emit("reddit-mod-action", { subredditId: subId, action, targetPostId: postId, reason });
+      }
     } catch (err: any) {
       set({ error: err.message });
       throw err;
@@ -685,6 +735,12 @@ export const useRedditStore = create<RedditState & RedditActions>((set, get) => 
       set((state) => ({
         comments: removeCommentFromTree(state.comments),
       }));
+
+      const socket = get().socket;
+      if (socket) {
+        const subId = subredditId || data.data?.subredditId;
+        socket.emit("reddit-mod-action", { subredditId: subId, action: "REMOVE_COMMENT", targetCommentId: commentId, reason });
+      }
     } catch (err: any) {
       set({ error: err.message });
       throw err;
@@ -699,6 +755,11 @@ export const useRedditStore = create<RedditState & RedditActions>((set, get) => 
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Moderation action failed");
+
+      const socket = get().socket;
+      if (socket) {
+        socket.emit("reddit-mod-action", { subredditId, action, targetUserId, reason });
+      }
     } catch (err: any) {
       set({ error: err.message });
       throw err;

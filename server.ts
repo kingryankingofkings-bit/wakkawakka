@@ -147,8 +147,30 @@ app.prepare().then(() => {
       io.to(`live:${data.streamId}`).emit("live-cohost", data);
     });
 
-    socket.on("join-audio-room", (roomId: string) => {
-      socket.join(`audio:${roomId}`);
+    socket.on("join-audio-room", (data: any) => {
+      const roomId = typeof data === "string" ? data : data?.roomId;
+      if (roomId) {
+        socket.join(`audio:${roomId}`);
+      }
+    });
+
+    socket.on("leave-audio-room", (data: any) => {
+      const roomId = typeof data === "string" ? data : data?.roomId;
+      if (roomId) {
+        socket.leave(`audio:${roomId}`);
+      }
+    });
+
+    socket.on("audio-join", (data: { roomId: string; userId: string; user: any; isSpeaker: boolean }) => {
+      socket.to(`audio:${data.roomId}`).emit("audio-user-joined", data);
+    });
+
+    socket.on("audio-leave", (data: { roomId: string; userId: string }) => {
+      socket.to(`audio:${data.roomId}`).emit("audio-user-left", data);
+    });
+
+    socket.on("audio-state-update", (data: { roomId: string; userId: string; isMuted?: boolean; handRaised?: boolean; isSpeaker?: boolean }) => {
+      socket.to(`audio:${data.roomId}`).emit("audio-state-changed", data);
     });
 
     socket.on(

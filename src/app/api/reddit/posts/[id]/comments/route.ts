@@ -86,6 +86,15 @@ export async function POST(
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
+    if (parentId) {
+      const parentComment = await prisma.subredditComment.findUnique({
+        where: { id: parentId },
+      });
+      if (!parentComment || parentComment.postId !== postId) {
+        return NextResponse.json({ error: "Invalid parent comment ID" }, { status: 400 });
+      }
+    }
+
     if (post.isLocked) {
       return NextResponse.json({ error: "Post is locked" }, { status: 400 });
     }

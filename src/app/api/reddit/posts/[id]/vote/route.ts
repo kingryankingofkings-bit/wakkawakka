@@ -18,7 +18,11 @@ export async function POST(
     const body = await req.json();
     const { type } = body; // "UPVOTE" | "DOWNVOTE" | null (clear)
 
-    if (type !== undefined && type !== "UPVOTE" && type !== "DOWNVOTE" && type !== null) {
+    if (type === undefined) {
+      return NextResponse.json({ error: "Vote type is required" }, { status: 400 });
+    }
+
+    if (type !== "UPVOTE" && type !== "DOWNVOTE" && type !== null) {
       return NextResponse.json({ error: "Invalid vote type" }, { status: 400 });
     }
 

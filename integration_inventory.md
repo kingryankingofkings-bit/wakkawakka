@@ -72,3 +72,15 @@ This inventory tracks the real features to be implemented in Batch 1.
 | **Threads Highlighter**                      | Gold border styling and a spotlight thread badge for high-engaging feed posts           | Implemented |
 | **Apaya AI Content Scheduling & Automation** | Month calendar grid, Brand voice profile form, AI post copy generator, and queue poster | Implemented |
 | **Avatar Story Ring**                        | Correct active story ring rendering using the animated CSS helper                       | Implemented |
+
+## Batch 9 Features
+
+| Feature | Description | Status |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| **Forum & Voting (Reddit-style)** | Subreddit-style topic communities with custom rules, upvote/downvote system with karma, award/gift system, crossposting, AMA format, and mod tools (automod rules, mod queue). | Implemented |
+
+## Batch 10 Features
+
+| Feature | Description | Status |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| **Camera & AR (Snapchat/BeReal-style)** | Mobile-only camera interface, AR lenses and filters, Snap Map real-time location sharing, disappearing (view-once) direct messages, streaks tracking, BeReal dual-camera ephemeral capture, and memories private vault. | Implemented |

@@ -2313,6 +2313,18 @@ runTest('tier4', 'Reddit Platform Workflow: Create Subreddit -> Join -> Post Tex
     const postId = postData.data.id;
     assert(postId, 'Post must return a valid ID');
 
+    // Verify subreddit postCount is incremented to 1
+    const subBefore = await prisma.subreddit.findUnique({ where: { id: subredditId } });
+    assertEq(subBefore.postCount, 1, 'Subreddit postCount must be 1 after post creation');
+
+    // Test: Post Vote Route undefined check (should reject with 400)
+    const postVoteUndefRes = await fetch(`${baseUrl}/api/reddit/posts/${postId}/vote`, {
+      method: 'POST',
+      headers: { 'x-user-id': voterUser.id, 'Content-Type': 'application/json' },
+      body: JSON.stringify({}) // omitting 'type'
+    });
+    assertEq(postVoteUndefRes.status, 400, 'Post vote route must reject undefined type with 400');
+
     // 4. Upvote & Karma sync (voterUser upvotes authorUser post)
     const voteRes = await fetch(`${baseUrl}/api/reddit/posts/${postId}/vote`, {
       method: 'POST',
@@ -2336,6 +2348,14 @@ runTest('tier4', 'Reddit Platform Workflow: Create Subreddit -> Join -> Post Tex
     });
     assertEq(rootCommentRes.status, 200, 'Should submit root comment');
     const rootComment = (await rootCommentRes.json()).data;
+
+    // Test: Comment Vote Route undefined check (should reject with 400)
+    const commentVoteUndefRes = await fetch(`${baseUrl}/api/reddit/comments/${rootComment.id}/vote`, {
+      method: 'POST',
+      headers: { 'x-user-id': voterUser.id, 'Content-Type': 'application/json' },
+      body: JSON.stringify({}) // omitting 'type'
+    });
+    assertEq(commentVoteUndefRes.status, 400, 'Comment vote route must reject undefined type with 400');
 
     // Sub-reply by AMA host alicedev (should automatically flag as isAMAAnswer)
     const replyCommentRes = await fetch(`${baseUrl}/api/reddit/posts/${postId}/comments`, {
@@ -2382,13 +2402,194 @@ runTest('tier4', 'Reddit Platform Workflow: Create Subreddit -> Join -> Post Tex
     assert(loggedAction, 'Moderator action log record must exist');
     assertEq(loggedAction.action, 'LOCK_POST');
 
+    // Moderator removes the post (REMOVE action) and checks postCount decrement
+    const removeRes = await fetch(`${baseUrl}/api/reddit/mod`, {
+      method: 'POST',
+      headers: { 'x-user-id': modUser.id, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        subredditId: subredditId,
+        postId: postId,
+        action: 'REMOVE',
+        reason: 'AMA has completed'
+      })
+    });
+    assertEq(removeRes.status, 200, 'Moderator should execute remove action successfully');
+
+    // Verify postCount decremented to 0
+    const subAfterRemove = await prisma.subreddit.findUnique({ where: { id: subredditId } });
+    assertEq(subAfterRemove.postCount, 0, 'Subreddit postCount must be 0 after post removal');
+
     // Cleanup E2E records
     await prisma.redditModAction.deleteMany({ where: { subredditId } });
     await prisma.redditAward.deleteMany({ where: { targetId: postId } });
     await prisma.subredditComment.deleteMany({ where: { postId } });
-    await prisma.subredditPost.delete({ where: { id: postId } });
+    await prisma.subredditPost.deleteMany({ where: { id: postId } });
     await prisma.subredditMember.deleteMany({ where: { subredditId } });
     await prisma.subreddit.delete({ where: { id: subredditId } });
+
+  } finally {
+    if (serverProcess) {
+      serverProcess.kill('SIGKILL');
+    }
+    await prisma.$disconnect();
+  }
+});
+
+// ============================================================================
+// BATCH 11: AUDIO & VOICE (AUDIO ROOMS, SOUNDBOARD DELETION, SPOTIFY SEARCH)
+// ============================================================================
+
+runTest('tier4', 'Audio & Voice Platform Workflow: Create Audio Room -> Join as Listener -> Raise Hand -> Promote to Speaker -> Mute Speaker -> Demote Speaker -> Soundboard Deletion Permissions -> Spotify Search Fallback', async () => {
+  const { PrismaClient } = require('@prisma/client');
+  const prisma = new PrismaClient();
+  const { spawn } = require('child_process');
+  const path = require('path');
+  const port = 4086;
+  const baseUrl = `http://127.0.0.1:${port}`;
+  let serverProcess = null;
+
+  try {
+    const hostUser = await prisma.user.findUnique({ where: { username: 'wakkadev' } });
+    const listenerUser = await prisma.user.findUnique({ where: { username: 'alicedev' } });
+    const intruderUser = await prisma.user.findUnique({ where: { username: 'bobdev' } });
+    assert(hostUser && listenerUser && intruderUser, 'Seeded users wakkadev, alicedev, and bobdev must exist');
+
+    console.log(`    Spawning server on port ${port}...`);
+    const tsxPath = path.resolve(__dirname, "../node_modules/tsx/dist/cli.cjs");
+    const env = {
+      ...process.env,
+      PORT: String(port),
+      HOSTNAME: "127.0.0.1",
+      NODE_ENV: "development",
+    };
+    serverProcess = spawn('node', [tsxPath, 'server.ts'], { env });
+
+    await new Promise((resolve) => {
+      const checkInterval = setInterval(async () => {
+        try {
+          const res = await fetch(`${baseUrl}/api/audio-rooms`);
+          if (res.status === 200 || res.status === 401) {
+            clearInterval(checkInterval);
+            resolve();
+          }
+        } catch (e) {}
+      }, 500);
+    });
+
+    // 1. Create Audio Room
+    const createRoomRes = await fetch(`${baseUrl}/api/audio-rooms`, {
+      method: 'POST',
+      headers: { 'x-user-id': hostUser.id, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: 'Tech Talk Live',
+        description: 'Discussing the future of Next.js and Prisma',
+        category: 'Tech',
+        tags: ['nextjs', 'prisma']
+      })
+    });
+    assertEq(createRoomRes.status, 201, 'Should create audio room successfully');
+    const roomData = await createRoomRes.json();
+    const roomId = roomData.room.id;
+    assert(roomId, 'Audio room must return a valid ID');
+
+    // 2. GET /api/audio-rooms
+    const getRoomsRes = await fetch(`${baseUrl}/api/audio-rooms`);
+    assertEq(getRoomsRes.status, 200, 'Should get active audio rooms');
+    const getRoomsData = await getRoomsRes.json();
+    const hasRoom = getRoomsData.rooms.some(r => r.id === roomId);
+    assert(hasRoom, 'Newly created room must be in active audio rooms list');
+
+    // 3. Join as Listener
+    const joinListenerRes = await fetch(`${baseUrl}/api/audio-rooms/${roomId}/listeners`, {
+      method: 'POST',
+      headers: { 'x-user-id': listenerUser.id }
+    });
+    assertEq(joinListenerRes.status, 200, 'User should join audio room as listener');
+
+    // 4. Raise Hand
+    const raiseHandRes = await fetch(`${baseUrl}/api/audio-rooms/${roomId}/hand`, {
+      method: 'PATCH',
+      headers: { 'x-user-id': listenerUser.id, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ handRaised: true })
+    });
+    assertEq(raiseHandRes.status, 200, 'Listener should be able to raise hand');
+    const handData = await raiseHandRes.json();
+    assertEq(handData.listener.handRaised, true, 'handRaised status must be true');
+
+    // 5. Promote Listener to Speaker (host action)
+    const badPromoteRes = await fetch(`${baseUrl}/api/audio-rooms/${roomId}/speakers`, {
+      method: 'POST',
+      headers: { 'x-user-id': intruderUser.id, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: listenerUser.id })
+    });
+    assertEq(badPromoteRes.status, 403, 'Intruder should be forbidden from promoting speakers');
+
+    const promoteRes = await fetch(`${baseUrl}/api/audio-rooms/${roomId}/speakers`, {
+      method: 'POST',
+      headers: { 'x-user-id': hostUser.id, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: listenerUser.id })
+    });
+    assertEq(promoteRes.status, 200, 'Host should promote listener to speaker');
+
+    // 6. Mute Speaker
+    const muteRes = await fetch(`${baseUrl}/api/audio-rooms/${roomId}/speakers`, {
+      method: 'PATCH',
+      headers: { 'x-user-id': listenerUser.id, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: listenerUser.id, isMuted: true })
+    });
+    assertEq(muteRes.status, 200, 'Speaker should mute themselves');
+    const muteData = await muteRes.json();
+    assertEq(muteData.speaker.isMuted, true, 'Speaker isMuted must be true');
+
+    // 7. Demote Speaker
+    const demoteRes = await fetch(`${baseUrl}/api/audio-rooms/${roomId}/speakers`, {
+      method: 'DELETE',
+      headers: { 'x-user-id': hostUser.id, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: listenerUser.id })
+    });
+    assertEq(demoteRes.status, 200, 'Host should demote speaker back to listener');
+
+    // 8. Soundboard sound deletion permissions
+    const server = await prisma.server.create({
+      data: {
+        name: 'Soundboard Test Server',
+        ownerId: hostUser.id
+      }
+    });
+
+    const sound = await prisma.soundboardSound.create({
+      data: {
+        name: 'Airhorn',
+        soundUrl: 'http://example.com/airhorn.mp3',
+        serverId: server.id,
+        userId: listenerUser.id
+      }
+    });
+
+    const badDeleteSoundRes = await fetch(`${baseUrl}/api/servers/${server.id}/soundboard/${sound.id}`, {
+      method: 'DELETE',
+      headers: { 'x-user-id': intruderUser.id }
+    });
+    assertEq(badDeleteSoundRes.status, 403, 'Intruder should be forbidden from deleting sound');
+
+    const hostDeleteSoundRes = await fetch(`${baseUrl}/api/servers/${server.id}/soundboard/${sound.id}`, {
+      method: 'DELETE',
+      headers: { 'x-user-id': hostUser.id }
+    });
+    assertEq(hostDeleteSoundRes.status, 200, 'Server owner should delete sound successfully');
+
+    // 9. Spotify search fallback
+    const spotifyRes = await fetch(`${baseUrl}/api/spotify/search?q=Midnight`);
+    assertEq(spotifyRes.status, 200, 'Spotify search should return 200');
+    const spotifyData = await spotifyRes.json();
+    assert(spotifyData.data.length > 0, 'Spotify search fallback should return mock tracks');
+    assertEq(spotifyData.data[0].title, 'Midnight City', 'First mock track matches query "Midnight"');
+
+    // Cleanup Room and Server
+    await prisma.audioRoomSpeaker.deleteMany({ where: { audioRoomId: roomId } });
+    await prisma.audioRoomListener.deleteMany({ where: { audioRoomId: roomId } });
+    await prisma.audioRoom.delete({ where: { id: roomId } });
+    await prisma.server.delete({ where: { id: server.id } });
 
   } finally {
     if (serverProcess) {

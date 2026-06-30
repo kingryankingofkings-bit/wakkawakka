@@ -63,6 +63,14 @@ export async function POST(req: NextRequest) {
         await tx.subredditPost.delete({
           where: { id: targetPostId },
         });
+        await tx.subreddit.update({
+          where: { id: subredditId },
+          data: {
+            postCount: {
+              decrement: 1,
+            },
+          },
+        });
       } else if (actionMapped === "REMOVE_COMMENT" && targetCommentId) {
         await tx.subredditComment.update({
           where: { id: targetCommentId },
@@ -117,7 +125,7 @@ export async function POST(req: NextRequest) {
           moderatorId: userId,
           action: actionMapped,
           targetUserId: targetUserId || null,
-          targetPostId: targetPostId || null,
+          targetPostId: actionMapped === "REMOVE_POST" ? null : (targetPostId || null),
           targetCommentId: targetCommentId || null,
           reason: reason || "",
         },

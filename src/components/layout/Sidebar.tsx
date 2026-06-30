@@ -33,6 +33,9 @@ import {
   Briefcase,
   GraduationCap,
   Newspaper,
+  MessageSquare,
+  Camera,
+  Map,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/Avatar";
@@ -45,6 +48,7 @@ import { CURRENT_USER } from "@/lib/mockData";
 const NAV_ITEMS = [
   { href: "/feed", icon: Home, label: "Feed" },
   { href: "/explore", icon: Compass, label: "Explore" },
+  { href: "/reddit", icon: MessageSquare, label: "Forums" },
   { href: "/servers", icon: Server, label: "Servers" },
   { href: "/reels", icon: Film, label: "Reels" },
   { href: "/live", icon: Radio, label: "Live" },
@@ -62,6 +66,8 @@ const NAV_ITEMS = [
   { href: "/events", icon: Calendar, label: "Events" },
   { href: "/brand-pages", icon: Flag, label: "Pages" },
   { href: "/communities", icon: Users, label: "Communities" },
+  { href: "/camera", icon: Camera, label: "Camera" },
+  { href: "/map", icon: Map, label: "Snap Map" },
   { href: "/marketplace", icon: Store, label: "Marketplace" },
   { href: "/memories", icon: Clock, label: "Memories" },
   { href: "/audio-rooms", icon: Mic, label: "Audio Rooms" },

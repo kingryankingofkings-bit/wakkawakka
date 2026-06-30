@@ -22,6 +22,10 @@ export async function POST(
       return NextResponse.json({ error: "Award name, price, and icon are required" }, { status: 400 });
     }
 
+    if (typeof price !== "number" || price <= 0 || !Number.isInteger(price)) {
+      return NextResponse.json({ error: "Price must be a positive integer" }, { status: 400 });
+    }
+
     const post = await prisma.subredditPost.findUnique({
       where: { id: postId },
     });

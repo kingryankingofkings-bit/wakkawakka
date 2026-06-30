@@ -11,6 +11,8 @@ interface FeedState {
   feedType: FeedType;
   isLoading: boolean;
   hasMore: boolean;
+  beRealLocked: boolean;
+  beRealPosted: boolean;
 }
 
 interface FeedActions {
@@ -21,6 +23,9 @@ interface FeedActions {
   setFeedType: (type: FeedType) => void;
   setLoading: (loading: boolean) => void;
   setHasMore: (hasMore: boolean) => void;
+  setBeRealLocked: (locked: boolean) => void;
+  setBeRealPosted: (posted: boolean) => void;
+  unlockBeRealFeed: () => void;
 }
 
 type FeedStore = FeedState & FeedActions;
@@ -31,6 +36,8 @@ export const useFeedStore = create<FeedStore>((set) => ({
   feedType: "forYou",
   isLoading: false,
   hasMore: true,
+  beRealLocked: true,
+  beRealPosted: false,
 
   // Actions
   setPosts: (posts) => set({ posts }),
@@ -55,4 +62,10 @@ export const useFeedStore = create<FeedStore>((set) => ({
   setLoading: (isLoading) => set({ isLoading }),
 
   setHasMore: (hasMore) => set({ hasMore }),
+
+  setBeRealLocked: (beRealLocked) => set({ beRealLocked }),
+
+  setBeRealPosted: (posted) => set({ beRealPosted: posted, beRealLocked: !posted }),
+
+  unlockBeRealFeed: () => set({ beRealLocked: false, beRealPosted: true }),
 }));
