@@ -1,14 +1,17 @@
 'use client';
 
 import { Suspense } from 'react';
-import { useState, useEffect, useRef } from 'react';
-import { RefreshCw, ChevronUp } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { RefreshCw, ChevronUp, VolumeX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import { StoriesRow } from '@/components/feed/StoriesRow';
 import { PostCard } from '@/components/feed/PostCard';
 import { CreatePostCard } from '@/components/feed/CreatePostCard';
 import { CreatePostModal } from '@/components/feed/CreatePostModal';
 import { useFeedStore } from '@/store/feedStore';
+import { useSearchStore } from '@/store/searchStore';
+import { isMuted } from '@/lib/searchQuery';
 import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
 
@@ -28,9 +31,21 @@ export default function FeedPage() {
 
 function FeedPageInner() {
   const { posts, feedType, setFeedType } = useFeedStore();
+  const mutedKeywords = useSearchStore(s => s.mutedKeywords);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showNewPosts, setShowNewPosts] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
+
+  // Persisted muted keywords hydrate client-side; only filter after mount to
+  // keep the server-rendered list and first client render identical.
+  useEffect(() => setMounted(true), []);
+
+  const visiblePosts = useMemo(
+    () => (mounted ? posts.filter(p => !isMuted(p, mutedKeywords)) : posts),
+    [posts, mutedKeywords, mounted]
+  );
+  const hiddenCount = posts.length - visiblePosts.length;
 
   useEffect(() => {
     if (searchParams.get('create') === '1') {
@@ -100,10 +115,19 @@ function FeedPageInner() {
         <CreatePostCard onOpenModal={() => setShowCreateModal(true)} />
       </div>
 
+      {/* Muted-keyword notice */}
+      {hiddenCount > 0 && (
+        <div className="flex items-center justify-center gap-2 py-2 text-xs text-muted-foreground border-b border-border bg-muted/30">
+          <VolumeX className="h-3.5 w-3.5" />
+          {hiddenCount} post{hiddenCount > 1 ? 's' : ''} hidden by muted keywords.
+          <Link href="/explore" className="text-primary hover:underline font-medium">Manage</Link>
+        </div>
+      )}
+
       {/* Posts feed */}
       <div>
         <AnimatePresence mode="popLayout">
-          {posts.map((post, i) => (
+          {visiblePosts.map((post, i) => (
             <motion.div
               key={post.id}
               initial={{ opacity: 0, y: 10 }}

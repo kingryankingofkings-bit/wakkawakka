@@ -59,6 +59,50 @@ export const FEATURE_STATUS: Record<string, FeatureStatus> = {
     href: '/feed?create=1',
     note: 'Single autosaved draft persists across sessions; a multi-draft vault is planned.',
   },
+
+  // ---------------------------------------------------------------------------
+  // Batch 2 — Content Discovery & Search
+  // ---------------------------------------------------------------------------
+  'content-discovery-and-search--f117--advanced-search-filters': {
+    status: 'live',
+    href: '/explore',
+    note: 'has:media / has:poll / has:music filters plus recent vs. popular sorting.',
+  },
+  'content-discovery-and-search--f119--advanced-search-operators': {
+    status: 'live',
+    href: '/explore',
+    note: 'Operator syntax in the search bar: from:user, @mention, #tag, has:*, sort:*.',
+  },
+  'content-discovery-and-search--f203--search-bar-and-advanced-operators': {
+    status: 'live',
+    href: '/explore',
+    note: 'Unified search bar parsing advanced operators across people, posts, and tags.',
+  },
+  'content-discovery-and-search--f135--custom-search-filters': {
+    status: 'live',
+    href: '/explore',
+    note: 'Composable operator + interest-category + content-type filters.',
+  },
+  'content-discovery-and-search--f204--search-filters': {
+    status: 'live',
+    href: '/explore',
+    note: 'Tabbed result filtering (people / posts / tags / communities / live / audio).',
+  },
+  'content-discovery-and-search--f178--live-search-auto-suggest': {
+    status: 'live',
+    href: '/explore',
+    note: 'As-you-type dropdown suggesting recent searches, matching tags, and people.',
+  },
+  'content-discovery-and-search--f206--search-trends-and-auto-suggest': {
+    status: 'live',
+    href: '/explore',
+    note: 'Trending tags surfaced inline plus auto-suggest from search history.',
+  },
+  'content-discovery-and-search--f165--hidden-words-feed-filter': {
+    status: 'live',
+    href: '/explore',
+    note: 'Muted keywords (managed in Explore) hide matching posts from the feed.',
+  },
 };
 
 const DEFAULT: FeatureStatus = { status: 'planned' };
