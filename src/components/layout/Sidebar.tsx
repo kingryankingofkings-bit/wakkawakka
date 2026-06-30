@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Compass, Film, Radio, MessageCircle, Bell, Users, ShoppingBag, BarChart2, User, Settings, Zap, LogOut, Mic, BookMarked, Plus, UserPlus, Calendar, Flag, Store, Clock, Sun, Moon, Sparkles, CalendarClock, Package, ShieldCheck, Code2 } from 'lucide-react';
+import { Home, Compass, Film, Radio, MessageCircle, Bell, Users, ShoppingBag, BarChart2, User, Settings, Zap, LogOut, Mic, BookMarked, Plus, UserPlus, Calendar, Flag, Store, Clock, Sun, Moon, Sparkles, CalendarClock, Package, ShieldCheck, Code2, UserCog } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuthStore } from '@/store/authStore';
@@ -33,6 +33,7 @@ const NAV_ITEMS = [
   { href: '/bookmarks', icon: BookMarked, label: 'Bookmarks' },
   { href: '/scheduled', icon: CalendarClock, label: 'Scheduled' },
   { href: '/safety', icon: ShieldCheck, label: 'Safety' },
+  { href: '/account', icon: UserCog, label: 'Account' },
   { href: '/developer', icon: Code2, label: 'Developer' },
   { href: '/feature-hub', icon: Sparkles, label: 'Feature Hub' },
 ];

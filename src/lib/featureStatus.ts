@@ -366,6 +366,45 @@ export const FEATURE_STATUS: Record<string, FeatureStatus> = {
     href: '/notifications',
     note: 'Digital-wellbeing card with an adjustable daily time limit and break reminder.',
   },
+
+  // ---------------------------------------------------------------------------
+  // Batch 10 — Account Settings & Authentication
+  // ---------------------------------------------------------------------------
+  'account-settings-and-authentication--f1029--download-your-data': {
+    status: 'live',
+    href: '/account',
+    note: 'Export a JSON archive of your profile, drafts, orders, and settings.',
+  },
+  'account-settings-and-authentication--f1022--data-export-utility': {
+    status: 'live',
+    href: '/account',
+    note: 'One-click account data archive aggregated from all local stores.',
+  },
+  'account-settings-and-authentication--f1012--connected-accounts': {
+    status: 'live',
+    href: '/account',
+    note: 'Connect/disconnect Google, Apple, GitHub, and X login providers.',
+  },
+  'account-settings-and-authentication--f1002--app-passwords': {
+    status: 'live',
+    href: '/account',
+    note: 'Generate and revoke labelled app-specific passwords.',
+  },
+  'account-settings-and-authentication--f1044--login-alerts-and-unrecognized-device-tracking': {
+    status: 'live',
+    href: '/account',
+    note: 'Login-alerts toggle plus recent-login list flagging unrecognized devices.',
+  },
+  'account-settings-and-authentication--f978--account-deactivation': {
+    status: 'live',
+    href: '/account',
+    note: 'Pause your account (with confirm) and reactivate any time; data is kept.',
+  },
+  'account-settings-and-authentication--f979--account-deactivation-and-deletion': {
+    status: 'live',
+    href: '/account',
+    note: 'Deactivation flow with a two-step confirmation.',
+  },
 };
 
 const DEFAULT: FeatureStatus = { status: 'planned' };
