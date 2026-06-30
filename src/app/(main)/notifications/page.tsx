@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { Bell, Heart, MessageCircle, UserPlus, AtSign, Share2, Radio, Gift } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Bell, Heart, MessageCircle, UserPlus, AtSign, Share2, Radio, Gift, SlidersHorizontal, Moon, BellOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { useNotificationStore } from '@/store/notificationStore';
+import { useNotificationPrefsStore, isQuietNow } from '@/store/notificationPrefsStore';
+import { NotificationPreferences, WellbeingCard } from '@/components/notifications/NotificationSettings';
 import { formatRelativeTime, cn } from '@/lib/utils';
 import { NotificationType } from '@/types';
 
@@ -41,11 +43,19 @@ const TAB_FILTER: Record<NotifTab, NotificationType[]> = {
 
 export default function NotificationsPage() {
   const { notifications, markAsRead, markAllAsRead } = useNotificationStore();
+  const { doNotDisturb, quietHours, isCategoryEnabled } = useNotificationPrefsStore();
   const [tab, setTab] = useState<NotifTab>('All');
+  const [showPrefs, setShowPrefs] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  const filtered = tab === 'All'
+  const quietActive = mounted && (doNotDisturb || isQuietNow(quietHours));
+
+  const byTab = tab === 'All'
     ? notifications
     : notifications.filter(n => TAB_FILTER[tab].includes(n.type));
+  // Hide categories the user muted in preferences (only after mount/hydration).
+  const filtered = mounted ? byTab.filter(n => isCategoryEnabled(n.type)) : byTab;
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
@@ -55,11 +65,20 @@ export default function NotificationsPage() {
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="flex items-center justify-between px-4 py-3">
           <h1 className="text-xl font-bold">Notifications</h1>
-          {unreadCount > 0 && (
-            <Button variant="ghost" size="sm" onClick={markAllAsRead}>
-              Mark all read
-            </Button>
-          )}
+          <div className="flex items-center gap-1">
+            {unreadCount > 0 && (
+              <Button variant="ghost" size="sm" onClick={markAllAsRead}>
+                Mark all read
+              </Button>
+            )}
+            <button
+              onClick={() => setShowPrefs(v => !v)}
+              className={cn('p-2 rounded-xl transition-colors', showPrefs ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-muted-foreground')}
+              title="Notification settings"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+            </button>
+          </div>
         </div>
         {/* Tabs */}
         <div className="flex overflow-x-auto scrollbar-hide px-2 gap-1 pb-1">
@@ -77,6 +96,23 @@ export default function NotificationsPage() {
           ))}
         </div>
       </div>
+
+      {/* DND / quiet hours banner */}
+      {quietActive && (
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-primary/5 border-b border-border text-sm text-primary">
+          {doNotDisturb ? <BellOff className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          <span className="font-medium">
+            {doNotDisturb ? 'Do Not Disturb is on' : 'Quiet hours are active'}
+          </span>
+          <span className="text-muted-foreground">— alerts are silenced.</span>
+        </div>
+      )}
+
+      {/* Preferences panel */}
+      <AnimatePresence>{showPrefs && <NotificationPreferences />}</AnimatePresence>
+
+      {/* Digital wellbeing */}
+      {showPrefs && <WellbeingCard />}
 
       <div className="py-1">
         <AnimatePresence mode="popLayout">

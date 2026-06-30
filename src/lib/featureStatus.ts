@@ -322,6 +322,50 @@ export const FEATURE_STATUS: Record<string, FeatureStatus> = {
     href: '/developer',
     note: 'Embed-code generator for profile and post widgets (copyable iframe snippet).',
   },
+
+  // ---------------------------------------------------------------------------
+  // Batch 9 — Notifications & Time Management
+  // ---------------------------------------------------------------------------
+  'notifications-and-time-management--f886--do-not-disturb-mode': {
+    status: 'live',
+    href: '/notifications',
+    note: 'Do Not Disturb silences alerts; banner shows when active.',
+  },
+  'notifications-and-time-management--f888--do-not-disturb-toggle': {
+    status: 'live',
+    href: '/notifications',
+    note: 'One-tap DND toggle in notification settings.',
+  },
+  'notifications-and-time-management--f887--do-not-disturb-schedule': {
+    status: 'live',
+    href: '/notifications',
+    note: 'Scheduled quiet hours with start/end times (handles overnight windows).',
+  },
+  'notifications-and-time-management--f941--push-schedule-quiet-hours': {
+    status: 'live',
+    href: '/notifications',
+    note: 'Quiet-hours window that auto-activates by current time.',
+  },
+  'notifications-and-time-management--f921--notification-category-mutes': {
+    status: 'live',
+    href: '/notifications',
+    note: 'Per-category toggles (likes/comments/follows/mentions/messages/live/tips).',
+  },
+  'notifications-and-time-management--f924--notification-filtering': {
+    status: 'live',
+    href: '/notifications',
+    note: 'Filter by type tabs plus category mutes applied to the list.',
+  },
+  'notifications-and-time-management--f934--notification-types-filter': {
+    status: 'live',
+    href: '/notifications',
+    note: 'Tabbed type filter (All / Mentions / Likes / Comments / Follows / DMs / Live).',
+  },
+  'notifications-and-time-management--f881--daily-limit-reminders': {
+    status: 'live',
+    href: '/notifications',
+    note: 'Digital-wellbeing card with an adjustable daily time limit and break reminder.',
+  },
 };
 
 const DEFAULT: FeatureStatus = { status: 'planned' };
