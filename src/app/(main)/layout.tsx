@@ -1,10 +1,14 @@
 import { Sidebar } from '@/components/layout/Sidebar';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { RightPanel } from '@/components/layout/RightPanel';
+import { ScheduledPublisher } from '@/components/feed/ScheduledPublisher';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
+      {/* Background worker: auto-publishes due scheduled posts */}
+      <ScheduledPublisher />
+
       {/* Desktop sidebar */}
       <div className="hidden md:block">
         <Sidebar />

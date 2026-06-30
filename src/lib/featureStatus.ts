@@ -21,8 +21,44 @@ export interface FeatureStatus {
  * Populated incrementally as batches land.
  */
 export const FEATURE_STATUS: Record<string, FeatureStatus> = {
-  // --- Batch 0 seed: map a few already-shipped app capabilities to live ---
-  // (These existed before the bible build; registered so the hub reflects reality.)
+  // ---------------------------------------------------------------------------
+  // Batch 1 — Content Creation & Editing
+  // ---------------------------------------------------------------------------
+  'content-creation-and-editing--f2--ai-assist-content-generator': {
+    status: 'live',
+    href: '/feed?create=1',
+    note: 'Wakka Assist in the composer: on-device caption ideas, hashtag suggestions, and one-tap text polishing.',
+  },
+  'content-creation-and-editing--f9--auto-generated-captions': {
+    status: 'live',
+    href: '/feed?create=1',
+    note: 'Caption variants generated per tone (casual / professional / playful / inspirational).',
+  },
+  'content-creation-and-editing--f5--alt-text-editor': {
+    status: 'live',
+    href: '/feed?create=1',
+    note: 'Per-image alt-text fields with a missing-ALT warning for accessibility.',
+  },
+  'content-creation-and-editing--f61--media-formatting-and-alt-text': {
+    status: 'live',
+    href: '/feed?create=1',
+    note: 'Multi-image grid previews with individual alt-text editors.',
+  },
+  'content-creation-and-editing--f10--auto-scheduling-and-queue-system': {
+    status: 'live',
+    href: '/scheduled',
+    note: 'Schedule posts to a persisted queue that auto-publishes when their time arrives.',
+  },
+  'content-creation-and-editing--f36--drafts-saving-and-scheduling': {
+    status: 'live',
+    href: '/scheduled',
+    note: 'Composer autosaves a draft and restores it on reopen; scheduling queue at /scheduled.',
+  },
+  'analytics-business-and-creator-tools--f601--draft-post-vault': {
+    status: 'beta',
+    href: '/feed?create=1',
+    note: 'Single autosaved draft persists across sessions; a multi-draft vault is planned.',
+  },
 };
 
 const DEFAULT: FeatureStatus = { status: 'planned' };
