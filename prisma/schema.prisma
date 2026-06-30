@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -197,6 +197,12 @@ model User {
   receivedAwards           RedditAward[]           @relation("AwardsReceived")
   modActions               RedditModAction[]       @relation("ModActionModerator")
   targetModActions         RedditModAction[]       @relation("ModActionTargetUser")
+
+  // Relations for Camera & AR (Batch 10)
+  locationMap              UserLocation?
+  disappearingMediaSent    DisappearingMedia[]     @relation("DisappearingMediaSent")
+  disappearingMediaReceived DisappearingMedia[]    @relation("DisappearingMediaReceived")
+  savedMemories            SavedMemory[]
 
   @@index([username])
   @@index([email])
@@ -1105,6 +1111,7 @@ model Friendship {
   userBId   String
   userB     User     @relation("FriendshipUserB", fields: [userBId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  streak    FriendStreak?
 
   @@unique([userAId, userBId])
   @@index([userAId])
@@ -2126,6 +2133,90 @@ model RedditModAction {
 
   @@index([subredditId])
   @@index([moderatorId])
+}
+
+// =============================================================================
+// Camera & AR (Batch 10)
+// =============================================================================
+
+model UserLocation {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  latitude      Float
+  longitude     Float
+  shareLocation Boolean  @default(true)
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model DisappearingMedia {
+  id         String    @id @default(cuid())
+  senderId   String
+  sender     User      @relation("DisappearingMediaSent", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   User      @relation("DisappearingMediaReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+  mediaUrl   String
+  type       String    @default("IMAGE") // IMAGE | VIDEO
+  isViewed   Boolean   @default(false)
+  viewedAt   DateTime?
+  expiresAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([createdAt])
+}
+
+model FriendStreak {
+  id                String     @id @default(cuid())
+  friendshipId      String     @unique
+  friendship        Friendship @relation(fields: [friendshipId], references: [id], onDelete: Cascade)
+  count             Int        @default(0)
+  lastInteractionAt DateTime   @default(now())
+  expiresAt         DateTime
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  @@index([friendshipId])
+}
+
+model ARLens {
+  id        String   @id @default(cuid())
+  name      String
+  iconUrl   String
+  assetUrl  String
+  category  String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Geofilter {
+  id         String   @id @default(cuid())
+  name       String
+  overlayUrl String
+  minLat     Float
+  maxLat     Float
+  minLng     Float
+  maxLng     Float
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+
+model SavedMemory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mediaUrl  String
+  type      String
+  caption   String?
+  latitude  Float?
+  longitude Float?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 
