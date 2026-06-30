@@ -3,20 +3,26 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Check, CheckCheck, Clock, CornerUpLeft } from 'lucide-react';
+import { Check, CheckCheck, Clock, CornerUpLeft, Pin, Check as CheckIcon, X } from 'lucide-react';
 import { cn, formatRelativeTime } from '@/lib/utils';
 import { CURRENT_USER } from '@/lib/mockData';
 import type { Message } from '@/types';
+
+const QUICK_REACTIONS = ['❤️', '😂', '👍', '🔥', '😮', '😢'];
 
 interface MessageBubbleProps {
   message: Message;
   isOwn: boolean;
   showAvatar: boolean;
   isGroup: boolean;
+  isPinned?: boolean;
+  isEdited?: boolean;
   onReply: (message: Message) => void;
-  onReact: (message: Message) => void;
+  onReact: (message: Message, emoji: string) => void;
   onCopy: (content: string) => void;
   onDelete: (id: string) => void;
+  onEdit: (id: string, content: string) => void;
+  onPin: (message: Message) => void;
 }
 
 type DeliveryStatus = 'sending' | 'sent' | 'delivered' | 'read';
@@ -39,13 +45,25 @@ export function MessageBubble({
   isOwn,
   showAvatar,
   isGroup,
+  isPinned = false,
+  isEdited = false,
   onReply,
   onReact,
   onCopy,
   onDelete,
+  onEdit,
+  onPin,
 }: MessageBubbleProps) {
   const [contextMenu, setContextMenu] = React.useState<{ x: number; y: number } | null>(null);
+  const [editing, setEditing] = React.useState(false);
+  const [draft, setDraft] = React.useState(message.content);
   const longPressTimer = React.useRef<NodeJS.Timeout | null>(null);
+
+  function saveEdit() {
+    const v = draft.trim();
+    if (v && v !== message.content) onEdit(message.id, v);
+    setEditing(false);
+  }
 
   const deliveryStatus: DeliveryStatus = isOwn
     ? message.isRead
@@ -190,18 +208,44 @@ export function MessageBubble({
             </div>
           )}
 
-          {/* Text content */}
-          {message.content && (
-            <p className="whitespace-pre-wrap break-words leading-snug">{message.content}</p>
+          {/* Text content (or inline editor) */}
+          {editing ? (
+            <div className="space-y-1.5 min-w-[180px]">
+              <textarea
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveEdit(); }
+                  if (e.key === 'Escape') { setEditing(false); setDraft(message.content); }
+                }}
+                autoFocus
+                rows={2}
+                className="w-full text-sm bg-background text-foreground border border-border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+              />
+              <div className="flex items-center gap-2">
+                <button onClick={saveEdit} className="flex items-center gap-1 text-xs font-semibold text-primary">
+                  <CheckIcon className="h-3 w-3" /> Save
+                </button>
+                <button onClick={() => { setEditing(false); setDraft(message.content); }} className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <X className="h-3 w-3" /> Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            message.content && (
+              <p className="whitespace-pre-wrap break-words leading-snug">{message.content}</p>
+            )
           )}
 
           {/* Timestamp */}
           <span
             className={cn(
-              'text-[10px] mt-0.5 block',
-              isOwn ? 'text-primary-foreground/60 text-right' : 'text-muted-foreground text-right'
+              'text-[10px] mt-0.5 flex items-center gap-1',
+              isOwn ? 'text-primary-foreground/60 justify-end' : 'text-muted-foreground justify-end'
             )}
           >
+            {isPinned && <Pin className="h-2.5 w-2.5 fill-current" />}
+            {isEdited && <span>edited</span>}
             {new Date(message.createdAt).toLocaleTimeString([], {
               hour: '2-digit',
               minute: '2-digit',
@@ -238,44 +282,47 @@ export function MessageBubble({
       {/* Context Menu */}
       {contextMenu && (
         <div
-          className="fixed z-50 min-w-[140px] rounded-xl border border-border bg-popover shadow-lg overflow-hidden"
+          className="fixed z-50 min-w-[150px] rounded-xl border border-border bg-popover shadow-lg overflow-hidden"
           style={{ top: contextMenu.y, left: contextMenu.x }}
           onClick={(e) => e.stopPropagation()}
         >
+          {/* Quick reaction row */}
+          <div className="flex items-center justify-between px-2 py-2 border-b border-border">
+            {QUICK_REACTIONS.map((emoji) => (
+              <button
+                key={emoji}
+                onClick={() => { onReact(message, emoji); setContextMenu(null); }}
+                className="h-8 w-8 flex items-center justify-center text-lg rounded-full hover:bg-muted hover:scale-110 transition-transform"
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
           {[
             {
               label: 'Reply',
               icon: '↩',
-              action: () => {
-                onReply(message);
-                setContextMenu(null);
-              },
+              action: () => { onReply(message); setContextMenu(null); },
             },
+            ...(isOwn && message.content && !message.mediaUrl
+              ? [{ label: 'Edit', icon: '✏️', action: () => { setEditing(true); setDraft(message.content); setContextMenu(null); } }]
+              : []),
             {
-              label: 'React',
-              icon: '😊',
-              action: () => {
-                onReact(message);
-                setContextMenu(null);
-              },
+              label: isPinned ? 'Unpin' : 'Pin',
+              icon: '📌',
+              action: () => { onPin(message); setContextMenu(null); },
             },
             {
               label: 'Copy',
               icon: '📋',
-              action: () => {
-                onCopy(message.content);
-                setContextMenu(null);
-              },
+              action: () => { onCopy(message.content); setContextMenu(null); },
             },
             ...(isOwn
               ? [
                   {
                     label: 'Delete',
                     icon: '🗑',
-                    action: () => {
-                      onDelete(message.id);
-                      setContextMenu(null);
-                    },
+                    action: () => { onDelete(message.id); setContextMenu(null); },
                     destructive: true,
                   },
                 ]

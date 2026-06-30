@@ -132,6 +132,45 @@ export const FEATURE_STATUS: Record<string, FeatureStatus> = {
     href: '/feed',
     note: 'Six animated reactions (Like/Love/Haha/Wow/Sad/Angry) on posts.',
   },
+
+  // ---------------------------------------------------------------------------
+  // Batch 4 — Direct Messaging & Communication
+  // ---------------------------------------------------------------------------
+  'direct-messaging-and-communication--f360--chat-reactions': {
+    status: 'live',
+    href: '/messages',
+    note: 'Right-click / long-press a message to react with an emoji; tap again to remove.',
+  },
+  'direct-messaging-and-communication--f376--emoji-message-reactions': {
+    status: 'live',
+    href: '/messages',
+    note: 'Six quick emoji reactions per message, shown as a count chip on the bubble.',
+  },
+  'direct-messaging-and-communication--f377--emoji-reactions-in-chat': {
+    status: 'live',
+    href: '/messages',
+    note: 'Reaction picker in the message context menu.',
+  },
+  'direct-messaging-and-communication--f416--reaction-customization': {
+    status: 'live',
+    href: '/messages',
+    note: 'Choose from a customizable set of quick reactions (❤️ 😂 👍 🔥 😮 😢).',
+  },
+  'direct-messaging-and-communication--f422--sent-message-editing': {
+    status: 'live',
+    href: '/messages',
+    note: 'Edit your own sent text messages inline; bubbles show an "edited" label.',
+  },
+  'direct-messaging-and-communication--f410--pin-message': {
+    status: 'live',
+    href: '/messages',
+    note: 'Pin a message to a banner at the top of the conversation; unpin anytime.',
+  },
+  'direct-messaging-and-communication--f404--message-read-receipts-detailed-view': {
+    status: 'live',
+    href: '/messages',
+    note: 'Delivery/read ticks plus a "Read <time>" receipt on your sent messages.',
+  },
 };
 
 const DEFAULT: FeatureStatus = { status: 'planned' };
