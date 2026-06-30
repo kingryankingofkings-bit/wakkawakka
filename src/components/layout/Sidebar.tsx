@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Compass, Film, Radio, MessageCircle, Bell, Users, ShoppingBag, BarChart2, User, Settings, Zap, LogOut, Mic, BookMarked, Plus, UserPlus, Calendar, Flag, Store, Clock, Sun, Moon } from 'lucide-react';
+import { Home, Compass, Film, Radio, MessageCircle, Bell, Users, ShoppingBag, BarChart2, User, Settings, Zap, LogOut, Mic, BookMarked, Plus, UserPlus, Calendar, Flag, Store, Clock, Sun, Moon, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuthStore } from '@/store/authStore';
@@ -30,6 +30,7 @@ const NAV_ITEMS = [
   { href: '/shop', icon: ShoppingBag, label: 'Shop' },
   { href: '/analytics', icon: BarChart2, label: 'Analytics' },
   { href: '/bookmarks', icon: BookMarked, label: 'Bookmarks' },
+  { href: '/feature-hub', icon: Sparkles, label: 'Feature Hub' },
 ];
 
 export function Sidebar() {
