@@ -171,6 +171,45 @@ export const FEATURE_STATUS: Record<string, FeatureStatus> = {
     href: '/messages',
     note: 'Delivery/read ticks plus a "Read <time>" receipt on your sent messages.',
   },
+
+  // ---------------------------------------------------------------------------
+  // Batch 5 — Monetization & E-Commerce
+  // ---------------------------------------------------------------------------
+  'monetization-and-e-commerce--f481--e-commerce-cart': {
+    status: 'live',
+    href: '/shop',
+    note: 'Persisted cart with quantity controls, subtotal, and a slide-out drawer.',
+  },
+  'monetization-and-e-commerce--f487--in-app-checkout': {
+    status: 'live',
+    href: '/shop',
+    note: 'Multi-step checkout (summary → card → success) that records orders to /orders.',
+  },
+  'monetization-and-e-commerce--f476--creator-tip-links': {
+    status: 'live',
+    href: '/profile/maya_lifestyle',
+    note: 'Tip jar on creator profiles with presets, custom amounts, and a message.',
+  },
+  'monetization-and-e-commerce--f473--creator-profile-tip-links': {
+    status: 'live',
+    href: '/profile/maya_lifestyle',
+    note: 'Per-profile tip button wired to the persisted commerce store.',
+  },
+  'monetization-and-e-commerce--f479--digital-tipping-gateway': {
+    status: 'live',
+    href: '/profile/maya_lifestyle',
+    note: 'Tipping flow recording amount + optional message; visible under Orders.',
+  },
+  'monetization-and-e-commerce--f475--creator-subscriptions': {
+    status: 'live',
+    href: '/profile/maya_lifestyle',
+    note: 'Subscribe to creator tiers (Fan / Super Fan) with perks; manage at /orders.',
+  },
+  'monetization-and-e-commerce--f509--premium-subscriptions': {
+    status: 'live',
+    href: '/profile/maya_lifestyle',
+    note: 'Recurring monthly subscription tiers per creator, cancellable any time.',
+  },
 };
 
 const DEFAULT: FeatureStatus = { status: 'planned' };

@@ -8,6 +8,7 @@ import { MOCK_USERS, MOCK_POSTS, CURRENT_USER } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
 import { EndorsementsCard } from '@/components/profile/EndorsementsCard';
+import { CreatorSupportCard } from '@/components/profile/CreatorSupportCard';
 import { EditProfileModal } from '@/components/profile/EditProfileModal';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
@@ -172,6 +173,13 @@ export default function ProfilePage({ params }: ProfilePageProps) {
           </motion.div>
         ) : (
           <>
+            {/* Creator support: tips & subscriptions */}
+            <CreatorSupportCard
+              creatorId={profileUser.id}
+              creatorName={profileUser.displayName}
+              isOwnProfile={isOwnProfile}
+            />
+
             {/* Skills & endorsements */}
             <EndorsementsCard
               userId={profileUser.id}
