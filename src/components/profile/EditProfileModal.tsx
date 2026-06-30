@@ -7,7 +7,6 @@ import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Camera, Globe, MapPin, Link2, User as UserIcon, FileText, Calendar, Palette, LayoutDashboard, Settings2, Music, EyeOff, ChevronUp, ChevronDown, Sparkles } from 'lucide-react';
 import Image from 'next/image';
-import ProfileCommunityConsole from './ProfileCommunityConsole';
 import { cn, getInitials } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
 import { User as UserType } from '@/types';
@@ -52,6 +51,7 @@ const editProfileSchema = z.object({
   accentColor: z.string(),
   profileTheme: z.string().optional(),
   profileSoundtrack: z.string().optional(),
+  profileSoundtrackVisible: z.boolean().optional(),
   hideFollowerCount: z.boolean().optional(),
   profileTabOrder: z.array(z.string()).optional(),
 });
@@ -63,7 +63,7 @@ interface EditProfileModalProps {
   onClose: () => void;
 }
 
-type TabSection = 'basic' | 'theme' | 'widgets' | 'console';
+type TabSection = 'basic' | 'theme' | 'widgets';
 
 export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
   const updateUser = useAuthStore((s) => s.updateUser);
@@ -71,6 +71,26 @@ export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
   const [avatarPreview, setAvatarPreview] = useState<string>(user.avatar ?? '');
   const [coverPreview, setCoverPreview] = useState<string>(user.coverImage ?? '');
   const [isSaving, setIsSaving] = useState(false);
+  const [spotifyQuery, setSpotifyQuery] = useState('');
+  const [spotifyResults, setSpotifyResults] = useState<any[]>([]);
+  const [searchingSpotify, setSearchingSpotify] = useState(false);
+
+  async function searchSpotify(q: string) {
+    if (!q.trim()) return;
+    setSearchingSpotify(true);
+    try {
+      const res = await fetch(`/api/spotify/search?q=${encodeURIComponent(q)}`);
+      if (res.ok) {
+        const json = await res.json();
+        setSpotifyResults(json.data || []);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSearchingSpotify(false);
+    }
+  }
+
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
@@ -87,6 +107,7 @@ export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
       accentColor: user.accentColor ?? 'blue',
       profileTheme: user.profileTheme ?? 'none',
       profileSoundtrack: user.profileSoundtrack ?? '',
+      profileSoundtrackVisible: user.profileSoundtrackVisible ?? true,
       hideFollowerCount: user.hideFollowerCount ?? false,
       profileTabOrder: user.profileTabOrder ?? ALL_TABS,
     },
@@ -94,6 +115,8 @@ export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
 
   const watchedTheme = watch('profileTheme');
   const watchedTabs = watch('profileTabOrder') ?? ALL_TABS;
+  const watchedSoundtrack = watch('profileSoundtrack');
+  const watchedSoundtrackVisible = watch('profileSoundtrackVisible') ?? true;
 
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -121,17 +144,34 @@ export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
 
   async function onSubmit(data: EditProfileFormData) {
     setIsSaving(true);
-    await new Promise((r) => setTimeout(r, 800));
-    updateUser({
-      ...user,
-      ...data,
-      avatar: avatarPreview || user.avatar,
-      coverImage: coverPreview || user.coverImage,
-      updatedAt: new Date().toISOString(),
-    });
-    setIsSaving(false);
-    toast.success('Profile customized successfully!');
-    onClose();
+    try {
+      const payload = {
+        ...data,
+        avatar: avatarPreview || user.avatar,
+        coverImage: coverPreview || user.coverImage,
+      };
+
+      const res = await fetch(`/api/users/${user.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        updateUser(json.data);
+        toast.success('Profile customized successfully!');
+        onClose();
+      } else {
+        const errJson = await res.json();
+        toast.error(errJson.error || 'Failed to update profile');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred');
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   const sectionVariants = {
@@ -180,11 +220,7 @@ export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
                 onClick={() => setActiveSection('widgets')} 
                 icon={Settings2} label="Widgets & Privacy" 
               />
-              <SidebarBtn 
-                active={activeSection === 'console'} 
-                onClick={() => setActiveSection('console')} 
-                icon={Sparkles} label="Interpersonal Console" 
-              />
+
             </div>
             {/* Mobile close button visible only on small screens inside sidebar area */}
             <div className="p-4 sm:hidden">
@@ -352,8 +388,80 @@ export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
                         <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 p-5 rounded-2xl relative overflow-hidden">
                           <Music className="absolute right-4 top-4 w-24 h-24 text-purple-500/10 -rotate-12" />
                           <label className="text-sm font-bold text-foreground mb-2 flex items-center gap-2"><Music className="w-4 h-4 text-purple-500" /> Profile Soundtrack Widget</label>
-                          <p className="text-xs text-muted-foreground mb-4 max-w-sm">Paste a Spotify, SoundCloud, or direct audio link. A beautiful music player will appear on your profile header!</p>
-                          <input {...register('profileSoundtrack')} placeholder="https://..." className="w-full max-w-md px-4 py-2.5 bg-background border border-border rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition-all relative z-10" />
+                          <p className="text-xs text-muted-foreground mb-4 max-w-sm">Search and select a soundtrack for your profile header.</p>
+                          
+                          {/* Visibility Toggle */}
+                          <label className="flex items-center justify-between cursor-pointer p-3 bg-background/50 rounded-xl mb-4 border border-border/40 relative z-10">
+                            <div>
+                              <span className="text-xs font-semibold block">Enable Soundtrack</span>
+                              <span className="text-[10px] text-muted-foreground">Toggle whether the soundtrack is visible and playable on your profile.</span>
+                            </div>
+                            <input type="checkbox" {...register('profileSoundtrackVisible')} className="w-5 h-5 accent-purple-500 rounded cursor-pointer" />
+                          </label>
+
+                          {/* Selected Song Preview */}
+                          {watchedSoundtrack ? (
+                            <div className="mb-4 p-3 bg-background border border-purple-500/30 rounded-xl flex items-center justify-between relative z-10">
+                              <div>
+                                <p className="text-xs font-semibold text-foreground">Selected Soundtrack</p>
+                                <p className="text-[11px] text-muted-foreground">{watchedSoundtrack.split('|')[0].trim()}</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setValue('profileSoundtrack', '')}
+                                className="text-xs text-destructive hover:underline font-bold"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="mb-4 text-xs text-muted-foreground relative z-10">No soundtrack selected. Search below to add one!</div>
+                          )}
+
+                          {/* Search Widget */}
+                          <div className="space-y-2 relative z-10">
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                placeholder="Search song or artist..."
+                                value={spotifyQuery}
+                                onChange={e => setSpotifyQuery(e.target.value)}
+                                className="flex-1 px-3 py-2 bg-background border border-border rounded-xl text-xs focus:ring-2 focus:ring-purple-500 outline-none"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => searchSpotify(spotifyQuery)}
+                                className="px-4 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold hover:bg-purple-700"
+                              >
+                                Search
+                              </button>
+                            </div>
+
+                            {searchingSpotify && <div className="text-xs text-muted-foreground">Searching...</div>}
+
+                            {spotifyResults.length > 0 && (
+                              <div className="bg-background border border-border rounded-xl divide-y divide-border overflow-hidden max-h-40 overflow-y-auto">
+                                {spotifyResults.map(track => {
+                                  const metadata = `${track.title} - ${track.artist} | ${track.previewUrl}`;
+                                  return (
+                                    <button
+                                      key={track.id}
+                                      type="button"
+                                      onClick={() => {
+                                        setValue('profileSoundtrack', metadata);
+                                        setSpotifyResults([]);
+                                        setSpotifyQuery('');
+                                      }}
+                                      className="w-full text-left px-3 py-2 text-xs hover:bg-muted/50 flex flex-col"
+                                    >
+                                      <span className="font-semibold text-foreground">{track.title}</span>
+                                      <span className="text-[10px] text-muted-foreground">{track.artist}</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
                         </div>
 
                         {/* Privacy Toggles */}
@@ -372,19 +480,7 @@ export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
                     </motion.div>
                   )}
 
-                  {/* CONSOLE SECTION */}
-                  {activeSection === 'console' && (
-                    <motion.div key="console" variants={sectionVariants} initial="hidden" animate="visible" exit="exit" transition={{ duration: 0.2 }} className="p-6">
-                      <div className="mb-6">
-                        <h3 className="text-lg font-bold mb-1">Profiles & Communities Console</h3>
-                        <p className="text-sm text-muted-foreground font-medium">Test and customize interpersonal interactive components for profiles and communities.</p>
-                      </div>
 
-                      <div className="space-y-4">
-                        <ProfileCommunityConsole />
-                      </div>
-                    </motion.div>
-                  )}
                 </AnimatePresence>
               </form>
             </div>

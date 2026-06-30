@@ -24,12 +24,14 @@ export interface User {
   verificationTier: VerificationTier;
   isPremium: boolean;
   isPrivate: boolean;
+  isAdmin?: boolean;
   twoFactorEnabled: boolean;
   theme: Theme;
   accentColor: string;
   language: string;
   profileTheme?: string;
   profileSoundtrack?: string;
+  profileSoundtrackVisible?: boolean;
   profileTabOrder?: string[];
   hideFollowerCount?: boolean;
   pinnedPostId?: string;
@@ -62,9 +64,14 @@ export interface Post {
   userReaction?: ReactionType;
   isBookmarked?: boolean;
   isShared?: boolean;
+  isPinned?: boolean;
+  isArchived?: boolean;
   originalPost?: Post;
   musicTrack?: MusicTrack;
   poll?: Poll;
+  btsUrl?: string;
+  greenScreenBg?: string;
+  labels?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -126,6 +133,7 @@ export interface Message {
   content: string;
   mediaUrl?: string;
   mediaType?: 'image' | 'video' | 'audio' | 'file';
+  type?: string;
   isRead: boolean;
   isDeleted: boolean;
   replyTo?: Message;
@@ -167,6 +175,7 @@ export interface Story {
   type: 'IMAGE' | 'VIDEO' | 'TEXT';
   textContent?: string;
   backgroundColor?: string;
+  duration?: number;
   expiresAt: string;
   viewerIds: string[];
   hasViewed?: boolean;
@@ -176,6 +185,7 @@ export interface Story {
 export interface Community {
   id: string;
   name: string;
+  slug?: string;
   description: string;
   avatarUrl?: string;
   coverImage?: string;
@@ -240,6 +250,9 @@ export interface Product {
   images: string[];
   category: string;
   inStock: boolean;
+  stockCount?: number | null;
+  condition?: string;
+  shippingInfo?: string;
   rating?: number;
   reviewCount?: number;
   createdAt: string;

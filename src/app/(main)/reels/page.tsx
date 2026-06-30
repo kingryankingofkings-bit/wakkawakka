@@ -16,6 +16,7 @@ import {
 import { cn, formatCount } from '@/lib/utils';
 import { MOCK_POSTS, MOCK_USERS } from '@/lib/mockData';
 import { Post, User } from '@/types';
+import { apiFetch } from '@/lib/apiClient';
 
 /* ─── Mock reel data ─────────────────────────────────── */
 interface Reel {
@@ -28,6 +29,7 @@ interface Reel {
   musicTrack: { title: string; artist: string };
   gradient: string;
   userLiked: boolean;
+  videoUrl?: string | null;
 }
 
 const GRADIENTS = [
@@ -39,47 +41,6 @@ const GRADIENTS = [
   'from-slate-900 via-gray-800 to-zinc-900',
   'from-fuchsia-900 via-purple-800 to-pink-900',
   'from-sky-900 via-blue-800 to-indigo-900',
-];
-
-const VIDEO_POSTS = MOCK_POSTS.filter(
-  (p) => p.type === 'VIDEO' || p.type === 'REEL'
-);
-
-const MOCK_REELS: Reel[] = [
-  ...VIDEO_POSTS.map((p, i) => ({
-    id: p.id,
-    author: p.author,
-    caption: p.content,
-    likesCount: p.likesCount,
-    commentsCount: p.commentsCount,
-    sharesCount: p.sharesCount,
-    musicTrack: p.musicTrack
-      ? { title: p.musicTrack.title, artist: p.musicTrack.artist }
-      : { title: 'Original Sound', artist: p.author.displayName },
-    gradient: GRADIENTS[i % GRADIENTS.length],
-    userLiked: !!p.userReaction,
-  })),
-  ...Array.from({ length: 6 }, (_, i) => ({
-    id: `reel-extra-${i}`,
-    author: MOCK_USERS[i % MOCK_USERS.length],
-    caption: [
-      'Drop everything and watch this 🔥 #viral #trending #fyp',
-      'POV: you found your new fav creator 🎨 #art #creative',
-      'This transition took me 3 hours 😤 totally worth it #transition',
-      'Living my best life one reel at a time ✨ #lifestyle #vibes',
-      'Tutorial: how to make everyone jealous of your coding setup 💻 #tech #setup',
-      'Unexpected ending... 👀 #surprise #satisfying',
-    ][i],
-    likesCount: Math.floor(Math.random() * 100000) + 1000,
-    commentsCount: Math.floor(Math.random() * 5000) + 100,
-    sharesCount: Math.floor(Math.random() * 10000) + 500,
-    musicTrack: {
-      title: ['Summer Vibes', 'Midnight Drive', 'Neon Lights', 'Golden Hour', 'City Pulse', 'Echo Chamber'][i],
-      artist: ['DJ Wave', 'Synthwave Pro', 'Lo-Fi Beats', 'ChillHop', 'UrbanRhythm', 'NightOwl'][i],
-    },
-    gradient: GRADIENTS[(i + 2) % GRADIENTS.length],
-    userLiked: false,
-  })),
 ];
 
 /* ─── Comment drawer ─────────────────────────────────── */
@@ -270,21 +231,30 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
           transition={{ duration: 0.1 }}
         />
       </div>
-
-      {/* Background gradient + play icon */}
-      <div className={cn('absolute inset-0 bg-gradient-to-br', reel.gradient)}>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <motion.div
-            animate={isActive ? { scale: [1, 1.05, 1], opacity: [0.15, 0.25, 0.15] } : {}}
-            transition={{ repeat: Infinity, duration: 3 }}
-            className="text-white/20"
-          >
-            <Play size={120} fill="white" />
-          </motion.div>
+      {reel.videoUrl ? (
+        <video
+          src={reel.videoUrl}
+          className="absolute inset-0 w-full h-full object-cover"
+          autoPlay={isActive}
+          loop
+          muted={muted}
+          playsInline
+        />
+      ) : (
+        /* Background gradient + play icon */
+        <div className={cn('absolute inset-0 bg-gradient-to-br', reel.gradient)}>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <motion.div
+              animate={isActive ? { scale: [1, 1.05, 1], opacity: [0.15, 0.25, 0.15] } : {}}
+              transition={{ repeat: Infinity, duration: 3 }}
+              className="text-white/20"
+            >
+              <Play size={120} fill="white" />
+            </motion.div>
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
         </div>
-        {/* Overlay vignette */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
-      </div>
+      )}
 
       {/* Floating hearts */}
       <AnimatePresence>
@@ -438,17 +408,67 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
 
 /* ─── Main page ──────────────────────────────────────── */
 export default function ReelsPage() {
+  const [reels, setReels] = useState<Reel[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
 
+  useEffect(() => {
+    async function loadReels() {
+      try {
+        const response = await apiFetch('/api/posts?type=REEL');
+        if (response.ok) {
+          const json = await response.json();
+          if (json.data) {
+            const mapped = json.data.map((p: any, i: number) => {
+              const mediaUrls = Array.isArray(p.mediaUrls) ? p.mediaUrls : [];
+              let videoUrl = null;
+              if (mediaUrls.length > 0) {
+                const item = mediaUrls[0];
+                if (typeof item === 'object' && item !== null && item.url) {
+                  videoUrl = item.url;
+                } else if (typeof item === 'string') {
+                  try {
+                    const parsed = JSON.parse(item);
+                    videoUrl = parsed.url || item;
+                  } catch {
+                    videoUrl = item;
+                  }
+                }
+              }
+
+              return {
+                id: p.id,
+                author: p.author,
+                caption: p.content,
+                likesCount: p.likesCount,
+                commentsCount: p.commentsCount,
+                sharesCount: p.sharesCount,
+                musicTrack: p.musicTrack
+                  ? { title: p.musicTrack.title, artist: p.musicTrack.artist }
+                  : { title: 'Original Sound', artist: p.author.displayName },
+                gradient: GRADIENTS[i % GRADIENTS.length],
+                userLiked: !!p.userReaction,
+                videoUrl,
+              };
+            });
+            setReels(mapped);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load reels:', err);
+      }
+    }
+    loadReels();
+  }, []);
+
   const goTo = useCallback((idx: number) => {
-    const clamped = Math.max(0, Math.min(MOCK_REELS.length - 1, idx));
+    const clamped = Math.max(0, Math.min(reels.length - 1, idx));
     setCurrentIndex(clamped);
     if (containerRef.current) {
       containerRef.current.scrollTo({ top: clamped * window.innerHeight, behavior: 'smooth' });
     }
-  }, []);
+  }, [reels.length]);
 
   // Wheel navigation
   useEffect(() => {
@@ -504,13 +524,21 @@ export default function ReelsPage() {
     }
   }, [currentIndex]);
 
+  if (reels.length === 0) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-black text-white text-sm">
+        No reels available.
+      </div>
+    );
+  }
+
   return (
     <div
       ref={containerRef}
       className="h-screen overflow-hidden relative"
       style={{ scrollSnapType: 'y mandatory' }}
     >
-      {MOCK_REELS.map((reel, i) => (
+      {reels.map((reel, i) => (
         <div key={reel.id} style={{ scrollSnapAlign: 'start' }}>
           <ReelCard reel={reel} isActive={i === currentIndex} />
         </div>
@@ -518,7 +546,7 @@ export default function ReelsPage() {
 
       {/* Dot indicators */}
       <div className="fixed right-2 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-1.5">
-        {MOCK_REELS.map((_, i) => (
+        {reels.map((_, i) => (
           <button
             key={i}
             onClick={() => goTo(i)}

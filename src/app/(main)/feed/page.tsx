@@ -6,13 +6,14 @@ import { RefreshCw, ChevronUp, Sliders } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StoriesRow } from '@/components/feed/StoriesRow';
 import { PostCard } from '@/components/feed/PostCard';
+import { SponsoredAd } from '@/components/ads/SponsoredAd';
 import { CreatePostCard } from '@/components/feed/CreatePostCard';
 import { CreatePostModal } from '@/components/feed/CreatePostModal';
 import { Modal } from '@/components/ui/Modal';
-import { ContentFeedConsole } from '@/components/feed/ContentFeedConsole';
 import { useFeedStore } from '@/store/feedStore';
 import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
+import { apiFetch } from '@/lib/apiClient';
 
 const FEED_TABS = [
   { id: 'forYou', label: 'For You' },
@@ -29,10 +30,11 @@ export default function FeedPage() {
 }
 
 function FeedPageInner() {
-  const { posts, feedType, setFeedType } = useFeedStore();
+  const { posts, feedType, setFeedType, setPosts } = useFeedStore();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showNewPosts, setShowNewPosts] = useState(false);
-  const [showConsole, setShowConsole] = useState(false);
+  const [hideLabels, setHideLabels] = useState<string[]>([]);
+
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -41,11 +43,49 @@ function FeedPageInner() {
     }
   }, [searchParams]);
 
+  // Fetch actual posts from the API on mount and when feedType changes
+  useEffect(() => {
+    let active = true;
+    async function loadPosts() {
+      let url = '/api/posts';
+      if (feedType === 'following') {
+        url += '?feed=following';
+      } else if (feedType === 'trending') {
+        url += '?feed=trending';
+      }
+      try {
+        const response = await apiFetch(url);
+        if (response.ok) {
+          const json = await response.json();
+          if (active && json.data) {
+            setPosts(json.data);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load posts:', err);
+      }
+    }
+    loadPosts();
+    return () => {
+      active = false;
+    };
+  }, [feedType, setPosts]);
+
   // Simulate new posts arriving
   useEffect(() => {
     const t = setTimeout(() => setShowNewPosts(true), 15000);
     return () => clearTimeout(t);
   }, []);
+
+  const filteredPosts = posts.filter(post => {
+    if (!post.labels) return true;
+    try {
+      const parsedLabels: string[] = JSON.parse(post.labels);
+      return !parsedLabels.some(l => hideLabels.includes(l));
+    } catch {
+      return true;
+    }
+  });
 
   return (
     <div className="min-h-screen">
@@ -72,14 +112,27 @@ function FeedPageInner() {
               </button>
             ))}
           </div>
-          <button
-            onClick={() => setShowConsole(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary transition-colors text-xs font-bold shrink-0 ml-2"
-          >
-            <Sliders className="h-3.5 w-3.5" />
-            Launch Console
-          </button>
         </div>
+      </div>
+
+      {/* Moderation Labels Filter Row */}
+      <div className="bg-muted/40 px-4 py-2 border-b border-border flex items-center gap-3 overflow-x-auto scrollbar-hide text-xs shrink-0">
+        <span className="font-semibold text-muted-foreground whitespace-nowrap">Filter Content:</span>
+        {['NSFW', 'Clickbait', 'Misinformation'].map(label => {
+          const isActive = hideLabels.includes(label);
+          return (
+            <button
+              key={label}
+              onClick={() => setHideLabels(prev => prev.includes(label) ? prev.filter(l => l !== label) : [...prev, label])}
+              className={cn(
+                "px-2.5 py-1 rounded-xl border text-[10px] font-bold active:scale-95 transition-all whitespace-nowrap",
+                isActive ? "bg-red-500 text-white border-red-500 shadow-sm" : "bg-card text-muted-foreground border-border hover:bg-muted"
+              )}
+            >
+              Hide {label}
+            </button>
+          );
+        })}
       </div>
 
       {/* New posts notification */}
@@ -115,15 +168,19 @@ function FeedPageInner() {
       {/* Posts feed */}
       <div>
         <AnimatePresence mode="popLayout">
-          {posts.map((post, i) => (
-            <motion.div
-              key={post.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05, duration: 0.3 }}
-            >
-              <PostCard post={post} />
-            </motion.div>
+          {filteredPosts.map((post, i) => (
+            <div key={post.id}>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05, duration: 0.3 }}
+              >
+                <PostCard post={post} />
+              </motion.div>
+              {(i + 1) % 5 === 0 && (
+                <SponsoredAd />
+              )}
+            </div>
           ))}
         </AnimatePresence>
 
@@ -139,10 +196,7 @@ function FeedPageInner() {
       {/* Create post modal */}
       <CreatePostModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} />
 
-      {/* Feed console modal */}
-      <Modal isOpen={showConsole} onClose={() => setShowConsole(false)} title="Batch 3 Content Creation, Feeds & Discovery Console" size="full">
-        <ContentFeedConsole />
-      </Modal>
+
     </div>
   );
 }

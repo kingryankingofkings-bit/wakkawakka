@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Search, TrendingUp, Users, Hash, Compass, Radio, Mic } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/Input';
@@ -8,11 +8,13 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { formatCount, cn } from '@/lib/utils';
-import { MOCK_USERS, MOCK_POSTS, MOCK_HASHTAGS, MOCK_COMMUNITIES, MOCK_LIVE_STREAMS, MOCK_AUDIO_ROOMS } from '@/lib/mockData';
+import { MOCK_USERS, MOCK_HASHTAGS, MOCK_COMMUNITIES, MOCK_LIVE_STREAMS, MOCK_AUDIO_ROOMS } from '@/lib/mockData';
 import Link from 'next/link';
-import { ContentFeedConsole } from '@/components/feed/ContentFeedConsole';
+import { useFeedStore } from '@/store/feedStore';
+import { SponsoredAd } from '@/components/ads/SponsoredAd';
+import { apiFetch } from '@/lib/apiClient';
 
-const EXPLORE_TABS = ['All', 'People', 'Posts', 'Tags', 'Communities', 'Live', 'Audio', 'Feed Console'] as const;
+const EXPLORE_TABS = ['All', 'People', 'Posts', 'Tags', 'Communities', 'Live', 'Audio'] as const;
 type ExploreTab = typeof EXPLORE_TABS[number];
 
 interface InterestCategory {
@@ -32,6 +34,7 @@ const INTEREST_CATEGORIES: readonly InterestCategory[] = [
 ] as const;
 
 export default function ExplorePage() {
+  const { posts, setPosts } = useFeedStore();
   const [query, setQuery] = useState('');
   const [tab, setTab] = useState<ExploreTab>('All');
   const [interest, setInterest] = useState<string>('ALL');
@@ -41,6 +44,28 @@ export default function ExplorePage() {
   );
 
   const selectedCategory = useMemo(() => INTEREST_CATEGORIES.find(c => c.id === interest), [interest]);
+
+  // Fetch actual posts from the API on mount
+  useEffect(() => {
+    let active = true;
+    async function loadPosts() {
+      try {
+        const response = await apiFetch('/api/posts');
+        if (response.ok) {
+          const json = await response.json();
+          if (active && json.data) {
+            setPosts(json.data);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load posts in ExplorePage:', err);
+      }
+    }
+    loadPosts();
+    return () => {
+      active = false;
+    };
+  }, [setPosts]);
 
   // Filter Users
   const filteredUsers = useMemo(() => {
@@ -63,7 +88,7 @@ export default function ExplorePage() {
 
   // Filter Posts
   const filteredPosts = useMemo(() => {
-    let result = MOCK_POSTS;
+    let result = posts;
     if (query) {
       result = result.filter(p => p.content.toLowerCase().includes(query.toLowerCase()));
     }
@@ -74,7 +99,7 @@ export default function ExplorePage() {
       );
     }
     return result;
-  }, [query, interest, selectedCategory]);
+  }, [query, interest, selectedCategory, posts]);
 
   // Filter Tags
   const filteredTags = useMemo(() => {
@@ -156,11 +181,7 @@ export default function ExplorePage() {
 
       <div className="p-4 space-y-8">
         {/* Feed Console */}
-        {tab === 'Feed Console' && (
-          <section className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
-            <ContentFeedConsole />
-          </section>
-        )}
+
 
         {/* People */}
         {(tab === 'All' || tab === 'People') && filteredUsers.length > 0 && (
@@ -345,18 +366,24 @@ export default function ExplorePage() {
               <h2 className="font-bold text-base">Featured Posts</h2>
             </div>
             <div className="grid grid-cols-3 gap-2">
-              {filteredPosts.filter(p => p.mediaUrls.length > 0).map(post => (
-                <Link key={post.id} href={`/feed`} className="aspect-square bg-muted rounded-xl overflow-hidden hover:opacity-90 transition-opacity">
-                  <img src={post.mediaUrls[0]} alt="" className="h-full w-full object-cover" />
-                </Link>
+              {filteredPosts.filter(p => p.mediaUrls.length > 0).map((post, i) => (
+                <div key={post.id} className="contents">
+                  <Link href={`/feed`} className="aspect-square bg-muted rounded-xl overflow-hidden hover:opacity-90 transition-opacity">
+                    <img src={post.mediaUrls[0]} alt="" className="h-full w-full object-cover" />
+                  </Link>
+                  {(i + 1) % 5 === 0 && (
+                    <div className="col-span-3">
+                      <SponsoredAd />
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </section>
         )}
 
         {/* Empty state */}
-        {tab !== 'Feed Console' &&
-         filteredUsers.length === 0 &&
+        {filteredUsers.length === 0 &&
          filteredPosts.length === 0 &&
          filteredTags.length === 0 &&
          filteredCommunities.length === 0 && (

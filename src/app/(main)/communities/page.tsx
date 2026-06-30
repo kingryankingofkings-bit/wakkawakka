@@ -1,33 +1,103 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Users, Lock, Globe, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { formatCount } from '@/lib/utils';
-import { MOCK_COMMUNITIES } from '@/lib/mockData';
 import Link from 'next/link';
 import { Modal } from '@/components/ui/Modal';
-import ProfileCommunityConsole from '@/components/profile/ProfileCommunityConsole';
+import toast from 'react-hot-toast';
+
 
 const CATEGORIES = ['All', 'Art & Design', 'Technology', 'Health & Wellness', 'Music', 'Gaming', 'Education', 'Sports'];
 
 export default function CommunitiesPage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [activeView, setActiveView] = useState<'explore' | 'console'>('explore');
-  const [joined, setJoined] = useState<Set<string>>(
-    new Set(MOCK_COMMUNITIES.filter(c => c.isMember).map(c => c.id))
-  );
   
   // Creation Modal State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newCommName, setNewCommName] = useState('');
   const [newCommDesc, setNewCommDesc] = useState('');
+  const [newCommPrivate, setNewCommPrivate] = useState(false);
 
-  const myCommunities = MOCK_COMMUNITIES.filter(c => joined.has(c.id));
-  const discover = MOCK_COMMUNITIES.filter(c =>
-    (activeCategory === 'All' || c.category === activeCategory) && !joined.has(c.id)
-  );
+  // Database-backed state
+  const [communities, setCommunities] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadCommunities();
+  }, [activeCategory]);
+
+  async function loadCommunities() {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/communities?category=${activeCategory}`);
+      if (res.ok) {
+        const json = await res.json();
+        setCommunities(json.data || []);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleJoin(commId: string) {
+    try {
+      const res = await fetch(`/api/communities/${commId}/join`, {
+        method: 'POST',
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data?.status === 'MEMBER') {
+          toast.success('Joined community successfully!');
+        } else if (json.data?.status === 'PENDING') {
+          toast.success('Join request sent!');
+        }
+        loadCommunities();
+      } else {
+        toast.error('Failed to join community');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred');
+    }
+  }
+
+  async function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/communities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newCommName,
+          description: newCommDesc,
+          visibility: newCommPrivate ? 'PRIVATE' : 'PUBLIC',
+        }),
+      });
+      if (res.ok) {
+        toast.success('Community created successfully!');
+        setIsCreateOpen(false);
+        setNewCommName('');
+        setNewCommDesc('');
+        setNewCommPrivate(false);
+        loadCommunities();
+      } else {
+        const errJson = await res.json();
+        toast.error(errJson.error || 'Failed to create community');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred');
+    }
+  }
+
+  const myCommunities = communities.filter(c => c.isMember);
+  const discover = communities.filter(c => !c.isMember);
 
   return (
     <div className="min-h-screen">
@@ -67,7 +137,9 @@ export default function CommunitiesPage() {
 
       <div className="p-4 space-y-6">
         {activeView === 'console' ? (
-          <ProfileCommunityConsole />
+          <div className="text-center py-12 text-muted-foreground">
+            Console tools are currently unavailable.
+          </div>
         ) : (
           <>
             {/* Promotional Launch Card */}
@@ -162,7 +234,7 @@ export default function CommunitiesPage() {
                         </div>
                         <Button
                           size="sm"
-                          onClick={() => setJoined(prev => { const n = new Set(prev); n.add(c.id); return n; })}
+                          onClick={() => handleJoin(c.id)}
                           className="flex-shrink-0"
                         >
                           Join
@@ -180,12 +252,7 @@ export default function CommunitiesPage() {
       <Modal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="Create a Community">
         <form 
           className="p-5 flex flex-col gap-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setIsCreateOpen(false);
-            setNewCommName('');
-            setNewCommDesc('');
-          }}
+          onSubmit={handleCreate}
         >
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Community Name</label>
@@ -207,6 +274,18 @@ export default function CommunitiesPage() {
               className="w-full rounded-xl border border-border bg-background px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary resize-none h-20"
               required
             />
+          </div>
+          <div className="flex items-center gap-2 py-1">
+            <input
+              type="checkbox"
+              id="newCommPrivate"
+              checked={newCommPrivate}
+              onChange={(e) => setNewCommPrivate(e.target.checked)}
+              className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-2 focus:ring-primary"
+            />
+            <label htmlFor="newCommPrivate" className="text-sm font-medium cursor-pointer">
+              Private Community (requires approval to join)
+            </label>
           </div>
           <Button type="submit" className="w-full mt-2">
             Create Community

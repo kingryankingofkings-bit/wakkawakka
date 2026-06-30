@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { ShoppingBag, Search, Star, Plus, ChevronRight, X, CreditCard, ShieldCheck, CheckCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useAuthStore } from '@/store/authStore';
+import { ShoppingBag, ShoppingCart, Search, Star, Plus, ChevronRight, X, CreditCard, ShieldCheck, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -12,7 +13,6 @@ import { formatCurrency, formatCount, cn } from '@/lib/utils';
 import { MOCK_PRODUCTS, MOCK_USERS } from '@/lib/mockData';
 import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
-import CommerceToolsConsole from '@/components/commerce/CommerceToolsConsole';
 
 
 const CATEGORIES = ['All', 'Digital Downloads', 'Music', 'Art', 'Physical', 'Services'];
@@ -36,7 +36,7 @@ function StarRating({ rating, count }: { rating: number; count?: number }) {
 export default function ShopPage() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
-  const { addItem, items, isOpen, toggleCart, clearCart } = useCartStore();
+  const { addItem, items, isOpen, toggleCart, clearCart, fetchCart } = useCartStore();
 
   // Checkout States
   const [showCheckout, setShowCheckout] = useState(false);
@@ -45,23 +45,58 @@ export default function ShopPage() {
   const [cardNumber, setCardNumber] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
   const [cardCVC, setCardCVC] = useState('');
-  const [showToolsConsole, setShowToolsConsole] = useState(false);
+  const [realOrderId, setRealOrderId] = useState('');
+
+  // Product Details Modal States
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+
+  // Products from Database
+  const [dbProducts, setDbProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchCart();
+    fetch('/api/marketplace')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.data && json.data.length > 0) {
+          const parsed = json.data.map((p: any) => {
+            let images = p.images;
+            if (typeof images === 'string') {
+              try {
+                images = JSON.parse(images);
+              } catch {
+                images = [];
+              }
+            }
+            return {
+              ...p,
+              images: Array.isArray(images) && images.length > 0 ? images : ['https://picsum.photos/seed/' + p.id + '/400/400'],
+            };
+          });
+          setDbProducts(parsed);
+        }
+      })
+      .catch((err) => console.error('Failed to load products:', err));
+  }, [fetchCart]);
 
   const cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
   const subtotal = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
 
-  const filtered = MOCK_PRODUCTS.filter(p =>
+  const activeProducts = dbProducts.length > 0 ? dbProducts : MOCK_PRODUCTS;
+
+  const filtered = activeProducts.filter(p =>
     (category === 'All' || p.category === category) &&
     (query === '' || p.name.toLowerCase().includes(query.toLowerCase()))
   );
 
-  function handleAddToCart(product: typeof MOCK_PRODUCTS[0]) {
+  function handleAddToCart(product: any) {
     addItem(product);
     toast.success(`${product.name} added to cart!`);
   }
 
-  // Simulate Stripe Checkout Submission
-  const handleCheckoutSubmit = (e: React.FormEvent) => {
+  // Real Checkout Submission
+  const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!cardName || !cardNumber || !cardExpiry || !cardCVC) {
       toast.error('Please fill in all credit card details');
@@ -69,10 +104,31 @@ export default function ShopPage() {
     }
 
     setCheckoutStep('processing');
-    setTimeout(() => {
-      setCheckoutStep('success');
-      toast.success('Payment authorized successfully!');
-    }, 2000);
+    try {
+      const res = await fetch('/api/marketplace/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': useAuthStore.getState().user?.id || '',
+        },
+        body: JSON.stringify({
+          shippingAddress: 'Digital Delivery to ' + cardName,
+          notes: 'Credit Card Checkout Sandbox',
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setRealOrderId(data.orderId);
+        setCheckoutStep('success');
+        toast.success('Payment authorized successfully!');
+      } else {
+        toast.error(data.error || 'Checkout failed');
+        setCheckoutStep('form');
+      }
+    } catch (err) {
+      toast.error('Network error during checkout');
+      setCheckoutStep('form');
+    }
   };
 
   const handleFinishCheckout = () => {
@@ -83,6 +139,7 @@ export default function ShopPage() {
     setCardNumber('');
     setCardExpiry('');
     setCardCVC('');
+    setRealOrderId('');
   };
 
   return (
@@ -147,21 +204,6 @@ export default function ShopPage() {
           </div>
         </div>
 
-        {/* Commerce Tools Console Launcher Card */}
-        <Card padding="md" hover onClick={() => setShowToolsConsole(true)} className="bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border-indigo-500/30 flex items-center justify-between gap-4">
-          <div className="space-y-1">
-            <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-              <ShoppingBag className="h-4 w-4 text-primary" />
-              Advanced Commerce & Creator Tools
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Simulate premium subscriptions, digital tipping, FAQ bots, and developer webhooks.
-            </p>
-          </div>
-          <Button size="sm" onClick={(e) => { e.stopPropagation(); setShowToolsConsole(true); }}>
-            Open Console
-          </Button>
-        </Card>
 
 
         {/* Products grid */}
@@ -178,7 +220,15 @@ export default function ShopPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {filtered.map(product => (
-                <Card key={product.id} padding="none" className="overflow-hidden hover:shadow-md transition-shadow">
+                <Card
+                  key={product.id}
+                  padding="none"
+                  className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => {
+                    setSelectedProduct(product);
+                    setShowDetailModal(true);
+                  }}
+                >
                   {/* Image */}
                   <div className="relative aspect-square bg-muted overflow-hidden">
                     {product.images[0] && (
@@ -203,7 +253,10 @@ export default function ShopPage() {
                       <span className="text-base font-bold text-primary">{formatCurrency(product.price)}</span>
                       <Button
                         size="xs"
-                        onClick={() => handleAddToCart(product)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToCart(product);
+                        }}
                         disabled={!product.inStock}
                       >
                         Add to Cart
@@ -403,7 +456,7 @@ export default function ShopPage() {
               <div className="border border-border/80 bg-muted/20 rounded-2xl p-4 w-full text-xs space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Order ID</span>
-                  <span className="font-bold text-foreground">ORD-{Date.now().toString(36).toUpperCase()}</span>
+                  <span className="font-bold text-foreground">{realOrderId}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Card ending in</span>
@@ -423,12 +476,67 @@ export default function ShopPage() {
         </AnimatePresence>
       </Modal>
 
-      {/* Commerce & Developer Tools Console Modal */}
-      <Modal isOpen={showToolsConsole} onClose={() => setShowToolsConsole(false)} title="Commerce & Developer Tools Console" size="full">
-        <div className="p-4 overflow-y-auto">
-          <CommerceToolsConsole />
-        </div>
-      </Modal>
+      {/* Product Detail Modal */}
+      {selectedProduct && (
+        <Modal isOpen={showDetailModal} onClose={() => setShowDetailModal(false)} title="Product Details">
+          <div className="p-5 space-y-4">
+            <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-muted">
+              <img src={selectedProduct.images[0]} alt={selectedProduct.name} className="h-full w-full object-cover" />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
+                  {selectedProduct.category}
+                </span>
+                <span className="text-xs text-muted-foreground font-medium border border-border px-2 py-0.5 rounded-full">
+                  Condition: {selectedProduct.condition || 'NEW'}
+                </span>
+              </div>
+              <h3 className="font-bold text-lg text-foreground">{selectedProduct.name}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{selectedProduct.description}</p>
+              
+              <div className="flex items-center gap-3 pt-2 pb-2 border-y border-border">
+                <img src={selectedProduct.seller.avatar || 'https://picsum.photos/seed/avatar/100/100'} alt={selectedProduct.seller.displayName} className="h-10 w-10 rounded-full object-cover" />
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{selectedProduct.seller.displayName}</p>
+                  {selectedProduct.seller.location && <p className="text-xs text-muted-foreground">{selectedProduct.seller.location}</p>}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Price</p>
+                  <p className="text-2xl font-extrabold text-foreground">{formatCurrency(selectedProduct.price)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider text-right">Availability</p>
+                  <p className={cn("text-sm font-bold text-right", selectedProduct.stockCount === 0 || !selectedProduct.inStock ? "text-destructive" : "text-success")}>
+                    {selectedProduct.stockCount !== null 
+                      ? (selectedProduct.stockCount > 0 ? `${selectedProduct.stockCount} in stock` : 'Out of Stock')
+                      : 'In Stock'
+                    }
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-3">
+                <button
+                  onClick={(e) => {
+                    handleAddToCart(selectedProduct);
+                    setShowDetailModal(false);
+                  }}
+                  disabled={selectedProduct.stockCount === 0 || !selectedProduct.inStock}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
+
     </div>
   );
 }

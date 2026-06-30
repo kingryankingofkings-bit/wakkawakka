@@ -2,292 +2,294 @@
 
 This document compiles the feature research for Apaya, categorized into the reconciled 10-category taxonomy. Each category contains exactly 5 unique, specific, and actionable features, totaling 50 features.
 
+**Platform Identity**: Apaya is an AI-powered social media management and automation platform designed to handle the full content workflow — from AI-generated content creation to multi-platform scheduling, publishing, and performance analytics. It serves businesses, agencies, and freelancers who need consistent social media presence without manual content creation for every post.
+
 ---
 
 ## Category 1: Content Creation & Editing
 
-### 1. Dynamic Text Stylizer
+### 1. AI Caption Generator
 - **Category**: Content Creation & Editing
-- **Description**: Stylizes text messages using custom fonts, kinetic text effects, and colorful gradients before sending.
-- **Sub-category / Actionable Details**: Text Styles. Select text in the chat bar, tap the "Style" button, choose a font or motion effect, and tap send.
+- **Description**: Uses AI to automatically generate platform-optimized captions based on the user's brand voice, target audience, and content topic.
+- **Sub-category / Actionable Details**: AI Writing. Navigate to the content dashboard, select "Create Post," enter a topic or prompt, and the AI generates multiple caption variants with appropriate tone and length for each target platform.
 
-### 2. Quick Voice Overlay
+### 2. AI Hashtag Recommender
 - **Category**: Content Creation & Editing
-- **Description**: Records and overlays voice commentary onto images or video clips before sharing them in chats.
-- **Sub-category / Actionable Details**: Media Commentary. Choose an image/video to send, tap the microphone overlay icon, record your voice note, and send the combined media.
+- **Description**: Analyzes post content and brand context to suggest relevant, high-performing hashtags tailored to each social platform's algorithm.
+- **Sub-category / Actionable Details**: Hashtag Optimization. After generating or writing a caption, click "Suggest Hashtags" to receive a ranked list of hashtags based on reach potential, relevance, and competition level.
 
-### 3. Auto-Cropping Canvas
+### 3. AI Branded Graphic Generator
 - **Category**: Content Creation & Editing
-- **Description**: Automatically resizes and crops photos to optimized canvas ratios matching the target chat or channel layout.
-- **Sub-category / Actionable Details**: Intelligent Cropper. Insert an image in the editor, select the canvas tool, and tap "Auto-Optimize" to crop around the focal point.
+- **Description**: Automatically creates branded visual assets (static images, carousels, and short videos) using the brand's learned color palette, logo, and typography.
+- **Sub-category / Actionable Details**: Visual Content Production. Select "Generate Graphics" in the post creator, choose a format (single image, carousel, or video), and the AI produces on-brand visuals matching the post topic.
 
-### 4. Multi-frame Collage
+### 4. Carousel and Slideshow Builder
 - **Category**: Content Creation & Editing
-- **Description**: Combines multiple photos into custom grid collages directly in the composer.
-- **Sub-category / Actionable Details**: Layout Editor. Tap the image attachment icon, select multiple pictures, and choose a grid template to compile them into a single collage.
+- **Description**: Assembles multi-slide carousel posts from AI-generated or user-uploaded images, with consistent branding and swipe-optimized layouts.
+- **Sub-category / Actionable Details**: Multi-Slide Creator. In the post editor, select "Carousel," add slides via AI generation or manual upload, reorder slides with drag-and-drop, and preview the final swipeable sequence.
 
-### 5. In-app GIF Designer
+### 5. Bulk Content Production Engine
 - **Category**: Content Creation & Editing
-- **Description**: Converts short video loops or image sequences into custom animated GIFs with text captions.
-- **Sub-category / Actionable Details**: GIF Creator. Select a short video in the app gallery, tap "Make GIF," adjust the loop bounds, add optional captions, and export/send.
+- **Description**: Generates a full month of social media content (captions + graphics) in a single batch operation, significantly reducing manual content creation time.
+- **Sub-category / Actionable Details**: Monthly Content Generator. Click "Generate Month," specify the content themes and posting frequency, and the AI produces 30 days of ready-to-review posts with captions and visuals.
 
 ---
 
 ## Category 2: Content Discovery & Search
 
-### 6. Interest-Based Channels
+### 6. Brand Voice Learning Engine
 - **Category**: Content Discovery & Search
-- **Description**: Allows users to explore and join public channels cataloged by specific topic interests.
-- **Sub-category / Actionable Details**: Discovery Directory. Open the search portal, tap "Interest Channels," select categories (e.g. Technology, Art), and follow your preferred feeds.
+- **Description**: Analyzes the user's website, existing social profiles, and brand guidelines to learn and replicate the brand's tone, vocabulary, style, and visual identity.
+- **Sub-category / Actionable Details**: Brand Analysis. During onboarding, enter the business website URL and connect social accounts. The AI scans pages, posts, and visual assets to build a brand voice profile used in all future content generation.
 
-### 7. Voice-to-Text Search
+### 7. Content Topic Suggestion Engine
 - **Category**: Content Discovery & Search
-- **Description**: Performs voice searches to find chats, channels, contacts, and shared files.
-- **Sub-category / Actionable Details**: Vocal Queries. Tap the microphone icon in the global search bar, state your search query, and view matched files and chats.
+- **Description**: Recommends trending and evergreen content topics relevant to the user's industry, audience interests, and engagement patterns.
+- **Sub-category / Actionable Details**: Topic Discovery. Open the "Ideas" tab on the dashboard to browse AI-curated topic suggestions organized by category, trending status, and estimated engagement potential.
 
-### 8. Shared Links Library
+### 8. Competitor Content Tracker
 - **Category**: Content Discovery & Search
-- **Description**: Consolidates all web links shared across chats into a single searchable library.
-- **Sub-category / Actionable Details**: Link Database. Open chat details, tap "Shared Links" to view an organized index categorized by domain, title, and sender.
+- **Description**: Monitors competitor social media accounts to surface their top-performing content, posting patterns, and engagement trends.
+- **Sub-category / Actionable Details**: Competitive Intelligence. Add competitor profiles in Settings → Competitors, then view their recent post performance, posting frequency, and content themes in the "Competitors" dashboard tab.
 
-### 9. Chat Pinning Matrix
+### 9. Content Performance Search
 - **Category**: Content Discovery & Search
-- **Description**: Pins and organizes multiple conversations into custom grid layouts at the top of the chat page.
-- **Sub-category / Actionable Details**: Grid Pins. Long-press a chat thread, tap the Pin Matrix option, and assign the chat to a specific grid position (up to 9 slots).
+- **Description**: Enables searching through all published posts by keyword, platform, date range, or performance metrics to identify what content resonated most.
+- **Sub-category / Actionable Details**: Post Archive Search. Use the search bar in the "Published" tab to filter posts by keyword, platform, date, or sort by engagement rate, clicks, or reach.
 
-### 10. Tagged Search Filters
+### 10. Audience Insight Discovery
 - **Category**: Content Discovery & Search
-- **Description**: Uses hashtags and custom label tags to search and sort historical messages.
-- **Sub-category / Actionable Details**: Metadata Search. Type a hash tag (e.g. `#invoice`) or click a tag filter in the search menu to isolate labeled messages.
+- **Description**: Analyzes follower demographics, active hours, and content preferences to recommend optimal posting strategies.
+- **Sub-category / Actionable Details**: Audience Analysis. Navigate to Analytics → Audience to view demographic breakdowns, peak activity times, and content format preferences that inform the AI's scheduling decisions.
 
 ---
 
 ## Category 3: Interpersonal & Community Engagement
 
-### 11. Apaya Spaces
+### 11. Multi-Platform Comment Inbox
 - **Category**: Interpersonal & Community Engagement
-- **Description**: Creates interactive audio and video rooms for live discussions, meetings, and presentations within communities.
-- **Sub-category / Actionable Details**: Live Audio Rooms. Open a community dashboard, tap "Start Space," enter a title, configure access permissions, and go live.
+- **Description**: Aggregates comments and replies from all connected social platforms into a single unified inbox for centralized response management.
+- **Sub-category / Actionable Details**: Unified Inbox. Open the "Engagement" tab to view all incoming comments across Instagram, Facebook, X, LinkedIn, and TikTok in one stream. Reply directly from the inbox.
 
-### 12. Multi-option Surveys
+### 12. AI Reply Suggestions
 - **Category**: Interpersonal & Community Engagement
-- **Description**: Launches interactive, multi-option surveys and question forms in group chats to collect member feedback.
-- **Sub-category / Actionable Details**: Survey Generator. Tap the compose extension icon, select "Survey," define multiple questions and checkbox answers, and publish.
+- **Description**: Generates context-aware reply suggestions for incoming comments based on the brand voice, comment sentiment, and conversation history.
+- **Sub-category / Actionable Details**: Smart Replies. When viewing a comment in the unified inbox, click "Suggest Reply" to receive 2-3 AI-generated response options. Edit or send directly.
 
-### 13. Live Stage Broadcasts
+### 13. Engagement Rate Tracker Per Post
 - **Category**: Interpersonal & Community Engagement
-- **Description**: Allows verified creators to stream live video broadcasts to an audience with moderation controls.
-- **Sub-category / Actionable Details**: Streaming Stage. In profile options, select "Go Live on Stage," adjust stream quality, configure chat moderation, and begin broadcasting.
+- **Description**: Calculates and displays real-time engagement rates (likes, comments, shares, saves divided by impressions) for every published post.
+- **Sub-category / Actionable Details**: Post Engagement Metrics. Click any published post in the content calendar to view its engagement rate, individual metric breakdowns, and comparison to account averages.
 
-### 14. Group Call Hand-raise
+### 14. Team Collaboration Workspace
 - **Category**: Interpersonal & Community Engagement
-- **Description**: Enables participants in large group calls to raise their virtual hand to request speaking privileges.
-- **Sub-category / Actionable Details**: Moderated Calls. During a call, tap the hand icon. The call host receives a notification to unmute or invite the user to speak.
+- **Description**: Enables multiple team members to collaborate on content creation with role-based permissions, approval workflows, and shared content libraries.
+- **Sub-category / Actionable Details**: Team Management. Go to Settings → Team, invite members by email, assign roles (Admin, Editor, Viewer), and configure approval chains so posts require manager sign-off before publishing.
 
-### 15. Interactive Shared Scribble
+### 15. Client Workspace Management
 - **Category**: Interpersonal & Community Engagement
-- **Description**: A collaborative whiteboard where group chat members can draw, sketch, and annotate together in real-time.
-- **Sub-category / Actionable Details**: Collaborative Whiteboard. Tap the attachment icon, select "Scribble," and open the canvas to draw simultaneously with active contacts.
+- **Description**: Allows agencies to manage multiple client brands from a single dashboard, each with isolated content calendars, brand profiles, and connected accounts.
+- **Sub-category / Actionable Details**: Multi-Client Dashboard. Click "Add Workspace" to create a new client environment. Switch between client workspaces using the workspace selector in the top navigation.
 
 ---
 
 ## Category 4: Direct Messaging & Communication
 
-### 16. Whisper Messages
+### 16. In-App Notification Center
 - **Category**: Direct Messaging & Communication
-- **Description**: Sends temporary text messages that blur out after reading, requiring the recipient to tap to reveal them.
-- **Sub-category / Actionable Details**: Hidden Messages. Toggle the padlock icon in the text bar before typing a message to send it as a blurred Whisper message.
+- **Description**: Sends in-app and email notifications for scheduled post publishing, failed uploads, engagement milestones, and team activity.
+- **Sub-category / Actionable Details**: Notification Management. Click the bell icon to view recent notifications. Configure notification preferences in Settings → Notifications to choose which events trigger alerts.
 
-### 17. Delayed Sending Queue
+### 17. Post Approval Request Notifications
 - **Category**: Direct Messaging & Communication
-- **Description**: Places outgoing messages in a queue scheduled for delivery at custom times or user status triggers.
-- **Sub-category / Actionable Details**: Outbox Scheduler. Type a message, long-press the send button, select "Queue Delivery," and configure the release conditions.
+- **Description**: Sends notification alerts to approvers when team members submit posts for review, with direct links to the approval queue.
+- **Sub-category / Actionable Details**: Approval Alerts. When a team member submits a post, the designated approver receives an email and in-app notification with a "Review Post" link.
 
-### 18. Push-to-Talk Intercom
+### 18. Failed Post Retry Alerts
 - **Category**: Direct Messaging & Communication
-- **Description**: Turns chats into real-time walkie-talkie intercom lines, playing audio messages instantly out loud on receiving devices.
-- **Sub-category / Actionable Details**: Intercom Mode. Double-tap the microphone icon in a chat to toggle Intercom on, then hold and talk to broadcast voice instantly.
+- **Description**: Automatically alerts users when a scheduled post fails to publish due to API errors, token expiration, or content policy violations, and offers one-click retry.
+- **Sub-category / Actionable Details**: Error Recovery. Failed posts appear in the notification center with a red flag. Click "Retry" to reattempt publishing or "Edit" to modify the post before retrying.
 
-### 19. Circular Video Snapshots
+### 19. Scheduled Post Reminder Notifications
 - **Category**: Direct Messaging & Communication
-- **Description**: Captures and sends circular video clips up to 30 seconds directly from the chat camera interface.
-- **Sub-category / Actionable Details**: Circular Clips. Tap the camera shortcut in the chat composer, select the round video mode, and capture a quick clip.
+- **Description**: Sends advance reminders before scheduled posts go live, allowing users to make last-minute edits or cancellations.
+- **Sub-category / Actionable Details**: Pre-Publish Alerts. Configure reminder timing (1 hour, 30 minutes, or 15 minutes before publish) in Settings → Notifications → Scheduled Posts.
 
-### 20. Multi-lingual Translator
+### 20. Webhook Event Notifications
 - **Category**: Direct Messaging & Communication
-- **Description**: Automatically translates incoming messages into the user's native language in real-time.
-- **Sub-category / Actionable Details**: Inline Translation. In chat settings, toggle "Auto-Translate," select the target language, and view translated text below original messages.
+- **Description**: Dispatches webhook payloads to external services when specific events occur (post published, post failed, engagement threshold reached).
+- **Sub-category / Actionable Details**: Developer Webhooks. Go to Settings → Integrations → Webhooks, add a target URL, select trigger events, and test the connection with a sample payload.
 
 ---
 
 ## Category 5: Monetization & E-Commerce
 
-### 21. Digital Tipping Gateway
+### 21. SaaS Subscription Plans
 - **Category**: Monetization & E-Commerce
-- **Description**: Allows users to send digital tips and micro-payments directly to creators or contacts.
-- **Sub-category / Actionable Details**: Tipping Portal. Tap the coin icon below a post or message, select the tip amount, authenticate payments, and transfer funds.
+- **Description**: Offers tiered subscription plans (Starter, Professional, Agency) with increasing limits on connected accounts, team members, and AI content generation credits.
+- **Sub-category / Actionable Details**: Plan Selection. Navigate to Settings → Billing to view plan tiers, compare features, and upgrade or downgrade subscriptions.
 
-### 22. Premium Subscriptions
+### 22. Affiliate Program
 - **Category**: Monetization & E-Commerce
-- **Description**: Enables channel owners to restrict access to exclusive feeds, chats, or forums behind monthly subscription tiers.
-- **Sub-category / Actionable Details**: Paid Memberships. Go to Channel Settings > Monetization, define subscription tiers and pricing, and bind exclusive channels.
+- **Description**: Provides an affiliate referral program where users earn commissions for referring new paying customers to the platform.
+- **Sub-category / Actionable Details**: Referral Dashboard. Go to Settings → Affiliate to generate unique referral links, track referred signups, and view earned commissions.
 
-### 23. In-chat Showcase Catalog
+### 23. Agency White-Label Branding
 - **Category**: Monetization & E-Commerce
-- **Description**: Allows merchants to send interactive product showcases and buyable catalogs directly into chat windows.
-- **Sub-category / Actionable Details**: Product Cards. In business settings, compile a catalog, tap "Share product," and select a contact to deliver shoppable cards.
+- **Description**: Allows agencies on premium plans to white-label the platform interface with their own branding, logos, and custom domains for client-facing portals.
+- **Sub-category / Actionable Details**: White-Label Setup. Navigate to Agency Settings → Branding, upload your logo, set brand colors, and configure a custom domain for client access.
 
-### 24. Automated Billing bot
+### 24. AI Credit Usage Metering
 - **Category**: Monetization & E-Commerce
-- **Description**: Integrates an automated billing bot that generates invoices, receipts, and tracks payment statuses in-chat.
-- **Sub-category / Actionable Details**: Conversational Invoicing. Command the billing bot in chat to issue a payment request (e.g. `/bill $50`), facilitating checkout.
+- **Description**: Tracks and displays AI content generation credit usage across the billing period, with overage alerts and the option to purchase additional credits.
+- **Sub-category / Actionable Details**: Credit Monitor. View remaining AI generation credits in the dashboard header or in Settings → Billing → Usage. Set up overage notifications.
 
-### 25. Sponsored Banner Ads
+### 25. Multi-Currency Billing
 - **Category**: Monetization & E-Commerce
-- **Description**: Displays non-intrusive sponsored banner ads at the bottom of public discovery feeds and channels.
-- **Sub-category / Actionable Details**: Channel Ads. Configure ad campaigns in the advertiser manager, target categories, and display banners to target audiences.
+- **Description**: Supports subscription billing in multiple currencies to serve a global customer base.
+- **Sub-category / Actionable Details**: Currency Selection. During signup or in Billing settings, select the preferred billing currency from supported options.
 
 ---
 
 ## Category 6: Analytics, Business & Creator Tools
 
-### 26. Engagement Insights
+### 26. Cross-Platform Analytics Dashboard
 - **Category**: Analytics, Business & Creator Tools
-- **Description**: Displays detailed post view, share, and interaction analytics for channels and community spaces.
-- **Sub-category / Actionable Details**: Analytics Suite. Open a channel, click the stats icon in the menu to review charts showing weekly engagement and viewer growth.
+- **Description**: Aggregates engagement metrics (likes, comments, shares, reach, impressions, clicks) from all connected social platforms into a single unified analytics view.
+- **Sub-category / Actionable Details**: Analytics Overview. Navigate to the Analytics tab to view cross-platform performance summaries, filterable by platform, date range, and content type.
 
-### 27. Business Hours Auto-Reply
+### 27. Best Time to Post Optimizer
 - **Category**: Analytics, Business & Creator Tools
-- **Description**: Automatically responds to incoming messages with custom messages during designated non-business hours.
-- **Sub-category / Actionable Details**: Away Responders. Go to Business Tools > Auto-Replies, configure business operating hours, and write the away template message.
+- **Description**: Analyzes historical engagement data and audience activity patterns to recommend optimal posting times for each connected platform.
+- **Sub-category / Actionable Details**: Schedule Optimization. View recommended posting windows in Analytics → Best Times, displayed as a heatmap showing peak engagement hours per platform and day of week.
 
-### 28. Automated FAQ bots
+### 28. Content Performance Reports
 - **Category**: Analytics, Business & Creator Tools
-- **Description**: Deploys automated chatbots that scan customer queries and provide instant answers from a built-in FAQ database.
-- **Sub-category / Actionable Details**: Chatbot Assistant. Import a list of questions and answers in Bot Settings, and assign the chatbot to handle initial customer contacts.
+- **Description**: Generates exportable PDF or CSV performance reports summarizing content metrics over custom date ranges, suitable for client or stakeholder presentations.
+- **Sub-category / Actionable Details**: Report Generation. Go to Analytics → Reports, select date range, choose platforms, and click "Generate Report" to download a branded PDF summary.
 
-### 29. Broadcast Lists
+### 29. Post-Level ROI Attribution
 - **Category**: Analytics, Business & Creator Tools
-- **Description**: Allows businesses to send updates and promotional announcements to multiple contacts simultaneously.
-- **Sub-category / Actionable Details**: Broadcast Lists. Open contacts, tap "Create Broadcast," select recipients, and send a message that delivers individually.
+- **Description**: Tracks click-through rates and conversion events from social posts to measure the ROI of individual content pieces.
+- **Sub-category / Actionable Details**: Conversion Tracking. Enable UTM parameter auto-tagging in Settings → Tracking, then view click-to-conversion funnels for each post in Analytics → Conversions.
 
-### 30. Message Delivery Dashboard
+### 30. Growth Trend Charts
 - **Category**: Analytics, Business & Creator Tools
-- **Description**: Tracks real-time delivery and read statuses for broadcast lists and group announcements.
-- **Sub-category / Actionable Details**: Delivery Metrics. Click on a broadcast message info panel to view statistics on how many recipients received and read the message.
+- **Description**: Visualizes follower growth, engagement trends, and posting frequency over time with interactive line and bar charts.
+- **Sub-category / Actionable Details**: Trend Visualization. Open Analytics → Growth to view follower count timelines, engagement rate trends, and posting cadence overlays across all connected accounts.
 
 ---
 
 ## Category 7: Privacy, Security & Safety
 
-### 31. Cryptographic Vault
+### 31. OAuth Social Account Connections
 - **Category**: Privacy, Security & Safety
-- **Description**: A secure, encrypted folder in the app to store confidential documents, photos, and messages.
-- **Sub-category / Actionable Details**: Secure Vault. Go to Settings > Security, activate the Cryptographic Vault, set a master password, and move sensitive files into it.
+- **Description**: Connects social media accounts using OAuth authentication tokens, avoiding the need to store raw social platform passwords.
+- **Sub-category / Actionable Details**: Secure Account Linking. Go to Settings → Connected Accounts, click "Connect" next to a platform, and authenticate via the platform's official OAuth flow.
 
-### 32. Ghost Mode
+### 32. Two-Factor Authentication
 - **Category**: Privacy, Security & Safety
-- **Description**: Hides online presence, last seen status, typing indicators, and read receipts across the app.
-- **Sub-category / Actionable Details**: Stealth Settings. Go to Settings > Privacy, toggle "Ghost Mode" on to browse chats without broadcasting activity status.
+- **Description**: Adds an optional second authentication factor (TOTP app or SMS) to protect the Apaya management account from unauthorized access.
+- **Sub-category / Actionable Details**: 2FA Setup. Navigate to Settings → Security → Two-Factor Authentication, scan the QR code with an authenticator app, and enter the verification code to activate.
 
-### 33. Local App Shield
+### 33. Team Permission Scoping
 - **Category**: Privacy, Security & Safety
-- **Description**: Prevents external apps and screen capture tools from reading data or taking screenshots within the app.
-- **Sub-category / Actionable Details**: Privacy Shield. Enable "App Shield" in Security settings to block OS-level screenshots and screen sharing.
+- **Description**: Restricts team member access to specific workspaces, platforms, or actions (view-only, edit, publish, admin) to enforce least-privilege access.
+- **Sub-category / Actionable Details**: Role Configuration. In Settings → Team → Permissions, define custom roles with granular access controls for each workspace and connected account.
 
-### 34. View-Once Media Screen-lock
+### 34. Audit Log
 - **Category**: Privacy, Security & Safety
-- **Description**: Automatically destroys view-once media if the app detects a lock-screen event or focus loss.
-- **Sub-category / Actionable Details**: Active Media Guard. The platform automatically monitors app focus during view-once playback, locking and deleting the media if focus changes.
+- **Description**: Records all user actions (post created, post published, account connected, team member added, settings changed) in a timestamped audit trail.
+- **Sub-category / Actionable Details**: Activity History. Go to Settings → Security → Audit Log to view, filter, and export a chronological record of all platform actions by team members.
 
-### 35. Trusted Devices Manager
+### 35. Content Policy Pre-Check
 - **Category**: Privacy, Security & Safety
-- **Description**: Audits and manages devices authorized to access the account, requiring confirmation from existing devices for new logins.
-- **Sub-category / Actionable Details**: Authorization Panel. Access in Settings > Authorized Devices to review connected sessions and authorize new devices via QR codes.
+- **Description**: Scans AI-generated or user-created content for potential policy violations (profanity, sensitive topics, copyright indicators) before scheduling.
+- **Sub-category / Actionable Details**: Pre-Publish Scan. When saving a post to the queue, the system automatically flags potential issues with a yellow warning indicator. Click the flag to view details and edit.
 
 ---
 
 ## Category 8: Developer APIs & Integrations
 
-### 36. Apaya Bot Framework
+### 36. Multi-Platform Publishing API
 - **Category**: Developer APIs & Integrations
-- **Description**: Provides software libraries and APIs to build, test, and host interactive bots within the platform.
-- **Sub-category / Actionable Details**: Bot SDK. Access developer documentation, register a bot ID, and use the SDK to capture chat events and respond dynamically.
+- **Description**: Supports automated posting to Instagram, Facebook, LinkedIn, X (Twitter), TikTok, and YouTube via official platform APIs.
+- **Sub-category / Actionable Details**: Platform Connectors. Each connected platform uses the official publishing API (Meta Graph API, X API v2, LinkedIn Marketing API, TikTok Content Posting API, YouTube Data API) for authenticated post delivery.
 
-### 37. Custom Webhooks
+### 37. RSS-to-Social Automation
 - **Category**: Developer APIs & Integrations
-- **Description**: Delivers real-time HTTP callbacks to external developer endpoints when events occur in chats or channels.
-- **Sub-category / Actionable Details**: Webhook Setup. Configure target endpoint URLs and select event triggers (e.g. new messages, member joins) in the developer console.
+- **Description**: Monitors RSS feeds and automatically generates and schedules social posts when new feed items are published.
+- **Sub-category / Actionable Details**: RSS Feed Automation. Go to Automations → RSS, add a feed URL, configure post templates (title, link, custom caption), and set the publishing schedule and target platforms.
 
-### 38. Direct Web Widgets
+### 38. Canva Integration
 - **Category**: Developer APIs & Integrations
-- **Description**: Embeds channel feeds, chat rooms, and follow buttons directly onto third-party web pages.
-- **Sub-category / Actionable Details**: Widget Embeds. Copy the generated iframe widget HTML snippet from channel settings and paste it into external web pages.
+- **Description**: Integrates with Canva to allow users to design graphics in Canva and import them directly into the Apaya post editor.
+- **Sub-category / Actionable Details**: Design Import. In the post editor, click "Import from Canva" to open the Canva design picker, select or create a design, and insert it into the post.
 
-### 39. OAuth 2.0 Identity Bridge
+### 39. Zapier / Make Integration
 - **Category**: Developer APIs & Integrations
-- **Description**: Allows users to log into external services and websites securely using their Apaya credentials.
-- **Sub-category / Actionable Details**: Identity Provider. Set up OAuth applications in the developer portal, enabling "Log in with Apaya" options on third-party sites.
+- **Description**: Connects with automation platforms (Zapier, Make) to trigger workflows based on Apaya events or to feed external data into Apaya's content pipeline.
+- **Sub-category / Actionable Details**: Workflow Automation. Use the Apaya Zapier app or Make module to create triggers (post published, post failed) and actions (create post, schedule post) in external automation workflows.
 
-### 40. Database Sync API
+### 40. Link-in-Bio Page Builder
 - **Category**: Developer APIs & Integrations
-- **Description**: Synchronizes local user data and chat metadata with external backup databases or CRM suites.
-- **Sub-category / Actionable Details**: Sync Engine. Connect external databases via secure API endpoints using HTTPS and API key authentication headers.
+- **Description**: Provides a customizable link-in-bio landing page that aggregates important links, recent posts, and CTAs in a single branded URL.
+- **Sub-category / Actionable Details**: Bio Page Setup. Navigate to Tools → Link in Bio, customize the page layout, add link blocks, connect social profiles, and copy the generated URL for social profile bios.
 
 ---
 
 ## Category 9: Notifications & Time Management
 
-### 41. Custom Chat Ringers
+### 41. Visual Content Calendar
 - **Category**: Notifications & Time Management
-- **Description**: Assigns distinct ringtones and alert sounds to specific contacts and groups.
-- **Sub-category / Actionable Details**: Ringtone Selector. Open a contact info page, tap "Notifications," select "Custom Sound," and choose a ringtone from the local list.
+- **Description**: Displays all scheduled, published, and draft posts in a drag-and-drop calendar view organized by day, week, or month.
+- **Sub-category / Actionable Details**: Calendar View. Open the Calendar tab to see all queued content. Drag posts to reschedule, click to edit, and use color coding to distinguish platforms and post status.
 
-### 42. Notification Bundler
+### 42. Queue-Based Auto-Scheduling
 - **Category**: Notifications & Time Management
-- **Description**: Consolidates alerts from active group chats into a single bundled notification to reduce lock-screen clutter.
-- **Sub-category / Actionable Details**: Alert Bundling. Go to Settings > Notifications, enable "Group Bundles," and configure the bundler's trigger frequency.
+- **Description**: Automatically distributes queued posts across optimal time slots based on audience activity data and predefined posting frequency limits.
+- **Sub-category / Actionable Details**: Smart Queue. Add posts to the queue without specifying exact times. The system automatically assigns publish times based on the best-time-to-post analysis and daily posting limits.
 
-### 43. Mute Schedules
+### 43. Bulk CSV Upload Scheduler
 - **Category**: Notifications & Time Management
-- **Description**: Automatically silences notifications during set daily schedules, such as working hours or sleep times.
-- **Sub-category / Actionable Details**: Scheduled Mute. Navigate to Settings > Notifications > Quiet Hours, configure start and end times, and toggle active days.
+- **Description**: Accepts CSV file uploads containing multiple posts with captions, media URLs, platform targets, and scheduled times for batch importing.
+- **Sub-category / Actionable Details**: Bulk Import. Go to Tools → Bulk Upload, download the CSV template, fill in post data, upload the file, preview the import, and confirm to add all posts to the calendar.
 
-### 44. High-Priority Previews
+### 44. Time Zone Management
 - **Category**: Notifications & Time Management
-- **Description**: Pinpoints high-priority notifications, displaying detailed message content on top of other alerts.
-- **Sub-category / Actionable Details**: Priority Settings. Go to Settings > Notifications, select important contacts, and enable "High Priority Previews" for their alerts.
+- **Description**: Supports scheduling posts in the audience's local time zone rather than the user's, ensuring optimal delivery timing for global audiences.
+- **Sub-category / Actionable Details**: Zone Targeting. When scheduling a post, select the target time zone from the dropdown or enable "Auto-detect audience zone" to let the AI choose based on follower location data.
 
-### 45. Silent Dispatch Toggle
+### 45. Post Recycling / Evergreen Queue
 - **Category**: Notifications & Time Management
-- **Description**: Allows sending messages without triggering sound or vibration notifications on the recipient's device.
-- **Sub-category / Actionable Details**: Silent Sending. Long-press the send button and select "Silent Send" to deliver the message quietly.
+- **Description**: Automatically re-queues high-performing evergreen content for republishing at configurable intervals, keeping the content pipeline full.
+- **Sub-category / Actionable Details**: Evergreen Library. Mark posts as "Evergreen" in the published posts view. Configure recycling frequency in Automations → Evergreen to set minimum intervals between reposts.
 
 ---
 
 ## Category 10: Account Settings & Authentication
 
-### 46. Multi-profile Switcher
+### 46. Multi-Account Dashboard
 - **Category**: Account Settings & Authentication
-- **Description**: Allows users to manage and switch between multiple sub-profiles (e.g., work, personal) within a single account.
-- **Sub-category / Actionable Details**: Profile Manager. Tap your avatar in the side menu, select "Add Profile," and switch profiles instantly without logging out.
+- **Description**: Manages multiple social media accounts across multiple platforms from a single login, with a unified view of all connected profiles.
+- **Sub-category / Actionable Details**: Account Hub. View all connected accounts in Settings → Connected Accounts. Add, remove, or refresh tokens for each social platform profile.
 
-### 47. Cloud Chat Backups
+### 47. Account Health Monitor
 - **Category**: Account Settings & Authentication
-- **Description**: Backs up chat history and media to secure cloud storage platforms.
-- **Sub-category / Actionable Details**: Backup Utility. Go to Settings > Account > Backups, select cloud targets (Google Drive, iCloud), and configure auto-backup schedules.
+- **Description**: Monitors the health and authentication status of all connected social accounts, alerting users when tokens expire or permissions are revoked.
+- **Sub-category / Actionable Details**: Connection Status. The dashboard displays a green/yellow/red indicator for each connected account. Click a yellow or red indicator to re-authenticate or troubleshoot.
 
-### 48. Passkey Login
+### 48. Workspace Settings Isolation
 - **Category**: Account Settings & Authentication
-- **Description**: Enables passwordless authentication using biometric sensors or device PINs to log into accounts.
-- **Sub-category / Actionable Details**: Passkey Configuration. Go to Settings > Account > Security, tap "Set up Passkey," and link the account to the device's secure enclave.
+- **Description**: Isolates settings, connected accounts, team members, and content between different workspaces to prevent cross-contamination between clients or brands.
+- **Sub-category / Actionable Details**: Workspace Boundaries. Each workspace has independent settings accessible via the workspace selector. Changes in one workspace do not affect others.
 
-### 49. Account Liquidation Timer
+### 49. SSO Enterprise Login
 - **Category**: Account Settings & Authentication
-- **Description**: Automatically deletes the account and all associated data after a specified period of complete user inactivity.
-- **Sub-category / Actionable Details**: Self-Destruct Timer. Go to Settings > Privacy > Account Liquidation, and select the inactivity duration (e.g. 6 months).
+- **Description**: Supports Single Sign-On via SAML or OAuth for enterprise customers who require centralized identity management.
+- **Sub-category / Actionable Details**: SSO Configuration. Enterprise admins configure SSO in Settings → Security → Single Sign-On by providing the IdP metadata URL and mapping user attributes.
 
-### 50. Data Export Utility
+### 50. Data Export and Account Portability
 - **Category**: Account Settings & Authentication
-- **Description**: Generates and exports a complete archive of user data, including chats, media, and settings, in JSON or HTML format.
-- **Sub-category / Actionable Details**: Export Portal. Go to Settings > Account > Export Data, select folders and formats, and request a download link.
+- **Description**: Allows users to export all their content, analytics data, and account settings in a portable format (CSV/JSON) for backup or migration purposes.
+- **Sub-category / Actionable Details**: Data Export. Go to Settings → Account → Export Data, select the data categories to include, and download a ZIP archive containing all exported files.

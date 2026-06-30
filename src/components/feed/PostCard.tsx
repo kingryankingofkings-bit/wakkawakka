@@ -41,6 +41,8 @@ import { ShareModal } from './ShareModal';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import toast from 'react-hot-toast';
+import { usePosts } from '@/hooks/usePosts';
+import { apiFetch } from '@/lib/apiClient';
 
 interface PostCardProps {
   post: Post;
@@ -249,17 +251,18 @@ function MediaGrid({ urls, type }: { urls: string[]; type: string }) {
 }
 
 export function PostCard({ post }: PostCardProps) {
+  const isSpotlightThread = (post.likesCount * 1.5 + post.commentsCount * 3.0) > 15 || post.likesCount > 4;
   const { updatePost, removePost } = useFeedStore();
+  const { reactToPost } = usePosts();
 
   const [showReactionPicker, setShowReactionPicker] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(post.isBookmarked ?? false);
-  const [currentReaction, setCurrentReaction] = useState<ReactionType | undefined>(
-    post.userReaction
-  );
-  const [likesCount, setLikesCount] = useState(post.likesCount);
+  
+  const currentReaction = post.userReaction;
+  const likesCount = post.likesCount;
   const [isLikeAnimating, setIsLikeAnimating] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
 
@@ -268,6 +271,7 @@ export function PostCard({ post }: PostCardProps) {
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState('SPAM');
   const [reportText, setReportText] = useState('');
+  const [showBtsModal, setShowBtsModal] = useState(false);
 
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -290,30 +294,17 @@ export function PostCard({ post }: PostCardProps) {
 
   const handleLikeClick = () => {
     if (currentReaction) {
-      // Remove reaction
-      setCurrentReaction(undefined);
-      setLikesCount((prev) => prev - 1);
+      reactToPost(post.id, currentReaction);
     } else {
-      // Default like
-      handleReact('LIKE');
+      reactToPost(post.id, 'LIKE');
     }
     setIsLikeAnimating(true);
     setTimeout(() => setIsLikeAnimating(false), 1300);
   };
 
   const handleReact = (type: ReactionType) => {
-    if (currentReaction === type) {
-      setCurrentReaction(undefined);
-      setLikesCount((prev) => prev - 1);
-    } else {
-      if (!currentReaction) setLikesCount((prev) => prev + 1);
-      setCurrentReaction(type);
-    }
+    reactToPost(post.id, type);
     setShowReactionPicker(false);
-    updatePost(post.id, {
-      userReaction: currentReaction === type ? undefined : type,
-      likesCount: currentReaction === type ? likesCount - 1 : !currentReaction ? likesCount + 1 : likesCount,
-    });
   };
 
   const handleBookmark = () => {
@@ -345,9 +336,29 @@ export function PostCard({ post }: PostCardProps) {
     toast.success(`Blocked @${post.author.username}. Hiding post.`);
   };
 
-  const handleReportSubmit = () => {
-    toast.success('Thank you for reporting. Our moderators will review this post shortly.');
+  const handleReportSubmit = async () => {
+    try {
+      const response = await apiFetch('/api/reports', {
+        method: 'POST',
+        body: JSON.stringify({
+          targetId: post.id,
+          targetType: 'POST',
+          reason: reportReason,
+          description: reportText,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('Thank you for reporting. Our moderators will review this post shortly.');
+      } else {
+        toast.error('Failed to submit report');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to submit report');
+    }
     setShowReportModal(false);
+    setReportText('');
   };
 
   const handleVote = (optionId: string) => {
@@ -383,7 +394,12 @@ export function PostCard({ post }: PostCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-card-hover transition-shadow duration-300"
+      className={cn(
+        "bg-card border border-border rounded-2xl overflow-hidden hover:shadow-card-hover transition-all duration-300 relative",
+        isSpotlightThread
+          ? "ring-2 ring-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.35)] bg-gradient-to-b from-amber-500/5 via-card to-card"
+          : (post.likesCount > 3 || post.isPinned) && "ring-2 ring-primary/60 shadow-[0_0_15px_rgba(59,130,246,0.25)] bg-gradient-to-b from-primary/5 to-transparent"
+      )}
     >
       {/* Header */}
       <div className="flex items-start justify-between px-4 pt-4 pb-3">
@@ -416,6 +432,19 @@ export function PostCard({ post }: PostCardProps) {
                 <span className="text-xs font-medium bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
                   PRO
                 </span>
+              )}
+              {isSpotlightThread && (
+                <span className="inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/35 rounded-full select-none">
+                  ✨ Spotlight Thread
+                </span>
+              )}
+              {post.btsUrl && (
+                <button
+                  onClick={() => setShowBtsModal(true)}
+                  className="flex items-center gap-1 text-[9px] font-black text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded-full hover:bg-rose-500/20 active:scale-95 transition-all select-none"
+                >
+                  🎬 BTS PLAYBACK
+                </button>
               )}
             </div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -632,7 +661,12 @@ export function PostCard({ post }: PostCardProps) {
 
       {/* Media */}
       {(post.mediaUrls.length > 0 || post.type === 'VIDEO') && (
-        <div className="px-3 pb-3">
+        <div className="px-3 pb-3 relative">
+          {post.greenScreenBg && (
+            <div className="absolute top-5 left-5 z-10 bg-green-600 text-white font-bold text-[9px] px-2 py-0.5 rounded-md flex items-center gap-1 shadow-md select-none uppercase">
+              🌴 Green Screen: {post.greenScreenBg}
+            </div>
+          )}
           <MediaGrid urls={post.mediaUrls} type={post.type} />
         </div>
       )}
@@ -852,6 +886,26 @@ export function PostCard({ post }: PostCardProps) {
           </div>
         </div>
       </Modal>
+
+      {/* Behind-The-Scenes Video Player Modal */}
+      {post.btsUrl && (
+        <Modal isOpen={showBtsModal} onClose={() => setShowBtsModal(false)} title="Behind-the-Scenes snippet" size="md">
+          <div className="p-4 flex flex-col items-center justify-center space-y-3">
+            <p className="text-xs text-muted-foreground">3-second Behind-The-Scenes snippet attached by @{post.author.username}</p>
+            <div className="relative rounded-2xl overflow-hidden bg-black border border-border w-full aspect-[9/16] max-w-[280px]">
+              <video
+                src={post.btsUrl}
+                autoPlay
+                controls
+                loop
+                muted
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <Button size="sm" onClick={() => setShowBtsModal(false)}>Close Player</Button>
+          </div>
+        </Modal>
+      )}
     </motion.article>
   );
 }

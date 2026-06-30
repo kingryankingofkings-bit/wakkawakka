@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -45,15 +46,95 @@ export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHead
   const [menuOpen, setMenuOpen] = useState(false);
   const [followerCount, setFollowerCount] = useState(user.followersCount);
 
-  function handleFollow() {
-    if (followState === 'none') {
-      setFollowState(user.isPrivate ? 'pending' : 'following');
-      if (!user.isPrivate) setFollowerCount((c) => c + 1);
-    } else if (followState === 'following') {
-      setFollowState('none');
-      setFollowerCount((c) => c - 1);
-    } else {
-      setFollowState('none');
+  useEffect(() => {
+    if (isOwnProfile) return;
+    async function checkFollow() {
+      try {
+        const res = await fetch(`/api/users/${user.id}/follow`);
+        if (res.ok) {
+          const json = await res.json();
+          const status = json.data?.status;
+          if (status === 'ACCEPTED') setFollowState('following');
+          else if (status === 'PENDING') setFollowState('pending');
+          else setFollowState('none');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    checkFollow();
+  }, [user.id, isOwnProfile]);
+
+  const [isBlocked, setIsBlocked] = useState(false);
+
+  useEffect(() => {
+    if (isOwnProfile) return;
+    async function checkBlock() {
+      try {
+        const res = await fetch(`/api/users/${user.id}/block`);
+        if (res.ok) {
+          const json = await res.json();
+          setIsBlocked(!!json.data?.blocked);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    checkBlock();
+  }, [user.id, isOwnProfile]);
+
+  async function handleBlock() {
+    setMenuOpen(false);
+    try {
+      const res = await fetch(`/api/users/${user.id}/block`, {
+        method: isBlocked ? 'DELETE' : 'POST',
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const blocked = !!json.data?.blocked;
+        setIsBlocked(blocked);
+        toast.success(blocked ? `Blocked @${user.username}` : `Unblocked @${user.username}`);
+        if (blocked) {
+          setFollowState('none');
+        }
+      } else {
+        toast.error('Failed to toggle block');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred');
+    }
+  }
+
+  async function handleFollow() {
+    try {
+      const res = await fetch(`/api/users/${user.id}/follow`, {
+        method: 'POST',
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const status = json.data?.status;
+        if (status === 'ACCEPTED') {
+          setFollowState('following');
+          setFollowerCount((c) => c + 1);
+          toast.success(`You are now following ${user.displayName}`);
+        } else if (status === 'PENDING') {
+          setFollowState('pending');
+          toast.success(`Follow request sent to ${user.displayName}`);
+        } else {
+          setFollowState('none');
+          if (followState === 'following') {
+            setFollowerCount((c) => Math.max(0, c - 1));
+          }
+          toast.success(`Unfollowed ${user.displayName}`);
+        }
+      } else {
+        const errJson = await res.json();
+        toast.error(errJson.error || 'Failed to toggle follow');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred');
     }
   }
 
@@ -94,7 +175,7 @@ export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHead
         <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
         
         {/* Profile Soundtrack Widget */}
-        {user.profileSoundtrack && (
+        {user.profileSoundtrack && user.profileSoundtrackVisible !== false && (
           <div className="absolute bottom-6 right-6 z-20">
             <ProfileSoundtrack url={user.profileSoundtrack} />
           </div>
@@ -179,8 +260,8 @@ export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHead
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-popover border border-border shadow-xl z-20 overflow-hidden"
                       >
-                        <button onClick={() => setMenuOpen(false)} className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium hover:bg-muted transition-colors">
-                          <Ban className="w-4 h-4 text-muted-foreground" /> Block @{user.username}
+                        <button onClick={handleBlock} className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium hover:bg-muted transition-colors">
+                          <Ban className="w-4 h-4 text-muted-foreground" /> {isBlocked ? 'Unblock' : 'Block'} @{user.username}
                         </button>
                         <button onClick={() => setMenuOpen(false)} className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors">
                           <Flag className="w-4 h-4" /> Report

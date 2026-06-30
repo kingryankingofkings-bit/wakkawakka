@@ -1,20 +1,18 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
-import { Users, Lock, Globe, Settings, Plus, ArrowLeft, Check, X, ShieldCheck } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Users, Lock, Globe, Settings, Plus, ArrowLeft, Check, X, ShieldCheck, Edit3, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
 import { Card } from '@/components/ui/Card';
-import { PostCard } from '@/components/feed/PostCard';
 import { formatCount, formatRelativeTime } from '@/lib/utils';
-import { MOCK_COMMUNITIES, MOCK_POSTS } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { Modal } from '@/components/ui/Modal';
 
-const COMMUNITY_TABS = ['Posts', 'Members', 'Requests', 'About', 'Rules'] as const;
+const COMMUNITY_TABS = ['Posts', 'Members', 'Events', 'Requests', 'About', 'Rules'] as const;
 
 interface JoinRequest {
   id: string;
@@ -24,88 +22,318 @@ interface JoinRequest {
     username: string;
     avatar?: string;
   };
-  requestedAt: string;
+  createdAt: string;
 }
 
 export default function CommunityPage() {
   const { id } = useParams<{ id: string }>();
-  const community = MOCK_COMMUNITIES.find(c => c.id === id) || MOCK_COMMUNITIES[0];
-  const [tab, setTab] = useState<typeof COMMUNITY_TABS[number]>('Posts');
-  const [joined, setJoined] = useState(community.isMember ?? false);
-  const [memberCount, setMemberCount] = useState(community.memberCount);
 
-  // Post Creation Modal State
+  // Backend state variables
+  const [community, setCommunity] = useState<any>(null);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
+  const [requests, setRequests] = useState<JoinRequest[]>([]);
+  const [tab, setTab] = useState<typeof COMMUNITY_TABS[number]>('Posts');
+  const [loading, setLoading] = useState(true);
+
+  // Post creation state
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
   const [newPostContent, setNewPostContent] = useState('');
+  const [postFlairText, setPostFlairText] = useState('');
+  const [postFlairBg, setPostFlairBg] = useState('#3b82f6');
+  const [postFlairTextCol, setPostFlairTextCol] = useState('#ffffff');
 
-  // Members list local state
-  const [members, setMembers] = useState<any[]>(community.members || []);
+  // Edit About state
+  const [isEditAboutOpen, setIsEditAboutOpen] = useState(false);
+  const [editDesc, setEditDesc] = useState('');
+  const [editRules, setEditRules] = useState('');
+  const [editVisibility, setEditVisibility] = useState('PUBLIC');
+  const [editCategory, setEditCategory] = useState('GENERAL');
+  const [editAvatarUrl, setEditAvatarUrl] = useState('');
+  const [editCoverImage, setEditCoverImage] = useState('');
 
-  // Join Requests state
-  const [requests, setRequests] = useState<JoinRequest[]>([
-    {
-      id: 'req1',
-      user: {
-        id: 'u_req1',
-        displayName: 'Marcus Aurelius',
-        username: 'philosopher',
-        avatar: 'https://picsum.photos/seed/marcus/100/100'
-      },
-      requestedAt: new Date(Date.now() - 3600000 * 2).toISOString()
-    },
-    {
-      id: 'req2',
-      user: {
-        id: 'u_req2',
-        displayName: 'Ada Lovelace',
-        username: 'ada_coder',
-        avatar: 'https://picsum.photos/seed/ada/100/100'
-      },
-      requestedAt: new Date(Date.now() - 3600000 * 18).toISOString()
+  // Member Flair Modal state
+  const [selectedMember, setSelectedMember] = useState<any>(null);
+  const [memberFlairText, setMemberFlairText] = useState('');
+  const [memberFlairBg, setMemberFlairBg] = useState('#10b981');
+  const [memberFlairTextCol, setMemberFlairTextCol] = useState('#ffffff');
+
+  // Community Events state
+  const [communityEvents, setCommunityEvents] = useState<any[]>([]);
+  const [isCreateEventOpen, setIsCreateEventOpen] = useState(false);
+  const [eventForm, setEventForm] = useState({ title: '', description: '', location: '', isOnline: false, startsAt: '', category: 'Community' });
+
+  useEffect(() => {
+    if (id) {
+      loadAll();
     }
-  ]);
+  }, [id]);
 
-  const COMMUNITY_RULES = [
-    'Be kind and respectful to all members',
-    'No spam or self-promotion without moderator approval',
-    'Share original content or properly credit sources',
-    'Keep discussions on-topic and relevant to the community',
-    'No harassment or hate speech of any kind',
-    'Follow Wakka\'s Community Guidelines at all times',
-  ];
+  async function loadAll() {
+    setLoading(true);
+    try {
+      await Promise.all([
+        loadCommunityDetails(),
+        loadPosts(),
+        loadMembers(),
+        loadCommunityEvents(),
+      ]);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  const handleApprove = (req: JoinRequest) => {
-    // Remove from requests
-    setRequests(prev => prev.filter(r => r.id !== req.id));
-    // Add to members
-    setMembers(prev => [...prev, {
-      id: req.user.id,
-      displayName: req.user.displayName,
-      username: req.user.username,
-      avatar: req.user.avatar || 'https://picsum.photos/seed/avatar/100/100'
-    }]);
-    // Increment member count
-    setMemberCount(prev => prev + 1);
-    toast.success(`Approved ${req.user.displayName}'s request to join!`);
-  };
+  async function loadCommunityDetails() {
+    const res = await fetch(`/api/communities/${id}`);
+    if (res.ok) {
+      const json = await res.json();
+      setCommunity(json.data);
+      setEditDesc(json.data.description || '');
+      setEditRules(json.data.rules || '');
+      setEditVisibility(json.data.visibility || 'PUBLIC');
+      setEditCategory(json.data.category || 'GENERAL');
+      setEditAvatarUrl(json.data.avatarUrl || '');
+      setEditCoverImage(json.data.coverImage || '');
 
-  const handleReject = (req: JoinRequest) => {
-    // Remove from requests
-    setRequests(prev => prev.filter(r => r.id !== req.id));
-    toast.error(`Rejected ${req.user.displayName}'s request`);
-  };
+      // Load requests only if moderator
+      if (json.data.isModerator) {
+        loadRequests();
+      }
+    }
+  }
 
-  const handleToggleJoin = () => {
-    if (joined) {
-      setJoined(false);
-      setMemberCount(prev => prev - 1);
-      toast.success(`Left ${community.name}`);
+  async function loadPosts() {
+    const res = await fetch(`/api/communities/${id}/posts`);
+    if (res.ok) {
+      const json = await res.json();
+      setPosts(json.data || []);
+    }
+  }
+
+  async function loadMembers() {
+    const res = await fetch(`/api/communities/${id}/members`);
+    if (res.ok) {
+      const json = await res.json();
+      setMembers(json.data || []);
+    }
+  }
+
+  async function loadRequests() {
+    const res = await fetch(`/api/communities/${id}/requests`);
+    if (res.ok) {
+      const json = await res.json();
+      setRequests(json.data || []);
+    }
+  }
+
+  async function loadCommunityEvents() {
+    const res = await fetch(`/api/events?communityId=${id}`);
+    if (res.ok) {
+      const json = await res.json();
+      setCommunityEvents(json.data || []);
+    }
+  }
+
+  async function handleCreateEvent(e: React.FormEvent) {
+    e.preventDefault();
+    if (!eventForm.title || !eventForm.startsAt) return;
+    try {
+      const res = await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...eventForm,
+          communityId: id,
+        }),
+      });
+
+      if (res.ok) {
+        toast.success('Community event created!');
+        setIsCreateEventOpen(false);
+        setEventForm({ title: '', description: '', location: '', isOnline: false, startsAt: '', category: 'Community' });
+        loadCommunityEvents();
+      } else {
+        toast.error('Failed to create community event');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred');
+    }
+  }
+
+  async function handleToggleJoin() {
+    if (!community) return;
+    try {
+      const res = await fetch(`/api/communities/${id}/join`, {
+        method: 'POST',
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data?.status === 'MEMBER') {
+          toast.success(`Joined ${community.name}!`);
+        } else if (json.data?.status === 'PENDING') {
+          toast.success('Join request sent successfully!');
+        }
+        await loadAll();
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred');
+    }
+  }
+
+  async function handleApprove(reqId: string) {
+    try {
+      const res = await fetch(`/api/communities/${id}/requests/${reqId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'approve' }),
+      });
+      if (res.ok) {
+        toast.success('Approved join request!');
+        loadAll();
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to approve request');
+    }
+  }
+
+  async function handleReject(reqId: string) {
+    try {
+      const res = await fetch(`/api/communities/${id}/requests/${reqId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reject' }),
+      });
+      if (res.ok) {
+        toast.error('Rejected join request');
+        loadAll();
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to reject request');
+    }
+  }
+
+  async function handleCreatePost(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      const flair = postFlairText ? `${postFlairText}|${postFlairBg}|${postFlairTextCol}` : '';
+      const res = await fetch(`/api/communities/${id}/posts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: newPostContent,
+          flair,
+        }),
+      });
+
+      if (res.ok) {
+        toast.success('Post published successfully!');
+        setIsCreatePostOpen(false);
+        setNewPostContent('');
+        setPostFlairText('');
+        loadPosts();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || 'Failed to create post');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred');
+    }
+  }
+
+  async function handleSaveAbout(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      const res = await fetch(`/api/communities/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          description: editDesc,
+          rules: editRules,
+          visibility: editVisibility,
+          category: editCategory,
+          avatarUrl: editAvatarUrl,
+          coverImage: editCoverImage,
+        }),
+      });
+
+      if (res.ok) {
+        toast.success('Community details updated!');
+        setIsEditAboutOpen(false);
+        loadCommunityDetails();
+      } else {
+        toast.error('Failed to update details');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred');
+    }
+  }
+
+  function openMemberFlairModal(member: any) {
+    setSelectedMember(member);
+    if (member.flair && member.flair.includes('|')) {
+      const parts = member.flair.split('|');
+      setMemberFlairText(parts[0]);
+      setMemberFlairBg(parts[1]);
+      setMemberFlairTextCol(parts[2]);
     } else {
-      setJoined(true);
-      setMemberCount(prev => prev + 1);
-      toast.success(`Joined ${community.name}!`);
+      setMemberFlairText('');
+      setMemberFlairBg('#10b981');
+      setMemberFlairTextCol('#ffffff');
     }
-  };
+  }
+
+  async function handleSaveMemberFlair(e: React.FormEvent) {
+    e.preventDefault();
+    if (!selectedMember) return;
+    try {
+      const flair = memberFlairText ? `${memberFlairText}|${memberFlairBg}|${memberFlairTextCol}` : '';
+      const res = await fetch(`/api/communities/${id}/members/${selectedMember.userId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ flair }),
+      });
+
+      if (res.ok) {
+        toast.success('Member flair updated!');
+        setSelectedMember(null);
+        loadMembers();
+      } else {
+        toast.error('Failed to update member flair');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred');
+    }
+  }
+
+  if (loading) {
+    return <div className="p-8 text-center text-sm text-muted-foreground">Loading community details...</div>;
+  }
+
+  if (!community) {
+    return <div className="p-8 text-center text-sm text-destructive">Community not found</div>;
+  }
+
+  const COMMUNITY_RULES = community.rules
+    ? community.rules.split('\n').filter((r: string) => r.trim().length > 0)
+    : [
+        'Be kind and respectful to all members',
+        'No spam or self-promotion without moderator approval',
+        'Share original content or properly credit sources',
+        'Keep discussions on-topic and relevant to the community',
+        'No harassment or hate speech of any kind',
+        'Follow Wakka\'s Community Guidelines at all times',
+      ];
+
+  const filteredTabs = COMMUNITY_TABS.filter((t) => t !== 'Requests' || community.isModerator);
 
   return (
     <div className="min-h-screen">
@@ -127,8 +355,12 @@ export default function CommunityPage() {
       {/* Header */}
       <div className="px-4 pb-4 border-b border-border">
         <div className="flex items-end gap-4 -mt-8 mb-3">
-          {community.avatarUrl && (
+          {community.avatarUrl ? (
             <img src={community.avatarUrl} alt={community.name} className="h-20 w-20 rounded-2xl object-cover ring-4 ring-background flex-shrink-0" />
+          ) : (
+            <div className="h-20 w-20 rounded-2xl bg-muted border-4 border-background flex items-center justify-center flex-shrink-0">
+              <Users className="h-8 w-8 text-muted-foreground" />
+            </div>
           )}
           <div className="flex-1 min-w-0 pb-2">
             <div className="flex items-start justify-between gap-3">
@@ -141,10 +373,10 @@ export default function CommunityPage() {
               </div>
               <Button
                 size="sm"
-                variant={joined ? 'outline' : 'primary'}
+                variant={community.isMember ? 'outline' : 'primary'}
                 onClick={handleToggleJoin}
               >
-                {joined ? 'Joined' : 'Join'}
+                {community.isMember ? 'Joined' : 'Join'}
               </Button>
             </div>
           </div>
@@ -153,7 +385,7 @@ export default function CommunityPage() {
         <div className="flex items-center gap-4 text-xs font-semibold">
           <div className="flex items-center gap-1.5 text-foreground">
             <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="font-bold">{formatCount(memberCount)}</span>
+            <span className="font-bold">{formatCount(community.memberCount)}</span>
             <span className="text-muted-foreground font-normal">members</span>
           </div>
         </div>
@@ -161,7 +393,7 @@ export default function CommunityPage() {
 
       {/* Tabs */}
       <div className="sticky top-14 z-10 bg-background/80 backdrop-blur-md border-b border-border flex">
-        {COMMUNITY_TABS.map(t => (
+        {filteredTabs.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -185,49 +417,187 @@ export default function CommunityPage() {
 
       {/* Content */}
       {tab === 'Posts' && (
-        <div>
-          {joined && (
-            <div className="p-4 border-b border-border">
+        <div className="divide-y divide-border">
+          {community.isMember && (
+            <div className="p-4">
               <Button variant="outline" className="w-full" onClick={() => setIsCreatePostOpen(true)}>
                 <Plus className="h-4 w-4" />
                 Post to {community.name}
               </Button>
             </div>
           )}
-          {MOCK_POSTS.map(post => <PostCard key={post.id} post={post} />)}
+          {posts.length === 0 ? (
+            <div className="p-8 text-center text-xs text-muted-foreground">No posts yet. Be the first to share something!</div>
+          ) : (
+            posts.map((post: any) => {
+              // Parse flair
+              let flairText = '';
+              let flairBg = '';
+              let flairTextCol = '';
+              if (post.flair && post.flair.includes('|')) {
+                const parts = post.flair.split('|');
+                flairText = parts[0];
+                flairBg = parts[1];
+                flairTextCol = parts[2];
+              }
+
+              return (
+                <div key={post.id} className="p-4 bg-card space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Avatar src={post.author.avatar} name={post.author.displayName} size="sm" />
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-foreground">{post.author.displayName}</span>
+                          {flairText && (
+                            <span
+                              className="text-[10px] font-extrabold px-2 py-0.5 rounded-full"
+                              style={{ backgroundColor: flairBg, color: flairTextCol }}
+                            >
+                              {flairText}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs text-muted-foreground">@{post.author.username} · {formatRelativeTime(post.createdAt)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
+                </div>
+              );
+            })
+          )}
         </div>
       )}
 
       {tab === 'Members' && (
         <div className="p-4 space-y-4">
           <div>
-            <h2 className="font-bold text-sm text-foreground mb-3">Moderators</h2>
+            <h2 className="font-bold text-sm text-foreground mb-3">Moderators & Admins</h2>
             <div className="grid grid-cols-2 gap-3">
-              {community.moderators.map(m => (
-                <Card key={m.id} padding="sm" className="flex items-center gap-3">
-                  <Avatar src={m.avatar} name={m.displayName} size="sm" />
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold truncate text-foreground">{m.displayName}</p>
-                    <p className="text-[10px] text-primary font-bold">Moderator</p>
-                  </div>
-                </Card>
-              ))}
+              {members.filter((m: any) => ['ADMIN', 'MODERATOR'].includes(m.role)).map((m: any) => {
+                let flairText = '';
+                let flairBg = '';
+                let flairTextCol = '';
+                if (m.flair && m.flair.includes('|')) {
+                  const parts = m.flair.split('|');
+                  flairText = parts[0];
+                  flairBg = parts[1];
+                  flairTextCol = parts[2];
+                }
+                return (
+                  <Card key={m.id} padding="sm" className="flex items-center justify-between gap-2 relative">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Avatar src={m.user.avatar} name={m.user.displayName} size="sm" />
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-sm font-semibold truncate text-foreground">{m.user.displayName}</p>
+                          {flairText && (
+                            <span
+                              className="text-[9px] font-bold px-1.5 py-0.5 rounded"
+                              style={{ backgroundColor: flairBg, color: flairTextCol }}
+                            >
+                              {flairText}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-primary font-bold">{m.role}</p>
+                      </div>
+                    </div>
+                    {community.isModerator && (
+                      <button
+                        onClick={() => openMemberFlairModal(m)}
+                        className="text-[10px] text-primary hover:underline font-bold"
+                      >
+                        Edit Flair
+                      </button>
+                    )}
+                  </Card>
+                );
+              })}
             </div>
           </div>
           <div>
             <h2 className="font-bold text-sm text-foreground mb-3">Members</h2>
             <div className="grid grid-cols-2 gap-3">
-              {members.map(m => (
-                <Card key={m.id} padding="sm" className="flex items-center gap-3">
-                  <Avatar src={m.avatar} name={m.displayName} size="sm" />
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold truncate text-foreground">{m.displayName}</p>
-                    <p className="text-xs text-muted-foreground">@{m.username}</p>
+              {members.filter((m: any) => !['ADMIN', 'MODERATOR'].includes(m.role)).map((m: any) => {
+                let flairText = '';
+                let flairBg = '';
+                let flairTextCol = '';
+                if (m.flair && m.flair.includes('|')) {
+                  const parts = m.flair.split('|');
+                  flairText = parts[0];
+                  flairBg = parts[1];
+                  flairTextCol = parts[2];
+                }
+                return (
+                  <Card key={m.id} padding="sm" className="flex items-center justify-between gap-2 relative">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Avatar src={m.user.avatar} name={m.user.displayName} size="sm" />
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-sm font-semibold truncate text-foreground">{m.user.displayName}</p>
+                          {flairText && (
+                            <span
+                              className="text-[9px] font-bold px-1.5 py-0.5 rounded"
+                              style={{ backgroundColor: flairBg, color: flairTextCol }}
+                            >
+                              {flairText}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">@{m.user.username}</p>
+                      </div>
+                    </div>
+                    {community.isModerator && (
+                      <button
+                        onClick={() => openMemberFlairModal(m)}
+                        className="text-[10px] text-primary hover:underline font-bold"
+                      >
+                        Edit Flair
+                      </button>
+                    )}
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab === 'Events' && (
+        <div className="p-4 space-y-4">
+          {community.isMember && (
+            <div>
+              <Button variant="outline" className="w-full" onClick={() => setIsCreateEventOpen(true)}>
+                <Plus className="h-4 w-4" />
+                Schedule Event in {community.name}
+              </Button>
+            </div>
+          )}
+          {communityEvents.length === 0 ? (
+            <div className="p-8 text-center text-xs text-muted-foreground bg-card border border-border border-dashed rounded-3xl">
+              No events scheduled for this community yet.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {communityEvents.map((e: any) => (
+                <Card key={e.id} padding="md" className="flex flex-col justify-between space-y-3 bg-card">
+                  <div className="space-y-1.5">
+                    <h4 className="font-bold text-sm text-foreground line-clamp-1 leading-tight">{e.title}</h4>
+                    {e.description && <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{e.description}</p>}
+                    <div className="flex flex-col gap-1 pt-1">
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        {e.isOnline ? <Globe className="h-3 w-3 text-primary" /> : <MapPin className="h-3 w-3 text-primary" />}
+                        <span>{e.isOnline ? 'Online via Wakka Live' : e.location || 'Location TBA'}</span>
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">Starts: {new Date(e.startsAt).toLocaleString()}</p>
+                    </div>
                   </div>
                 </Card>
               ))}
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -249,26 +619,26 @@ export default function CommunityPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {requests.map(req => (
+              {requests.map((req) => (
                 <Card key={req.id} padding="md" className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <Avatar src={req.user.avatar} name={req.user.displayName} size="md" />
                     <div className="min-w-0">
                       <p className="text-sm font-bold truncate text-foreground">{req.user.displayName}</p>
                       <p className="text-xs text-muted-foreground">@{req.user.username}</p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">Requested {formatRelativeTime(req.requestedAt)}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Requested {formatRelativeTime(req.createdAt)}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleReject(req)}
+                      onClick={() => handleReject(req.id)}
                       className="p-2 border border-border rounded-xl text-destructive hover:bg-destructive/10 hover:border-destructive/30 transition-all active:scale-95 shadow-sm"
                       title="Reject request"
                     >
                       <X className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => handleApprove(req)}
+                      onClick={() => handleApprove(req.id)}
                       className="p-2 border border-border rounded-xl text-success hover:bg-success/10 hover:border-success/30 transition-all active:scale-95 shadow-sm"
                       title="Approve request"
                     >
@@ -285,8 +655,15 @@ export default function CommunityPage() {
       {tab === 'About' && (
         <div className="p-4 space-y-5">
           <Card padding="md">
-            <h3 className="font-semibold mb-3 text-foreground text-sm">About this community</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">{community.description}</p>
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="font-semibold text-foreground text-sm">About this community</h3>
+              {community.isModerator && (
+                <Button size="xs" variant="outline" onClick={() => setIsEditAboutOpen(true)} className="flex items-center gap-1">
+                  <Edit3 className="w-3 h-3" /> Edit About
+                </Button>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">{community.description || 'No description provided.'}</p>
           </Card>
           <Card padding="md">
             <div className="space-y-3 text-sm">
@@ -300,13 +677,13 @@ export default function CommunityPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Members</span>
-                <span className="font-semibold text-foreground">{formatCount(memberCount)}</span>
+                <span className="font-semibold text-foreground">{formatCount(community.memberCount)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Created by</span>
                 <div className="flex items-center gap-2">
-                  <Avatar src={community.creator.avatar} name={community.creator.displayName} size="xs" />
-                  <span className="font-semibold text-foreground">{community.creator.displayName}</span>
+                  <Avatar src={community.creator?.avatar} name={community.creator?.displayName} size="xs" />
+                  <span className="font-semibold text-foreground">{community.creator?.displayName}</span>
                 </div>
               </div>
               <div className="flex justify-between">
@@ -321,7 +698,7 @@ export default function CommunityPage() {
       {tab === 'Rules' && (
         <div className="p-4 space-y-3">
           <p className="text-xs text-muted-foreground">Please follow these rules to keep the community healthy and welcoming.</p>
-          {COMMUNITY_RULES.map((rule, i) => (
+          {COMMUNITY_RULES.map((rule: string, i: number) => (
             <Card key={i} padding="md">
               <div className="flex items-start gap-3">
                 <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center flex-shrink-0">
@@ -334,18 +711,11 @@ export default function CommunityPage() {
         </div>
       )}
 
+      {/* Post Creation Modal with flair selection */}
       <Modal isOpen={isCreatePostOpen} onClose={() => setIsCreatePostOpen(false)} title={`Post to ${community.name}`}>
-        <form 
-          className="p-5 flex flex-col gap-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setIsCreatePostOpen(false);
-            setNewPostContent('');
-            toast.success('Post published to community!');
-          }}
-        >
+        <form className="p-5 flex flex-col gap-4" onSubmit={handleCreatePost}>
           <div className="space-y-1.5">
-            <textarea 
+            <textarea
               value={newPostContent}
               onChange={(e) => setNewPostContent(e.target.value)}
               placeholder="Share something with the community..."
@@ -353,8 +723,260 @@ export default function CommunityPage() {
               required
             />
           </div>
+
+          <div className="border border-border p-3 rounded-xl space-y-3">
+            <label className="text-xs font-bold text-muted-foreground block">Add Post Flair (Optional)</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={postFlairText}
+                onChange={(e) => setPostFlairText(e.target.value)}
+                placeholder="e.g. Announcement, Question"
+                className="flex-1 rounded-xl border border-border bg-background px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            {postFlairText && (
+              <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] text-muted-foreground">Bg Color</span>
+                  <input
+                    type="color"
+                    value={postFlairBg}
+                    onChange={(e) => setPostFlairBg(e.target.value)}
+                    className="w-8 h-8 rounded cursor-pointer border border-border"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] text-muted-foreground">Text Color</span>
+                  <input
+                    type="color"
+                    value={postFlairTextCol}
+                    onChange={(e) => setPostFlairTextCol(e.target.value)}
+                    className="w-8 h-8 rounded cursor-pointer border border-border"
+                  />
+                </div>
+                <div className="flex flex-col gap-1 pl-4">
+                  <span className="text-[10px] text-muted-foreground">Preview</span>
+                  <span
+                    className="text-[10px] font-extrabold px-2 py-0.5 rounded-full"
+                    style={{ backgroundColor: postFlairBg, color: postFlairTextCol }}
+                  >
+                    {postFlairText}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
           <Button type="submit" className="w-full mt-2">
             Publish Post
+          </Button>
+        </form>
+      </Modal>
+
+      {/* Edit About Modal */}
+      <Modal isOpen={isEditAboutOpen} onClose={() => setIsEditAboutOpen(false)} title={`Edit ${community.name} details`}>
+        <form className="p-5 flex flex-col gap-4 max-h-[80vh] overflow-y-auto" onSubmit={handleSaveAbout}>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold">Description</label>
+            <textarea
+              value={editDesc}
+              onChange={(e) => setEditDesc(e.target.value)}
+              placeholder="Description..."
+              className="w-full rounded-xl border border-border bg-background px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary resize-none h-20"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold">Rules (one per line)</label>
+            <textarea
+              value={editRules}
+              onChange={(e) => setEditRules(e.target.value)}
+              placeholder="Rules..."
+              className="w-full rounded-xl border border-border bg-background px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary resize-none h-24"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold">Category</label>
+              <select
+                value={editCategory}
+                onChange={(e) => setEditCategory(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="GENERAL">General</option>
+                <option value="Art & Design">Art & Design</option>
+                <option value="Technology">Technology</option>
+                <option value="Health & Wellness">Health & Wellness</option>
+                <option value="Music">Music</option>
+                <option value="Gaming">Gaming</option>
+                <option value="Education">Education</option>
+                <option value="Sports">Sports</option>
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold">Visibility</label>
+              <select
+                value={editVisibility}
+                onChange={(e) => setEditVisibility(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="PUBLIC">Public</option>
+                <option value="PRIVATE">Private</option>
+              </select>
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold">Avatar URL</label>
+            <input
+              type="text"
+              value={editAvatarUrl}
+              onChange={(e) => setEditAvatarUrl(e.target.value)}
+              placeholder="https://..."
+              className="w-full rounded-xl border border-border bg-background px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold">Cover Image URL</label>
+            <input
+              type="text"
+              value={editCoverImage}
+              onChange={(e) => setEditCoverImage(e.target.value)}
+              placeholder="https://..."
+              className="w-full rounded-xl border border-border bg-background px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          <Button type="submit" className="w-full mt-2">
+            Save Changes
+          </Button>
+        </form>
+      </Modal>
+
+      {/* Member Flair Edit Modal */}
+      <Modal isOpen={!!selectedMember} onClose={() => setSelectedMember(null)} title="Edit Member Flair">
+        <form className="p-5 flex flex-col gap-4" onSubmit={handleSaveMemberFlair}>
+          <p className="text-xs text-muted-foreground">Assign a custom flair tag to {selectedMember?.user?.displayName}.</p>
+          
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold">Flair Text</label>
+            <input
+              type="text"
+              value={memberFlairText}
+              onChange={(e) => setMemberFlairText(e.target.value)}
+              placeholder="e.g. Founder, VIP (Leave blank to remove)"
+              className="w-full rounded-xl border border-border bg-background px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          {memberFlairText && (
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] text-muted-foreground">Bg Color</span>
+                <input
+                  type="color"
+                  value={memberFlairBg}
+                  onChange={(e) => setMemberFlairBg(e.target.value)}
+                  className="w-8 h-8 rounded cursor-pointer border border-border"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] text-muted-foreground">Text Color</span>
+                <input
+                  type="color"
+                  value={memberFlairTextCol}
+                  onChange={(e) => setMemberFlairTextCol(e.target.value)}
+                  className="w-8 h-8 rounded cursor-pointer border border-border"
+                />
+              </div>
+              <div className="flex flex-col gap-1 pl-4">
+                <span className="text-[10px] text-muted-foreground">Preview</span>
+                <span
+                  className="text-[10px] font-bold px-2 py-0.5 rounded"
+                  style={{ backgroundColor: memberFlairBg, color: memberFlairTextCol }}
+                >
+                  {memberFlairText}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <Button type="submit" className="w-full mt-2">
+            Save Flair
+          </Button>
+        </form>
+      </Modal>
+
+      {/* Create Event Modal */}
+      <Modal isOpen={isCreateEventOpen} onClose={() => setIsCreateEventOpen(false)} title="Create Community Event">
+        <form onSubmit={handleCreateEvent} className="space-y-4 p-5 max-h-[80vh] overflow-y-auto">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold">Title</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Community Meetup"
+              value={eventForm.title}
+              onChange={e => setEventForm({ ...eventForm, title: e.target.value })}
+              className="w-full rounded-xl border border-border bg-background px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold">Description</label>
+            <textarea
+              placeholder="Describe the event..."
+              value={eventForm.description}
+              onChange={e => setEventForm({ ...eventForm, description: e.target.value })}
+              className="w-full rounded-xl border border-border bg-background p-3 text-sm min-h-[90px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+            />
+          </div>
+          <div className="flex items-center gap-2 py-1.5">
+            <input
+              type="checkbox"
+              id="communityEventIsOnline"
+              checked={eventForm.isOnline}
+              onChange={e => setEventForm({ ...eventForm, isOnline: e.target.checked })}
+              className="h-4 w-4 accent-primary rounded cursor-pointer"
+            />
+            <label htmlFor="communityEventIsOnline" className="text-xs text-foreground font-semibold cursor-pointer">
+              This is an online virtual event
+            </label>
+          </div>
+          {!eventForm.isOnline && (
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold">Location</label>
+              <input
+                type="text"
+                placeholder="e.g. Discord, Zoom or physical location"
+                value={eventForm.location}
+                onChange={e => setEventForm({ ...eventForm, location: e.target.value })}
+                className="w-full rounded-xl border border-border bg-background px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+          )}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold">Starts At</label>
+              <input
+                type="datetime-local"
+                required
+                value={eventForm.startsAt}
+                onChange={e => setEventForm({ ...eventForm, startsAt: e.target.value })}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold">Category</label>
+              <input
+                type="text"
+                placeholder="e.g. Meetup"
+                value={eventForm.category}
+                onChange={e => setEventForm({ ...eventForm, category: e.target.value })}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+          </div>
+          <Button type="submit" className="w-full mt-2">
+            Schedule Event
           </Button>
         </form>
       </Modal>

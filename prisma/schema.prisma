@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -71,6 +71,8 @@ model User {
   emailVerifyToken   String?
   passwordResetToken String?
   passwordResetExpiry DateTime?
+  profileSoundtrack  String?
+  profileSoundtrackVisible Boolean @default(true)
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
@@ -107,6 +109,15 @@ model User {
   savedHashtags      UserSavedHashtag[]
   bookmarks          Bookmark[]
   viewedStories      StoryView[]
+  searchHistories    SearchHistory[]
+  cart                 Cart?
+  ads                  Ad[]
+  webhookSubscriptions WebhookSubscription[]
+  datingProfile        DatingProfile?
+  fundraisers          Fundraiser[]
+  bounties             Bounty[]
+  fundraiserDonations  FundraiserDonation[]
+
 
   // Relations — friends (social graph)
   friendRequestsSent     FriendRequest[] @relation("FriendRequestSender")
@@ -162,6 +173,11 @@ model Post {
   productTag      String?
   isEphemeral     Boolean   @default(false)
   expiresAt       DateTime?
+  scheduledAt     DateTime?
+  btsUrl          String?
+  greenScreenBg   String?
+  labels          String?   @default("[]")
+
   likesCount      Int       @default(0)
   commentsCount   Int       @default(0)
   sharesCount     Int       @default(0)
@@ -448,6 +464,7 @@ model Community {
   posts        CommunityPost[]
   reports      Report[]  @relation("ReportedCommunity")
   joinRequests CommunityJoinRequest[]
+  events       Event[]
 
   @@index([creatorId])
   @@index([category])
@@ -462,6 +479,7 @@ model CommunityMember {
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   role        String    @default("MEMBER")
+  flair       String?
   joinedAt    DateTime  @default(now())
   isBanned    Boolean   @default(false)
   isMuted     Boolean   @default(false)
@@ -490,6 +508,7 @@ model CommunityPost {
   isApproved    Boolean   @default(true)
   isDeleted     Boolean   @default(false)
   deletedAt     DateTime?
+  flair         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -677,6 +696,8 @@ model Product {
 
   orders      Order[]
   reviews     ProductReview[]
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
 
   @@index([sellerId])
   @@index([category])
@@ -705,8 +726,9 @@ model Order {
   id              String   @id @default(cuid())
   buyerId         String
   buyer           User     @relation("OrderBuyer", fields: [buyerId], references: [id])
-  productId       String
-  product         Product  @relation(fields: [productId], references: [id])
+  productId       String?
+  product         Product? @relation(fields: [productId], references: [id])
+  items           OrderItem[]
   quantity        Int      @default(1)
   unitPrice       Float
   total           Float
@@ -1067,6 +1089,8 @@ model Event {
   id            String          @id @default(cuid())
   creatorId     String
   creator       User            @relation("EventCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  communityId   String?
+  community     Community?      @relation(fields: [communityId], references: [id], onDelete: Cascade)
   title         String
   description   String?
   coverImage    String?
@@ -1215,3 +1239,207 @@ model LifeEvent {
   @@index([userId])
   @@index([occurredAt])
 }
+
+// =============================================================================
+// SearchHistory
+// =============================================================================
+model SearchHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  query     String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// =============================================================================
+// Cart (E-Commerce)
+// =============================================================================
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([productId])
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  unitPrice Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+// =============================================================================
+// Ad (Advertiser Campaigns)
+// =============================================================================
+model Ad {
+  id           String   @id @default(cuid())
+  creatorId    String
+  creator      User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  title        String
+  copy         String
+  imageUrl     String?
+  targetUrl    String
+  budget       Float
+  spent        Float    @default(0)
+  bidAmount    Float
+  ageMin       Int?
+  ageMax       Int?
+  gender       String?
+  location     String?
+  isActive     Boolean  @default(true)
+  impressions  Int      @default(0)
+  clicks       Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  placements   AdPlacement[]
+
+  @@index([creatorId])
+  @@index([isActive])
+}
+
+// =============================================================================
+// Developer Webhooks
+// =============================================================================
+model WebhookSubscription {
+  id           String                 @id @default(cuid())
+  userId       String
+  user         User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  url          String
+  events       String
+  secret       String
+  isActive     Boolean                @default(true)
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  deliveryLogs WebhookDeliveryLog[]
+
+  @@index([userId])
+  @@index([isActive])
+}
+
+model WebhookDeliveryLog {
+  id             String              @id @default(cuid())
+  subscriptionId String
+  subscription   WebhookSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  payload        String
+  statusCode     Int?
+  responseBody   String?
+  durationMs     Int
+  success        Boolean
+  createdAt      DateTime            @default(now())
+
+  @@index([subscriptionId])
+  @@index([createdAt])
+}
+
+// =============================================================================
+// Fundraisers (Charity campaigns)
+// =============================================================================
+model Fundraiser {
+  id           String               @id @default(cuid())
+  creatorId    String
+  creator      User                 @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  goalAmount   Float
+  raisedAmount Float                @default(0)
+  status       String               @default("ACTIVE") // ACTIVE | COMPLETED
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  donations    FundraiserDonation[]
+
+  @@index([creatorId])
+  @@index([status])
+}
+
+model FundraiserDonation {
+  id           String     @id @default(cuid())
+  fundraiserId String
+  fundraiser   Fundraiser @relation(fields: [fundraiserId], references: [id], onDelete: Cascade)
+  donorId      String
+  donor        User       @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  amount       Float
+  createdAt    DateTime   @default(now())
+
+  @@index([fundraiserId])
+  @@index([donorId])
+}
+
+// =============================================================================
+// Dating (Swipe & Crush simulator)
+// =============================================================================
+model DatingProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio          String?
+  prompts      String   @default("[]")
+  lookingFor   String   @default("ANY")
+  matches      String   @default("[]")
+  crushes      String   @default("[]")
+  datingEvents String   @default("[]")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// =============================================================================
+// Ad Placements (Support WhatsApp Status/Channel Ads)
+// =============================================================================
+model AdPlacement {
+  id        String   @id @default(cuid())
+  adId      String
+  ad        Ad       @relation(fields: [adId], references: [id], onDelete: Cascade)
+  type      String
+  page      String
+  createdAt DateTime @default(now())
+
+  @@index([adId])
+}
+
+// =============================================================================
+// Bounties (Creator incentives)
+// =============================================================================
+model Bounty {
+  id                String   @id @default(cuid())
+  creatorId         String
+  creator           User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  title             String
+  description       String?
+  rewardAmount      Float
+  status            String   @default("ACTIVE")
+  participantsCount Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([creatorId])
+}
+
+
+

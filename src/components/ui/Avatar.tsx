@@ -36,7 +36,7 @@ export function Avatar({ src, alt, name, size = 'md', className, hasStory, story
             s.ring,
             storyViewed ? 'ring-muted-foreground/40' : 'ring-transparent',
           ],
-          hasStory && !storyViewed && 'story-ring',
+          hasStory && !storyViewed && 'story-ring-animated',
           className
         )}
       >

@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Reply, Trash2, ChevronDown, ChevronUp, Send } from 'lucide-react';
 import { Comment, Post } from '@/types';
 import { CURRENT_USER } from '@/lib/mockData';
 import { formatRelativeTime, cn } from '@/lib/utils';
+import { apiFetch } from '@/lib/apiClient';
 
 interface CommentsSectionProps {
   post: Post;
@@ -263,11 +264,30 @@ function CommentItem({ comment, onReply, onDelete, onLike, isReply = false }: Co
 }
 
 export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
-  const [comments, setComments] = useState<Comment[]>(() => generateMockComments(post.id));
+  const [comments, setComments] = useState<Comment[]>([]);
   const [showAll, setShowAll] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [replyingTo, setReplyingTo] = useState<{ id: string; name: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isExpanded) {
+      const loadComments = async () => {
+        try {
+          const res = await apiFetch(`/api/posts/${post.id}/comments`);
+          if (res.ok) {
+            const json = await res.json();
+            if (json.data) {
+              setComments(json.data);
+            }
+          }
+        } catch (err) {
+          console.error('Failed to load comments:', err);
+        }
+      };
+      loadComments();
+    }
+  }, [isExpanded, post.id]);
 
   const displayedComments = showAll ? comments : comments.slice(0, 2);
 
@@ -305,38 +325,41 @@ export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
     setComments((prev) => prev.map(toggleLike));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
 
-    const newComment: Comment = {
-      id: `${post.id}-c${Date.now()}`,
-      postId: post.id,
-      author: CURRENT_USER,
-      authorId: CURRENT_USER.id,
-      parentId: replyingTo?.id,
-      content: inputValue.trim(),
-      likesCount: 0,
-      userLiked: false,
-      replies: [],
-      createdAt: new Date().toISOString(),
-    };
+    try {
+      const response = await apiFetch(`/api/posts/${post.id}/comments`, {
+        method: 'POST',
+        body: JSON.stringify({
+          content: inputValue.trim(),
+          parentId: replyingTo?.id || null,
+        }),
+      });
 
-    if (replyingTo) {
-      setComments((prev) =>
-        prev.map((c) =>
-          c.id === replyingTo.id
-            ? { ...c, replies: [...(c.replies ?? []), newComment] }
-            : c
-        )
-      );
-      setReplyingTo(null);
-    } else {
-      setComments((prev) => [...prev, newComment]);
+      if (response.ok) {
+        const json = await response.json();
+        const newComment = json.data;
+
+        if (replyingTo) {
+          setComments((prev) =>
+            prev.map((c) =>
+              c.id === replyingTo.id
+                ? { ...c, replies: [...(c.replies ?? []), newComment] }
+                : c
+            )
+          );
+          setReplyingTo(null);
+        } else {
+          setComments((prev) => [...prev, newComment]);
+        }
+        setInputValue('');
+        setShowAll(true);
+      }
+    } catch (err) {
+      console.error('Failed to submit comment:', err);
     }
-
-    setInputValue('');
-    setShowAll(true);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

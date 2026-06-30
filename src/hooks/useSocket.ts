@@ -22,8 +22,9 @@ export function useSocket(): UseSocketReturn {
   const addNotification = useNotificationStore((s) => s.addNotification);
 
   const handleNewMessage = useCallback(
-    (message: Message) => {
-      addMessage(message);
+    (data: any) => {
+      const msg = data && data.message ? data.message : data;
+      addMessage(msg);
     },
     [addMessage]
   );
@@ -35,18 +36,27 @@ export function useSocket(): UseSocketReturn {
     [addNotification]
   );
 
-  const handleUserOnline = useCallback((userId: string) => {
+  const handleUserOnline = useCallback((data: any) => {
+    const id = typeof data === 'object' && data ? data.userId : data;
     setOnlineUsers((prev) => {
       const next = new Set(prev);
-      next.add(userId);
+      if (typeof data === 'object' && data && Array.isArray(data.onlineUsers)) {
+        data.onlineUsers.forEach((u: string) => next.add(u));
+      }
+      if (id && typeof id === 'string') {
+        next.add(id);
+      }
       return next;
     });
   }, []);
 
-  const handleUserOffline = useCallback((userId: string) => {
+  const handleUserOffline = useCallback((data: any) => {
+    const id = typeof data === 'object' && data ? data.userId : data;
     setOnlineUsers((prev) => {
       const next = new Set(prev);
-      next.delete(userId);
+      if (id && typeof id === 'string') {
+        next.delete(id);
+      }
       return next;
     });
   }, []);

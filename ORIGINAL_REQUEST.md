@@ -106,3 +106,186 @@ URGENT: The user reports the agents appear stuck. The orchestrator has completed
 2. Begin actual code implementation — the planning phase is done
 3. Report back with concrete file changes, not just status updates
 
+## Follow-up — 2026-06-30T07:42:35Z
+
+You are an expert autonomous full-stack engineering agent. Your mission is to efficiently, safely, and seamlessly integrate hundreds of catalog features, catalog elements, catalog UI components, catalog workflows, and related improvements into the existing Wakka social media platform without breaking the current website/application.
+
+Working directory: C:\Users\Kingr\OneDrive\Documents\wakkawakka-local
+
+Integrity mode: development
+
+## CRITICAL CONTEXT
+
+The previous implementation attempt FAILED because it created fake "feature registry" and "console" components that simply listed features with "Implemented" badges instead of actually building real, functional, integrated features. Those components (FeatureRegistry.tsx, ProfileCommunityConsole.tsx, ContentFeedConsole.tsx, MessagingFeaturesConsole.tsx, CommerceToolsConsole.tsx, and their batch data files) are GARBAGE and must be REPLACED with real working features integrated into the actual site UI/UX.
+
+Real implementation means:
+- A "Reactions" feature = actual reaction buttons on posts that persist to the database
+- A "Voice Messages" feature = an actual record button in chat that captures and sends audio
+- A "Content Moderation" feature = actual report flows, review queues, and automated filters
+- NOT a page that says "Voice Messages — Implemented"
+
+## EXISTING CODEBASE
+
+**Stack**: Next.js 14 (App Router) · TypeScript · Prisma (PostgreSQL) · Zustand · Radix UI · Tailwind CSS · Socket.IO · Firebase · Framer Motion · React Query · Zod · react-hook-form
+
+**Existing Routes** (18 main sections): feed, profile, messages, notifications, explore, communities, events, marketplace, shop, bookmarks, friends, analytics, audio-rooms, live, memories, pages, reels, settings
+
+**Existing API Routes** (14 endpoints): admin, albums, communities, events, friends, marketplace, memories, notifications, pages, polls, posts, search, socket, users
+
+**Existing State Stores**: authStore, cartStore, feedStore, messageStore, notificationStore, uiStore
+
+**Database Schema**: Prisma schema at `prisma/schema.prisma` (43KB)
+
+**Custom Workspace Skills**: 62 development skills in `.agents/skills/` — READ the `SKILL-PACK-README.md` for full inventory. Use relevant skills for each batch.
+
+**Feature Bible**: `social_media_feature_bible.md` (1.69MB) contains all 1,082 features, 1,082 improvements, and 100 innovations to implement.
+
+## PRIMARY OBJECTIVE
+
+Integrate all features from `social_media_feature_bible.md` into the existing project as REAL, FUNCTIONAL, INTEGRATED features. The integration must be complete, efficient, modular, maintainable, scalable, responsive, accessible, performance-conscious, consistent with the current codebase, and safe to deploy.
+
+The final result should feel like these features were designed as part of the original product, not bolted on afterward.
+
+## REQUIRED SOURCE REVIEW BEFORE CODING
+
+Before writing or modifying code:
+1. Read the existing codebase structure, components, API routes, Prisma schema, stores, types, and hooks
+2. Read `social_media_feature_bible.md` to understand every feature that needs integration
+3. Identify what already exists vs what needs to be built
+4. Remove the fake catalog/registry components from the previous failed attempt
+
+## BUILD A MASTER INTEGRATION INVENTORY
+
+Create `integration_inventory.md` in the working directory. For each feature, record: ID, name, source section, description, user-facing behavior, required frontend/backend/schema/API changes, dependencies, complexity, risk, test requirements, acceptance criteria, status.
+
+## DEPENDENCY-FIRST IMPLEMENTATION ORDER
+
+1. Clean up fake catalog components from previous attempt
+2. Analyze existing architecture thoroughly
+3. Create integration inventory
+4. Define shared types/interfaces/constants
+5. Update Prisma schema for new data models needed
+6. Implement backend API endpoints
+7. Implement frontend data layer/hooks/state management
+8. Implement core UI components integrated into existing pages
+9. Implement navigation and routing changes
+10. Implement search, filter, sort, pagination improvements
+11. Implement detail pages and item-specific elements
+12. Implement user interaction features (reactions, saves, shares, etc.)
+13. Implement admin/moderation tools
+14. Add loading, empty, and error states
+15. Add accessibility, responsive, and performance fixes
+16. Add/update tests
+17. Run full regression review
+18. Prepare final report
+19. Commit only after final review passes
+
+## BATCH WORKFLOW
+
+Work in controlled batches. Each batch must contain a coherent set of features with shared dependencies. For every batch:
+1. List exact inventory items included
+2. Identify dependencies
+3. Implement only that batch
+4. Run type-check, lint, build
+5. Review for missed requirements
+6. Fix errors before continuing
+7. Update inventory status
+8. Summarize completed work
+
+Do not move to next batch while current-batch blocking issues remain.
+
+## CODE QUALITY RULES
+
+- Use existing project patterns and conventions
+- Prefer small reusable components over giant files
+- Keep data logic separate from display logic
+- No duplicate implementations
+- No hardcoded values when constants/config are better
+- Preserve existing routes, styling, auth patterns
+- Use existing error/loading patterns
+- Do not introduce unnecessary dependencies
+- Do not rewrite unrelated code
+- Do not break existing functionality
+
+## WHAT "IMPLEMENTED" ACTUALLY MEANS
+
+A feature is implemented when:
+- The UI element exists in the correct page/component where users would naturally find it
+- It has real interactivity (click handlers, form submissions, state changes)
+- It persists data where appropriate (API calls, database writes)
+- It reads and displays real data
+- It handles loading, error, and empty states
+- It works on mobile and desktop
+- It respects permissions/auth where needed
+
+A feature is NOT implemented if:
+- It only exists in a registry/catalog listing
+- It shows a badge saying "Implemented" without actual functionality
+- It's just a type definition with no UI or API
+- It's dead code that nothing references
+
+## GIT AND COMMIT RULES
+
+- Only commit and push to the `wakkawakka` repository
+- NEVER touch or push to the `moji` repository
+- Do not commit until all batches are implemented, tested, and reviewed
+- Review the diff before committing
+- Use clear commit messages
+
+## FINAL REPORT
+
+Provide: executive summary, total items identified/implemented/tested/blocked, batch summaries, files created/modified, schema changes, API changes, UI changes, tests added, commands run, known risks, recommended next steps.
+
+## START NOW
+
+Begin by inspecting the repository and all catalog materials. Then produce:
+1. A concise codebase architecture summary
+2. A master integration inventory
+3. A dependency map
+4. A batch implementation plan
+5. The first implementation batch
+
+## Follow-up — 2026-06-30T10:44:04Z
+
+IMPORTANT: New requirements from the user's independent platform audit. You must account for these in your remaining batches:
+
+## 13 Feature Gaps to Add
+
+These real platform capabilities are NOT in the feature bible but MUST be implemented:
+
+1. **Facebook Dating** — Secret Crush, Dating profile, Dating-specific Events → Needs its own /dating site section with swipe/match UI (combine with Bumble's matching system)
+2. **Facebook Fundraisers** — Charitable fundraising with goal tracking and donation processing
+3. **Facebook Gaming** — Gaming tab, instant games, tournaments
+4. **Instagram Notes** — Lightweight text status above the DM inbox
+5. **WhatsApp Flows** — Structured in-chat business workflows (forms, selections, confirmations within chat)
+6. **WhatsApp ads in Status/Channels** — Monetization in update surfaces
+7. **Telegram Mini Apps / WebApps** — Full app runtime embedded in chat (unique capability)
+8. **Discord Activities** — Embedded multiplayer/social apps within channels (unique capability)
+9. **Kick Bounties** — Viewer/creator/developer incentive/reward programs
+10. **BeReal BTS** — Behind The Scenes clips showing seconds before daily capture
+11. **Bluesky Labelers** — Modular third-party moderation and labeling system
+12. **Threads Highlighter** — Spotlighting perspectives in trending conversations
+13. **TikTok Green Screen Kit** — External apps feeding assets into content creation
+
+## Apaya Correction
+
+The Apaya research was WRONG. Apaya is an AI-powered social media management/automation platform. Real features:
+- AI Brand Voice Learning (analyzes website for tone/colors/logo)
+- AI Content Generation (captions, hashtags, branded graphics, carousels, videos)
+- Bulk content production (full month of posts at once)
+- Multi-platform scheduling (IG, FB, LinkedIn, X, TikTok, YouTube)
+- Automated publishing
+- Performance analytics
+- Content calendar dashboard
+
+This means Wakka needs a **Content Scheduling & Automation** section that covers both Apaya and Publer capabilities.
+
+## Inflated Platform Notes
+
+- Buz Voice Connects: Only verifiable features are push-to-talk, async playback, text/picture sharing. Don't build features that aren't real.
+- Lemon8: Core identity (lifestyle content, templates, categories) is correct but some specific features may be over-specified.
+- BAND: Core is correct (groups, posts, chat, calendar, polls, files) but some features may be unverifiable.
+
+Add these gaps and corrections to your remaining batch plans. Do NOT skip them.
+
+

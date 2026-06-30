@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Compass, Film, Radio, MessageCircle, Bell, Users, ShoppingBag, BarChart2, User, Settings, Zap, LogOut, Mic, BookMarked, Plus, UserPlus, Calendar, Flag, Store, Clock, Sun, Moon } from 'lucide-react';
+import { Home, Compass, Film, Radio, MessageCircle, Bell, Users, ShoppingBag, BarChart2, User, Settings, Zap, LogOut, Mic, BookMarked, Plus, UserPlus, Calendar, Flag, Store, Clock, Sun, Moon, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuthStore } from '@/store/authStore';
@@ -30,6 +30,7 @@ const NAV_ITEMS = [
   { href: '/shop', icon: ShoppingBag, label: 'Shop' },
   { href: '/analytics', icon: BarChart2, label: 'Analytics' },
   { href: '/bookmarks', icon: BookMarked, label: 'Bookmarks' },
+  { href: '/scheduling', icon: Calendar, label: 'Scheduling' },
 ];
 
 export function Sidebar() {
@@ -125,6 +126,20 @@ export function Sidebar() {
               Settings
             </Link>
           </motion.div>
+          {user?.isAdmin && (
+            <motion.div whileHover={{ x: 4 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
+              <Link
+                href="/admin/moderation"
+                className={cn(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
+                  pathname.startsWith('/admin/moderation') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                )}
+              >
+                <Shield className="h-5 w-5 flex-shrink-0 text-primary animate-pulse" />
+                Moderation
+              </Link>
+            </motion.div>
+          )}
         </div>
       </nav>
 

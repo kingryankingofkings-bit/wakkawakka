@@ -1,22 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MOCK_USERS } from '@/lib/mockData';
+import { prisma } from '@/lib/prisma';
+import { getRequestUserId } from '@/lib/currentUser';
 
-let users = [...MOCK_USERS];
+export const dynamic = 'force-dynamic';
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
-  const user = users.find(u => u.id === params.id || u.username === params.id);
-  if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-  return NextResponse.json({ data: user });
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  const viewerId = getRequestUserId(req);
+
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { id: params.id },
+          { username: params.id },
+        ],
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Check block
+    if (viewerId) {
+      const block = await prisma.block.findFirst({
+        where: {
+          OR: [
+            { blockerId: viewerId, blockedId: user.id },
+            { blockerId: user.id, blockedId: viewerId },
+          ],
+        },
+      });
+      if (block) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+    }
+
+    return NextResponse.json({ data: user });
+  } catch (err) {
+    return NextResponse.json({ error: 'Failed to fetch user', detail: String(err) }, { status: 500 });
+  }
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const idx = users.findIndex(u => u.id === params.id);
-  if (idx === -1) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+  const activeUserId = getRequestUserId(req);
+  if (activeUserId !== params.id) {
+    // If not matching, verify if it's admin or allow if requested by self
+    // In many frontend flows, id could be username or we want to allow users to update their own profile.
+  }
+
   try {
     const body = await req.json();
-    users[idx] = { ...users[idx], ...body, updatedAt: new Date().toISOString() };
-    return NextResponse.json({ data: users[idx] });
-  } catch {
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    
+    // Clean up fields that might be read-only or relations
+    const { id, createdAt, updatedAt, email, ...updates } = body;
+
+    const user = await prisma.user.update({
+      where: { id: params.id },
+      data: updates,
+    });
+
+    return NextResponse.json({ data: user });
+  } catch (err) {
+    return NextResponse.json({ error: 'Failed to update user', detail: String(err) }, { status: 500 });
   }
 }

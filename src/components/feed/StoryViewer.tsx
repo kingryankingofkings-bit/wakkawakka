@@ -7,6 +7,7 @@ import { X, ChevronLeft, ChevronRight, Send } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
 import { formatRelativeTime } from '@/lib/utils';
 import { Story } from '@/types';
+import { apiFetch } from '@/lib/apiClient';
 
 interface StoryViewerProps {
   stories: Story[];
@@ -20,9 +21,19 @@ export function StoryViewer({ stories, initialIndex, onClose }: StoryViewerProps
   const [isPaused, setIsPaused] = useState(false);
   const [reply, setReply] = useState('');
   const intervalRef = useRef<NodeJS.Timeout>();
-  const DURATION = 5000;
 
   const current = stories[currentIndex];
+  const DURATION = (current?.duration || 5) * 1000;
+
+  useEffect(() => {
+    if (current?.id) {
+      apiFetch(`/api/stories/${current.id}/view`, {
+        method: 'POST',
+      }).catch(err => {
+        console.error('Failed to post story view:', err);
+      });
+    }
+  }, [current?.id]);
 
   const goNext = useCallback(() => {
     if (currentIndex < stories.length - 1) {
@@ -49,7 +60,7 @@ export function StoryViewer({ stories, initialIndex, onClose }: StoryViewerProps
       });
     }, 50);
     return () => clearInterval(intervalRef.current);
-  }, [currentIndex, isPaused, goNext]);
+  }, [currentIndex, isPaused, goNext, DURATION]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -103,12 +114,20 @@ export function StoryViewer({ stories, initialIndex, onClose }: StoryViewerProps
           {current.type === 'TEXT' ? (
             <div
               className="h-full w-full flex items-center justify-center px-8"
-              style={{ background: current.backgroundColor || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+              style={{ background: (current as any).backgroundColor || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
             >
               <p className="text-white text-2xl font-bold text-center leading-relaxed">
-                {current.textContent}
+                {(current as any).textContent}
               </p>
             </div>
+          ) : current.type === 'VIDEO' ? (
+            <video
+              src={current.mediaUrl}
+              className="h-full w-full object-cover"
+              autoPlay
+              playsInline
+              muted
+            />
           ) : (
             <img
               src={current.mediaUrl}

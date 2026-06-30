@@ -1,48 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { TrendingUp, TrendingDown, Eye, Users, BarChart2, FileDown } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { TrendingUp, TrendingDown, Eye, Users, FileDown, DollarSign, Gift, Star, Award } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
-import { formatCount, formatRelativeTime } from '@/lib/utils';
-import { MOCK_POSTS, CURRENT_USER } from '@/lib/mockData';
-import { cn } from '@/lib/utils';
+import { formatCount, formatCurrency, cn } from '@/lib/utils';
+import { useAuthStore } from '@/store/authStore';
 import toast from 'react-hot-toast';
-import CommerceToolsConsole from '@/components/commerce/CommerceToolsConsole';
-
 
 const DATE_RANGES = ['7d', '30d', '90d'] as const;
 type DateRange = typeof DATE_RANGES[number];
 
-function generateStats(range: DateRange) {
-  const multiplier = range === '7d' ? 1 : range === '30d' ? 4.3 : 13;
-  return {
-    impressions: Math.floor(12400 * multiplier),
-    impressionsTrend: 12.5,
-    reach: Math.floor(8900 * multiplier),
-    reachTrend: 8.3,
-    profileViews: Math.floor(1240 * multiplier),
-    profileViewsTrend: -2.1,
-    followerGrowth: Math.floor(48 * multiplier),
-    followerGrowthTrend: 22.4,
-  };
-}
-
-function generateBarData(range: DateRange): { label: string; value: number }[] {
-  const days = range === '7d' ? 7 : range === '30d' ? 30 : 12;
-  const labels = range === '90d'
-    ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].slice(0, days)
-    : Array.from({ length: days }, (_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - (days - 1 - i));
-        return `${d.getMonth() + 1}/${d.getDate()}`;
-      });
-  return labels.map(label => ({ label, value: Math.floor(Math.random() * 5000 + 2000) }));
-}
-
 function BarChart({ data }: { data: { label: string; value: number }[] }) {
-  const max = Math.max(...data.map(d => d.value));
+  if (!data || data.length === 0) return <div className="text-sm text-muted-foreground">No data available</div>;
+  const max = Math.max(...data.map(d => d.value), 1);
   return (
     <div className="flex items-end gap-1 h-32">
       {data.map((d, i) => (
@@ -59,7 +31,7 @@ function BarChart({ data }: { data: { label: string; value: number }[] }) {
 }
 
 function DonutChart({ segments }: { segments: { label: string; value: number; color: string }[] }) {
-  const total = segments.reduce((s, seg) => s + seg.value, 0);
+  const total = segments.reduce((s, seg) => s + seg.value, 0) || 1;
   let offset = 0;
 
   return (
@@ -89,7 +61,7 @@ function DonutChart({ segments }: { segments: { label: string; value: number; co
           <div key={seg.label} className="flex items-center gap-2">
             <div className="h-2.5 w-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: seg.color }} />
             <span className="text-xs">{seg.label}</span>
-            <span className="text-xs font-semibold ml-auto">{Math.round(seg.value / total * 100)}%</span>
+            <span className="text-xs font-semibold ml-auto">{Math.round((seg.value / total) * 100)}%</span>
           </div>
         ))}
       </div>
@@ -97,13 +69,118 @@ function DonutChart({ segments }: { segments: { label: string; value: number; co
   );
 }
 
+function SvgLineChart({ data }: { data: { date: string; amount: number }[] }) {
+  if (!data || data.length === 0) {
+    return <div className="text-sm text-muted-foreground py-8 text-center">No earnings data for this period.</div>;
+  }
+  const max = Math.max(...data.map(d => d.amount), 1);
+  const width = 500;
+  const height = 150;
+  const padding = 25;
+
+  const points = data.map((d, i) => {
+    const x = padding + (i / (data.length - 1 || 1)) * (width - 2 * padding);
+    const y = height - padding - (d.amount / max) * (height - 2 * padding);
+    return `${x},${y}`;
+  }).join(' ');
+
+  return (
+    <div className="w-full overflow-x-auto bg-card border border-border rounded-2xl p-4">
+      <h3 className="font-semibold text-sm mb-3">Daily Earnings Trend</h3>
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-40">
+        {/* Grid lines */}
+        <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="currentColor" className="text-border" strokeWidth="1" />
+        <line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="currentColor" className="text-border" strokeWidth="1" />
+        
+        {/* Polyline */}
+        <polyline
+          fill="none"
+          stroke="currentColor"
+          className="text-primary"
+          strokeWidth="3"
+          points={points}
+        />
+        
+        {/* Data Points */}
+        {data.map((d, i) => {
+          const x = padding + (i / (data.length - 1 || 1)) * (width - 2 * padding);
+          const y = height - padding - (d.amount / max) * (height - 2 * padding);
+          return (
+            <g key={i} className="group">
+              <circle
+                cx={x}
+                cy={y}
+                r="4"
+                className="fill-background stroke-primary hover:fill-primary transition-colors cursor-pointer"
+                strokeWidth="2"
+              />
+              <title>{`${d.date}: ${formatCurrency(d.amount)}`}</title>
+            </g>
+          );
+        })}
+      </svg>
+      <div className="flex justify-between px-5 text-[10px] text-muted-foreground mt-2">
+        <span>{data[0]?.date}</span>
+        <span>{data[data.length - 1]?.date}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function AnalyticsPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'advanced'>('overview');
-  const [range, setRange] = useState<DateRange>('30d');
-  const stats = generateStats(range);
-  const barData = generateBarData(range);
+  const [advancedSubTab, setAdvancedSubTab] = useState<'sales' | 'tips' | 'subs'>('sales');
+  const [range, setRange] = useState<DateRange>('7d');
 
-  const topPosts = MOCK_POSTS.slice().sort((a, b) => b.likesCount - a.likesCount).slice(0, 3);
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetch(`/api/creator/analytics?range=${range}`, {
+      headers: {
+        'x-user-id': useAuthStore.getState().user?.id || '',
+      }
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (json.data) {
+          setAnalyticsData(json.data);
+        }
+      })
+      .catch(err => console.error(err))
+      .finally(() => setIsLoading(false));
+  }, [range]);
+
+  const summary = analyticsData?.summary || {
+    totalRevenue: 0,
+    salesRevenue: 0,
+    tipsRevenue: 0,
+    subRevenue: 0,
+    salesCount: 0,
+    subCount: 0,
+    tipsCount: 0,
+    followerGrowth: 0,
+    totalFollowers: 0,
+    avgEngagementRate: 0,
+    totalViews: 0
+  };
+
+  const dailyEarnings = analyticsData?.dailyEarnings || [];
+  const transactions = analyticsData?.transactions || [];
+  const topPosts = analyticsData?.topPosts || [];
+
+  const locationSplit = Object.entries(analyticsData?.demographics?.location || {}).map(([loc, count]) => {
+    const total = summary.totalFollowers || 1;
+    const pct = Math.round(((count as number) / total) * 100);
+    return { country: loc, pct: pct || 0 };
+  }).sort((a, b) => b.pct - a.pct).slice(0, 5);
+
+  const genderData = [
+    { label: 'Male', value: analyticsData?.demographics?.gender?.Male || 0, color: '#3b82f6' },
+    { label: 'Female', value: analyticsData?.demographics?.gender?.Female || 0, color: '#ec4899' },
+    { label: 'Other', value: analyticsData?.demographics?.gender?.Other || 0, color: '#8b5cf6' },
+  ];
 
   const contentTypes = [
     { label: 'Images', value: 45, color: '#3b82f6' },
@@ -112,14 +189,14 @@ export default function AnalyticsPage() {
     { label: 'Reels', value: 10, color: '#f97316' },
   ];
 
-  const genderData = [
-    { label: 'Male', value: 48, color: '#3b82f6' },
-    { label: 'Female', value: 44, color: '#ec4899' },
-    { label: 'Other', value: 8, color: '#8b5cf6' },
-  ];
+  const filteredTransactions = transactions.filter((t: any) => {
+    if (advancedSubTab === 'sales') return t.type === 'sale';
+    if (advancedSubTab === 'tips') return t.type === 'tip';
+    return t.type === 'subscription';
+  });
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-10">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-4">
@@ -141,7 +218,7 @@ export default function AnalyticsPage() {
                 activeTab === 'advanced' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              Advanced Tools
+              Creator Earnings Hub
             </button>
           </div>
         </div>
@@ -152,9 +229,7 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="p-4 space-y-6">
-        {activeTab === 'overview' ? (
-          <>
-            {/* Date range */}
+        {/* Date range filter */}
         <div className="flex gap-2">
           {DATE_RANGES.map(r => (
             <button
@@ -170,135 +245,182 @@ export default function AnalyticsPage() {
           ))}
         </div>
 
-        {/* Overview cards */}
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { label: 'Impressions', value: stats.impressions, trend: stats.impressionsTrend, icon: Eye },
-            { label: 'Reach', value: stats.reach, trend: stats.reachTrend, icon: Users },
-            { label: 'Profile Views', value: stats.profileViews, trend: stats.profileViewsTrend, icon: Eye },
-            { label: 'New Followers', value: stats.followerGrowth, trend: stats.followerGrowthTrend, icon: TrendingUp },
-          ].map(({ label, value, trend, icon: Icon }) => (
-            <Card key={label} padding="md">
-              <div className="flex items-start justify-between mb-2">
-                <p className="text-xs text-muted-foreground">{label}</p>
-                <Icon className="h-4 w-4 text-muted-foreground" />
-              </div>
-              <p className="text-2xl font-bold">{formatCount(value)}</p>
-              <div className={cn('flex items-center gap-1 text-xs font-medium mt-1', trend > 0 ? 'text-green-500' : 'text-red-500')}>
-                {trend > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                {Math.abs(trend)}% vs prev period
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          </div>
+        ) : activeTab === 'overview' ? (
+          <>
+            {/* Overview cards */}
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: 'Total Views', value: summary.totalViews, trend: 12.5, icon: Eye },
+                { label: 'Follower Growth', value: summary.followerGrowth, trend: 8.3, icon: Users },
+                { label: 'Engagement Rate', value: `${summary.avgEngagementRate}%`, trend: 2.1, icon: TrendingUp },
+                { label: 'Total Followers', value: summary.totalFollowers, trend: 22.4, icon: Award },
+              ].map(({ label, value, trend, icon: Icon }) => (
+                <Card key={label} padding="md">
+                  <div className="flex items-start justify-between mb-2">
+                    <p className="text-xs text-muted-foreground">{label}</p>
+                    <Icon className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <p className="text-2xl font-bold">{typeof value === 'number' ? formatCount(value) : value}</p>
+                  <div className={cn('flex items-center gap-1 text-xs font-medium mt-1', 'text-green-500')}>
+                    <TrendingUp className="h-3 w-3" />
+                    Live database update
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* Demographics section */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Card padding="md">
+                <h3 className="font-semibold mb-4">Content Breakdown</h3>
+                <DonutChart segments={contentTypes} />
+              </Card>
+              <Card padding="md">
+                <h3 className="font-semibold mb-4">Audience Gender</h3>
+                <DonutChart segments={genderData} />
+              </Card>
+            </div>
+
+            {/* Top locations */}
+            <Card padding="md">
+              <h3 className="font-semibold mb-4">Top Locations</h3>
+              <div className="space-y-3">
+                {locationSplit.length === 0 || (locationSplit.length === 1 && locationSplit[0].country === 'Global' && locationSplit[0].pct === 0) ? (
+                  <p className="text-xs text-muted-foreground">No location data yet.</p>
+                ) : (
+                  locationSplit.map(({ country, pct }) => (
+                    <div key={country} className="flex items-center gap-3">
+                      <span className="text-sm w-40 truncate">{country}</span>
+                      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="text-sm font-medium w-10 text-right">{pct}%</span>
+                    </div>
+                  ))
+                )}
               </div>
             </Card>
-          ))}
-        </div>
 
-        {/* Impressions chart */}
-        <Card padding="md">
-          <h3 className="font-semibold mb-4">Post Impressions</h3>
-          <BarChart data={barData} />
-          <div className="flex justify-between mt-2">
-            {barData.filter((_, i) => i % Math.ceil(barData.length / 6) === 0).map(d => (
-              <span key={d.label} className="text-xs text-muted-foreground">{d.label}</span>
-            ))}
-          </div>
-        </Card>
-
-        {/* Content performance & Audience */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Card padding="md">
-            <h3 className="font-semibold mb-4">Content Breakdown</h3>
-            <DonutChart segments={contentTypes} />
-          </Card>
-          <Card padding="md">
-            <h3 className="font-semibold mb-4">Audience Gender</h3>
-            <DonutChart segments={genderData} />
-          </Card>
-        </div>
-
-        {/* Top locations */}
-        <Card padding="md">
-          <h3 className="font-semibold mb-4">Top Locations</h3>
-          <div className="space-y-3">
-            {[
-              { country: '🇺🇸 United States', pct: 48 },
-              { country: '🇬🇧 United Kingdom', pct: 12 },
-              { country: '🇨🇦 Canada', pct: 9 },
-              { country: '🇦🇺 Australia', pct: 8 },
-              { country: '🇩🇪 Germany', pct: 6 },
-            ].map(({ country, pct }) => (
-              <div key={country} className="flex items-center gap-3">
-                <span className="text-sm w-40">{country}</span>
-                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
-                </div>
-                <span className="text-sm font-medium w-10 text-right">{pct}%</span>
+            {/* Top posts */}
+            <div>
+              <h3 className="font-semibold mb-4">Top Performing Posts</h3>
+              <div className="space-y-3">
+                {topPosts.length === 0 ? (
+                  <div className="text-center py-8 text-sm text-muted-foreground bg-card border border-border rounded-xl">
+                    No posts available yet.
+                  </div>
+                ) : (
+                  topPosts.map((post: any, i: number) => (
+                    <Card key={post.id} padding="md">
+                      <div className="flex items-start gap-3">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 font-bold text-primary text-sm">
+                          #{i + 1}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm line-clamp-2">{post.content || '[Media Post]'}</p>
+                          <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+                            <span>{formatCount(post.likes)} likes</span>
+                            <span>{formatCount(post.comments)} comments</span>
+                            <span>{formatCount(post.views)} views</span>
+                            <span className="text-primary font-bold">{post.engagementRate}% ER</span>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))
+                )}
               </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* Best posting times */}
-        <Card padding="md">
-          <h3 className="font-semibold mb-4">Best Posting Times</h3>
-          <div className="overflow-x-auto">
-            <div className="grid" style={{ gridTemplateColumns: 'auto repeat(24, 1fr)', minWidth: '600px' }}>
-              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-                <div key={day} className="contents">
-                  <div className="text-xs text-muted-foreground py-1 pr-2 flex items-center">{day}</div>
-                  {Array.from({ length: 24 }, (_, h) => {
-                    const val = Math.random();
-                    return (
-                      <div
-                        key={h}
-                        className="m-0.5 rounded-sm h-5"
-                        style={{ backgroundColor: `rgba(59, 130, 246, ${val > 0.7 ? 0.8 : val > 0.4 ? 0.4 : 0.1})` }}
-                        title={`${day} ${h}:00 - ${Math.round(val * 100)}% engagement`}
-                      />
-                    );
-                  })}
-                </div>
-              ))}
             </div>
-            <div className="grid mt-1" style={{ gridTemplateColumns: 'auto repeat(24, 1fr)', minWidth: '600px' }}>
-              <div />
-              {[0, 6, 12, 18, 23].map(h => (
-                <div key={h} className="text-xs text-muted-foreground" style={{ gridColumn: h + 2 }}>
-                  {h}h
-                </div>
-              ))}
-            </div>
-          </div>
-        </Card>
-
-        {/* Top posts */}
-        <div>
-          <h3 className="font-semibold mb-4">Top Performing Posts</h3>
-          <div className="space-y-3">
-            {topPosts.map((post, i) => (
-              <Card key={post.id} padding="md">
-                <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 font-bold text-primary text-sm">
-                    #{i + 1}
-                  </div>
-                  {post.mediaUrls[0] && (
-                    <img src={post.mediaUrls[0]} alt="" className="h-14 w-14 rounded-xl object-cover flex-shrink-0" />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm line-clamp-2">{post.content}</p>
-                    <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-                      <span>{formatCount(post.likesCount)} likes</span>
-                      <span>{formatCount(post.commentsCount)} comments</span>
-                      <span>{formatCount(post.viewsCount)} views</span>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
           </>
         ) : (
-          <CommerceToolsConsole />
+          /* Advanced Creator Earnings Hub */
+          <div className="space-y-6">
+            {/* SVG Line Chart */}
+            <SvgLineChart data={dailyEarnings} />
+
+            {/* Earnings breakdown grid */}
+            <div className="grid grid-cols-3 gap-3">
+              <Card padding="sm" className="text-center space-y-1">
+                <DollarSign className="h-5 w-5 mx-auto text-primary" />
+                <p className="text-[10px] text-muted-foreground uppercase font-bold">Sales</p>
+                <p className="text-sm font-bold text-foreground">{formatCurrency(summary.salesRevenue)}</p>
+                <p className="text-[9px] text-muted-foreground">{summary.salesCount} purchases</p>
+              </Card>
+              <Card padding="sm" className="text-center space-y-1">
+                <Gift className="h-5 w-5 mx-auto text-purple-500" />
+                <p className="text-[10px] text-muted-foreground uppercase font-bold">Tips</p>
+                <p className="text-sm font-bold text-foreground">{formatCurrency(summary.tipsRevenue)}</p>
+                <p className="text-[9px] text-muted-foreground">{summary.tipsCount} tips</p>
+              </Card>
+              <Card padding="sm" className="text-center space-y-1">
+                <Award className="h-5 w-5 mx-auto text-success" />
+                <p className="text-[10px] text-muted-foreground uppercase font-bold">Subscriptions</p>
+                <p className="text-sm font-bold text-foreground">{formatCurrency(summary.subRevenue)}</p>
+                <p className="text-[9px] text-muted-foreground">{summary.subCount} active</p>
+              </Card>
+            </div>
+
+            {/* Live Creator Earnings Hub Dashboard */}
+            <Card padding="none" className="overflow-hidden border border-border">
+              <div className="flex border-b border-border bg-muted/30">
+                <button
+                  onClick={() => setAdvancedSubTab('sales')}
+                  className={cn(
+                    'flex-1 py-3 text-xs font-bold transition-all border-b-2',
+                    advancedSubTab === 'sales' ? 'border-primary text-primary bg-card' : 'border-transparent text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  Sales Transactions
+                </button>
+                <button
+                  onClick={() => setAdvancedSubTab('tips')}
+                  className={cn(
+                    'flex-1 py-3 text-xs font-bold transition-all border-b-2',
+                    advancedSubTab === 'tips' ? 'border-primary text-primary bg-card' : 'border-transparent text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  Tips Received
+                </button>
+                <button
+                  onClick={() => setAdvancedSubTab('subs')}
+                  className={cn(
+                    'flex-1 py-3 text-xs font-bold transition-all border-b-2',
+                    advancedSubTab === 'subs' ? 'border-primary text-primary bg-card' : 'border-transparent text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  Subscriptions
+                </button>
+              </div>
+
+              {/* Transactions List */}
+              <div className="divide-y divide-border max-h-80 overflow-y-auto">
+                {filteredTransactions.length === 0 ? (
+                  <div className="text-center py-10 text-xs text-muted-foreground">
+                    No transactions found for this sub-tab.
+                  </div>
+                ) : (
+                  filteredTransactions.map((tx: any) => (
+                    <div key={tx.id} className="p-3 flex items-center justify-between text-xs hover:bg-muted/10">
+                      <div>
+                        <p className="font-semibold text-foreground">{tx.name}</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {new Date(tx.date).toLocaleDateString()} at {new Date(tx.date).toLocaleTimeString()}
+                        </p>
+                        {tx.message && <p className="text-[10px] text-primary mt-0.5">&quot;{tx.message}&quot;</p>}
+                      </div>
+                      <div className="text-right">
+                        <span className="font-bold text-foreground">{formatCurrency(tx.amount)}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </Card>
+          </div>
         )}
       </div>
     </div>

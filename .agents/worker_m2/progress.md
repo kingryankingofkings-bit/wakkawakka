@@ -1,13 +1,12 @@
 # Progress Tracker
 
-Last visited: 2026-06-30T04:57:40Z
+Last visited: 2026-06-30T09:20:00Z
 
-## Steps
-- [x] Initialize briefing and progress files (Completed)
-- [x] Investigate Batch 1 categories in `implementation_tracker.md` and check feature list (Completed)
-- [x] Read `src/app/(main)/settings/page.tsx` to understand integration points (Completed)
-- [x] Create `src/components/settings/FeatureRegistry.tsx` containing the 480 features and the requested interactive controls (Completed)
-- [x] Integrate `FeatureRegistry` into `src/app/(main)/settings/page.tsx` (Completed)
-- [x] Update `implementation_tracker.md` for Batch 1 entries (Category 7 and Category 10) (Completed)
-- [x] Run type-checking, linting, and production build to verify (Completed)
-- [x] Write handoff report `handoff.md` and send completion message (Completed)
+## Milestone 2 (Batch 1 Real Integration) Steps
+- [x] Initial verification of current codebase (type-check, lint, e2e tests) (Completed)
+- [x] Implement Post & Message Reactions (Prisma GET/POST, react endpoint, store integration, PostCard integration) (Completed)
+- [x] Implement Voice Messages (Upload API, record/upload UI, bubbles rendering) (Completed)
+- [x] Implement Content Moderation & Reporting (Report POST API, report modal, Admin GET/PATCH API, admin UI, Sidebar admin check) (Completed)
+- [x] Run type check, linting, and build verification (Completed)
+- [x] Run tests and verify all pass (Completed)
+- [x] Update integration inventory (Completed)

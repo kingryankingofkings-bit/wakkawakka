@@ -15,13 +15,32 @@ export function ProfileSoundtrack({ url }: ProfileSoundtrackProps) {
 
   // In a real application, you would initialize an Audio object or embed a 
   // Spotify/SoundCloud iframe. For this demo, we simulate a beautiful visual player!
+  // Parse url into song name and actual audio preview url
+  let parsedUrl = url;
+  let songName = 'Profile Soundtrack';
+  if (url && url.includes('|')) {
+    const parts = url.split('|');
+    parsedUrl = parts[1].trim();
+    songName = parts[0].trim();
+  }
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // If we had a real audio file URL (e.g. .mp3), we could play it here:
-    // audioRef.current = new Audio(url);
-    // return () => { audioRef.current?.pause(); };
-  }, [url]);
+    if (parsedUrl) {
+      audioRef.current = new Audio(parsedUrl);
+      
+      const handleEnded = () => setIsPlaying(false);
+      audioRef.current.addEventListener('ended', handleEnded);
+
+      return () => {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.removeEventListener('ended', handleEnded);
+        }
+      };
+    }
+  }, [parsedUrl]);
 
   const togglePlay = () => {
     if (isPlaying) {
@@ -29,8 +48,10 @@ export function ProfileSoundtrack({ url }: ProfileSoundtrackProps) {
       audioRef.current?.pause();
     } else {
       setIsPlaying(true);
-      // Play mock audio or actual audio if we had a valid audio source
-      audioRef.current?.play().catch(() => {});
+      audioRef.current?.play().catch((err) => {
+        console.error('Audio playback failed', err);
+        setIsPlaying(false);
+      });
     }
   };
 
@@ -51,7 +72,7 @@ export function ProfileSoundtrack({ url }: ProfileSoundtrackProps) {
             className="absolute -top-10 bg-black/80 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-white/10 whitespace-nowrap flex items-center gap-1.5"
           >
             <Music className="w-3 h-3 text-primary" />
-            Profile Soundtrack
+            {songName}
           </motion.div>
         )}
       </AnimatePresence>

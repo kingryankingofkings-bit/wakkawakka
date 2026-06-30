@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { User, Lock, Bell, Eye, Shield, DollarSign, Accessibility, Globe, Smartphone, ChevronRight, Moon, Sun, Monitor, Check, Download, Trash2, LogOut, Key, Copy, ShieldAlert } from 'lucide-react';
+import { useEffect } from 'react';
+import { User, UserPlus, Lock, Bell, Eye, Shield, DollarSign, Accessibility, Globe, Smartphone, ChevronRight, Moon, Sun, Monitor, Check, Download, Trash2, LogOut, Key, Copy, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
@@ -11,13 +12,13 @@ import { CURRENT_USER } from '@/lib/mockData';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useTheme } from 'next-themes';
-import FeatureRegistry from '@/components/settings/FeatureRegistry';
 
-type SettingsSection = 'account' | 'privacy' | 'notifications' | 'appearance' | 'security' | 'monetization' | 'accessibility' | 'fediverse' | 'advanced';
+type SettingsSection = 'account' | 'privacy' | 'requests' | 'notifications' | 'appearance' | 'security' | 'monetization' | 'accessibility' | 'fediverse' | 'advanced';
 
 const SECTIONS = [
   { id: 'account' as const, icon: User, label: 'Account' },
   { id: 'privacy' as const, icon: Eye, label: 'Privacy' },
+  { id: 'requests' as const, icon: UserPlus, label: 'Follow Requests' },
   { id: 'notifications' as const, icon: Bell, label: 'Notifications' },
   { id: 'appearance' as const, icon: Monitor, label: 'Appearance' },
   { id: 'security' as const, icon: Shield, label: 'Security' },
@@ -90,6 +91,50 @@ export default function SettingsPage() {
   const [accentColor, setAccentColor] = useState(user.accentColor || 'blue');
   const [dmPermission, setDmPermission] = useState<'EVERYONE' | 'FOLLOWERS' | 'NONE'>('EVERYONE');
   const [fontSize, setFontSize] = useState(16);
+
+  // Follow requests state & actions
+  const [followRequests, setFollowRequests] = useState<any[]>([]);
+  const [loadingRequests, setLoadingRequests] = useState(false);
+
+  useEffect(() => {
+    if (activeSection === 'requests') {
+      fetchRequests();
+    }
+  }, [activeSection]);
+
+  async function fetchRequests() {
+    setLoadingRequests(true);
+    try {
+      const res = await fetch('/api/users/requests');
+      if (res.ok) {
+        const json = await res.json();
+        setFollowRequests(json.data || []);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingRequests(false);
+    }
+  }
+
+  async function handleRequestAction(requestId: string, action: 'approve' | 'reject') {
+    try {
+      const res = await fetch(`/api/users/requests/${requestId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+      if (res.ok) {
+        toast.success(`Request ${action === 'approve' ? 'approved' : 'rejected'} successfully!`);
+        fetchRequests();
+      } else {
+        toast.error('Failed to process request');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred');
+    }
+  }
 
   // 2FA Wizard States
   const [show2FAWizard, setShow2FAWizard] = useState(false);
@@ -200,6 +245,49 @@ export default function SettingsPage() {
                   </div>
                   <Button variant="destructive" size="sm" onClick={() => toast.error('Account deletion disabled in demo')}>Delete</Button>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Follow Requests */}
+          {activeSection === 'requests' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-bold mb-1 text-foreground">Follow Requests</h2>
+                <p className="text-sm text-muted-foreground">Manage incoming follow requests for your private account</p>
+              </div>
+              <div className="rounded-2xl border border-border bg-card p-4 space-y-4">
+                {loadingRequests ? (
+                  <div className="text-center py-6 text-muted-foreground text-sm">Loading requests...</div>
+                ) : followRequests.length === 0 ? (
+                  <div className="text-center py-6 text-muted-foreground text-sm">No pending follow requests</div>
+                ) : (
+                  <div className="divide-y divide-border/60">
+                    {followRequests.map((req: any) => (
+                      <div key={req.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-primary/10 overflow-hidden relative">
+                            {req.follower.avatar ? (
+                              <img src={req.follower.avatar} alt={req.follower.displayName} className="h-full w-full object-cover" />
+                            ) : (
+                              <div className="h-full w-full flex items-center justify-center font-bold text-primary text-sm">
+                                {req.follower.displayName.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">{req.follower.displayName}</p>
+                            <p className="text-xs text-muted-foreground">@{req.follower.username}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button size="xs" variant="primary" onClick={() => handleRequestAction(req.id, 'approve')}>Accept</Button>
+                          <Button size="xs" variant="outline" onClick={() => handleRequestAction(req.id, 'reject')} className="text-destructive hover:bg-destructive/10">Reject</Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -541,7 +629,9 @@ export default function SettingsPage() {
 
           {/* Advanced Settings & Features */}
           {activeSection === 'advanced' && (
-            <FeatureRegistry />
+            <div className="text-center py-12 text-muted-foreground">
+              Advanced settings are currently unavailable.
+            </div>
           )}
         </div>
       </div>
