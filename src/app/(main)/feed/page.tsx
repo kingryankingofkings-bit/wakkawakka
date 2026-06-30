@@ -11,6 +11,7 @@ import { CreatePostCard } from '@/components/feed/CreatePostCard';
 import { CreatePostModal } from '@/components/feed/CreatePostModal';
 import { useFeedStore } from '@/store/feedStore';
 import { useSearchStore } from '@/store/searchStore';
+import { useSafetyStore } from '@/store/safetyStore';
 import { isMuted } from '@/lib/searchQuery';
 import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
@@ -32,6 +33,7 @@ export default function FeedPage() {
 function FeedPageInner() {
   const { posts, feedType, setFeedType } = useFeedStore();
   const mutedKeywords = useSearchStore(s => s.mutedKeywords);
+  const blocked = useSafetyStore(s => s.blocked);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showNewPosts, setShowNewPosts] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -41,9 +43,13 @@ function FeedPageInner() {
   // keep the server-rendered list and first client render identical.
   useEffect(() => setMounted(true), []);
 
+  const blockedIds = useMemo(() => new Set(blocked.map(b => b.id)), [blocked]);
   const visiblePosts = useMemo(
-    () => (mounted ? posts.filter(p => !isMuted(p, mutedKeywords)) : posts),
-    [posts, mutedKeywords, mounted]
+    () =>
+      mounted
+        ? posts.filter(p => !isMuted(p, mutedKeywords) && !blockedIds.has(p.authorId))
+        : posts,
+    [posts, mutedKeywords, blockedIds, mounted]
   );
   const hiddenCount = posts.length - visiblePosts.length;
 

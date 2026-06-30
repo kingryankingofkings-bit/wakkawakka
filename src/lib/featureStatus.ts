@@ -254,6 +254,45 @@ export const FEATURE_STATUS: Record<string, FeatureStatus> = {
     href: '/analytics',
     note: 'One-click CSV/JSON analytics export; PDF generation is planned.',
   },
+
+  // ---------------------------------------------------------------------------
+  // Batch 7 — Privacy, Security & Safety
+  // ---------------------------------------------------------------------------
+  'privacy-security-and-safety--f661--block-and-mute-list': {
+    status: 'live',
+    href: '/safety',
+    note: 'Block users from a post menu; manage the blocked list and muted words in Safety.',
+  },
+  'privacy-security-and-safety--f662--block-list-management': {
+    status: 'live',
+    href: '/safety',
+    note: 'Persisted blocked-accounts list with one-tap unblock.',
+  },
+  'privacy-security-and-safety--f666--blocked-accounts-list': {
+    status: 'live',
+    href: '/safety',
+    note: 'View every account you have blocked, with block time.',
+  },
+  'privacy-security-and-safety--f681--content-reporting-system': {
+    status: 'live',
+    href: '/feed',
+    note: 'Report posts with a reason + detail; reports are tracked in Safety.',
+  },
+  'privacy-security-and-safety--f688--custom-report-reasons': {
+    status: 'live',
+    href: '/feed',
+    note: 'Six structured report reasons plus a free-text detail field.',
+  },
+  'privacy-security-and-safety--f705--hidden-words-filtering': {
+    status: 'live',
+    href: '/safety',
+    note: 'Muted words hide matching posts from the feed (managed in Safety & Explore).',
+  },
+  'privacy-security-and-safety--f649--active-session-auditing': {
+    status: 'live',
+    href: '/safety',
+    note: 'Review active sessions by device/location and sign out remote ones.',
+  },
 };
 
 const DEFAULT: FeatureStatus = { status: 'planned' };
