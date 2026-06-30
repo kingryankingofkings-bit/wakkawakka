@@ -6,13 +6,16 @@ description: Use when creating, running, or reverting database migrations, manag
 # Database Migration Safety
 
 ## Goal
+
 Execute schema changes safely with rollback plans and zero-downtime strategies.
 
 ## Do Not Use When
+
 - Development-only, throwaway databases
 - Schema is managed automatically (Firebase, etc.)
 
 ## Required Inputs To Inspect
+
 - Current schema
 - Desired schema changes
 - Production status (is this live?)
@@ -32,6 +35,7 @@ Execute schema changes safely with rollback plans and zero-downtime strategies.
 ## Safe Migration Patterns
 
 ### Adding a Column
+
 ```sql
 -- Step 1: Add nullable column (safe, no table lock)
 ALTER TABLE users ADD COLUMN display_name TEXT;
@@ -46,6 +50,7 @@ ALTER TABLE users ALTER COLUMN display_name SET NOT NULL;
 ```
 
 ### Removing a Column
+
 ```sql
 -- Step 1: Stop writing to column (deploy code change)
 -- Step 2: Make column nullable (if not already)
@@ -54,6 +59,7 @@ ALTER TABLE users ALTER COLUMN display_name SET NOT NULL;
 ```
 
 ## Quality Checks
+
 - [ ] Migration tested on realistic data
 - [ ] Rollback plan documented
 - [ ] No data loss risk
@@ -61,11 +67,13 @@ ALTER TABLE users ALTER COLUMN display_name SET NOT NULL;
 - [ ] Monitored post-deployment
 
 ## Safety Rules
+
 - Never run untested migrations on production
 - Never modify existing migration files that have been run
 - Always have a backup
 - Break large migrations into smaller batches
 
 ## Coordinates With
+
 - `database-schema-designer` — for schema changes
 - `backup-rollback-planner` — for disaster recovery

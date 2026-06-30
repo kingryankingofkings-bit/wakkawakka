@@ -6,13 +6,16 @@ description: Use when planning dependency updates, framework upgrades, security 
 # Maintenance and Update Planner
 
 ## Goal
+
 Keep dependencies current with safe update practices and minimal disruption.
 
 ## Do Not Use When
+
 - Dependencies are already up to date
 - No update is needed
 
 ## Required Inputs To Inspect
+
 - Current dependencies and versions
 - Outdated packages (`npm outdated`)
 - Security advisories (`npm audit`)
@@ -40,17 +43,20 @@ Keep dependencies current with safe update practices and minimal disruption.
 ```
 
 ## Quality Checks
+
 - [ ] `npm audit` shows no high/critical vulnerabilities
 - [ ] All tests pass after updates
 - [ ] Build succeeds
 - [ ] Changelogs reviewed for breaking changes
 
 ## Safety Rules
+
 - Commit before updating
 - Update one major dependency at a time
 - Test after each update
 - Have rollback plan
 
 ## Coordinates With
+
 - `dependency-conflict-resolver` — for conflicts during updates
 - `security-audit-reviewer` — for security patches

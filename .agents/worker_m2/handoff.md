@@ -1,7 +1,9 @@
 # Handoff Report — 2026-06-30T09:20:00Z
 
 ## 1. Observation
+
 The project is built on Next.js, Prisma, and Tailwind CSS.
+
 - Active codebase state compiles and runs E2E tests cleanly:
   - `npm run type-check` outputs: `tsc --noEmit` and succeeds.
   - `npm run lint` completes successfully with warnings only.
@@ -14,6 +16,7 @@ The project is built on Next.js, Prisma, and Tailwind CSS.
 - Found frontend apiClient in `src/lib/apiClient.ts` providing `apiFetch`, which automatically attaches the active user ID as `x-user-id`.
 
 ## 2. Logic Chain
+
 - **Post & Message Reactions**:
   - We modified `src/app/api/posts/route.ts` to query Prisma, support page/limit filters, trending/following feeds, and auto-seed mock users and posts if no records exist.
   - We created `src/app/api/posts/[id]/react/route.ts` which uses `prisma.$transaction` to ensure atomic updates when a user reacts (toggles the reaction off if same, updates it if different, or creates it if new) and updates the post's counter.
@@ -32,13 +35,16 @@ The project is built on Next.js, Prisma, and Tailwind CSS.
   - We created the admin dashboard page at `src/app/(main)/admin/moderation/page.tsx` displaying reports and action buttons, and added it to `src/components/layout/Sidebar.tsx` for admin users.
 
 ## 3. Caveats
+
 - Browser media recording (`MediaRecorder` API) requires permission grants and works in modern SSL or localhost contexts. Standard fallbacks/error toasts were implemented in case permission is denied.
 - WebSocket message passing via socket requires an active server listener (mock socket implementation exists and works seamlessly with the UI).
 
 ## 5. Conclusion
+
 All Batch 1 integrated database-backed features (Reactions, Voice Messages, Reporting/Moderation) have been fully implemented with clean, type-safe Next.js API endpoints and frontend integrations. Typescript check, eslint, production build, and all e2e runner tests pass cleanly.
 
 ## 6. Verification Method
+
 - **Type Check & Linting**:
   - Run `npm run type-check` to verify no compilation errors.
   - Run `npm run lint` to verify compliance with style guidelines.

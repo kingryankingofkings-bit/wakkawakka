@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 const userSelect = {
   id: true,
@@ -17,7 +17,7 @@ const userSelect = {
 export async function GET(req: NextRequest) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
           },
         },
         messages: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: "desc" },
           take: 1,
           include: {
             sender: {
@@ -46,14 +46,14 @@ export async function GET(req: NextRequest) {
         },
       },
       orderBy: {
-        lastMessageAt: 'desc',
+        lastMessageAt: "desc",
       },
     });
 
     const mapped = await Promise.all(
       conversations.map(async (c) => {
         const lastMsg = c.messages[0] || null;
-        
+
         // Calculate unread count for this user
         const unreadCount = await prisma.message.count({
           where: {
@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
                 conversationId: lastMsg.conversationId,
                 senderId: lastMsg.senderId,
                 sender: lastMsg.sender,
-                content: lastMsg.content || '',
+                content: lastMsg.content || "",
                 mediaUrl: lastMsg.mediaUrl || undefined,
                 type: lastMsg.type,
                 isRead: lastMsg.isRead,
@@ -87,14 +87,14 @@ export async function GET(req: NextRequest) {
           unreadCount,
           createdAt: c.createdAt.toISOString(),
         };
-      })
+      }),
     );
 
     return NextResponse.json({ data: mapped });
   } catch (err) {
     return NextResponse.json(
-      { error: 'Failed to fetch conversations', detail: String(err) },
-      { status: 500 }
+      { error: "Failed to fetch conversations", detail: String(err) },
+      { status: 500 },
     );
   }
 }
@@ -103,7 +103,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
@@ -114,7 +114,10 @@ export async function POST(req: NextRequest) {
       // 1-to-1 chat
       const targetId = targetUserId || (participantIds && participantIds[0]);
       if (!targetId) {
-        return NextResponse.json({ error: 'targetUserId or participantIds required' }, { status: 400 });
+        return NextResponse.json(
+          { error: "targetUserId or participantIds required" },
+          { status: 400 },
+        );
       }
 
       // Check if conversation already exists to avoid duplicates
@@ -145,7 +148,9 @@ export async function POST(req: NextRequest) {
             isGroup: existing.isGroup,
             avatarUrl: existing.avatarUrl,
             members: existing.members.map((m) => m.user),
-            admins: existing.members.filter((m) => m.isAdmin).map((m) => m.user),
+            admins: existing.members
+              .filter((m) => m.isAdmin)
+              .map((m) => m.user),
             unreadCount: 0,
             createdAt: existing.createdAt.toISOString(),
           },
@@ -158,10 +163,7 @@ export async function POST(req: NextRequest) {
           isGroup: false,
           lastMessageAt: new Date(),
           members: {
-            create: [
-              { userId },
-              { userId: targetId },
-            ],
+            create: [{ userId }, { userId: targetId }],
           },
         },
         include: {
@@ -190,7 +192,10 @@ export async function POST(req: NextRequest) {
     } else {
       // Group chat
       if (!name) {
-        return NextResponse.json({ error: 'Group name required' }, { status: 400 });
+        return NextResponse.json(
+          { error: "Group name required" },
+          { status: 400 },
+        );
       }
 
       const memberIds: string[] = participantIds || [];
@@ -236,8 +241,8 @@ export async function POST(req: NextRequest) {
     }
   } catch (err) {
     return NextResponse.json(
-      { error: 'Failed to create conversation', detail: String(err) },
-      { status: 500 }
+      { error: "Failed to create conversation", detail: String(err) },
+      { status: 500 },
     );
   }
 }

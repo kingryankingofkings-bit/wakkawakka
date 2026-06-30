@@ -6,13 +6,16 @@ description: Use when managing environment variables, configuring deployment env
 # Environment Config Manager
 
 ## Goal
+
 Manage environment-specific configuration securely with proper secrets handling and validation.
 
 ## Do Not Use When
+
 - Configuration is already managed
 - No environment-specific values needed
 
 ## Required Inputs To Inspect
+
 - Required environment variables
 - Current .env files
 - Deployment platforms
@@ -31,7 +34,7 @@ Manage environment-specific configuration securely with proper secrets handling 
 ## Required Variables Pattern
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
@@ -39,18 +42,20 @@ const envSchema = z.object({
   NEXTAUTH_URL: z.string().url(),
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
-  NODE_ENV: z.enum(['development', 'production', 'test']),
+  NODE_ENV: z.enum(["development", "production", "test"]),
 });
 
 export const env = envSchema.parse(process.env);
 ```
 
 ## Safety Rules
+
 - Never commit .env files
 - Never log secrets
 - Rotate secrets regularly
 - Use different secrets per environment
 
 ## Coordinates With
+
 - `security-audit-reviewer` — for secret management
 - `deployment-preflight-checker` — for env validation

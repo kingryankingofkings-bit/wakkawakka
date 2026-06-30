@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // GET /api/cart - Fetches active user's cart including items and products
 export async function GET(req: NextRequest) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
@@ -25,13 +25,13 @@ export async function GET(req: NextRequest) {
                     username: true,
                     displayName: true,
                     avatar: true,
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!cart) {
@@ -48,19 +48,22 @@ export async function GET(req: NextRequest) {
                       username: true,
                       displayName: true,
                       avatar: true,
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
     }
 
     return NextResponse.json({ data: cart });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to fetch cart', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch cart", detail: String(err) },
+      { status: 500 },
+    );
   }
 }
 
@@ -68,21 +71,24 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
     const { productId, quantity = 1 } = await req.json();
     if (!productId) {
-      return NextResponse.json({ error: 'productId is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "productId is required" },
+        { status: 400 },
+      );
     }
 
     // Verify product exists
     const product = await prisma.product.findUnique({
-      where: { id: productId }
+      where: { id: productId },
     });
     if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     // Get or create cart
@@ -97,8 +103,8 @@ export async function POST(req: NextRequest) {
         cartId_productId: {
           cartId: cart.id,
           productId: productId,
-        }
-      }
+        },
+      },
     });
 
     let cartItem;
@@ -106,22 +112,25 @@ export async function POST(req: NextRequest) {
       cartItem = await prisma.cartItem.update({
         where: { id: existingItem.id },
         data: { quantity: existingItem.quantity + quantity },
-        include: { product: true }
+        include: { product: true },
       });
     } else {
       cartItem = await prisma.cartItem.create({
         data: {
           cartId: cart.id,
           productId: productId,
-          quantity: quantity
+          quantity: quantity,
         },
-        include: { product: true }
+        include: { product: true },
       });
     }
 
     return NextResponse.json({ data: cartItem }, { status: 200 });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to add item to cart', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to add item to cart", detail: String(err) },
+      { status: 500 },
+    );
   }
 }
 
@@ -129,18 +138,21 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
     const { productId, quantity } = await req.json();
     if (!productId || quantity === undefined) {
-      return NextResponse.json({ error: 'productId and quantity are required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "productId and quantity are required" },
+        { status: 400 },
+      );
     }
 
     let cart = await prisma.cart.findUnique({ where: { userId } });
     if (!cart) {
-      return NextResponse.json({ error: 'Cart not found' }, { status: 404 });
+      return NextResponse.json({ error: "Cart not found" }, { status: 404 });
     }
 
     const existingItem = await prisma.cartItem.findUnique({
@@ -148,28 +160,34 @@ export async function PUT(req: NextRequest) {
         cartId_productId: {
           cartId: cart.id,
           productId: productId,
-        }
-      }
+        },
+      },
     });
 
     if (!existingItem) {
-      return NextResponse.json({ error: 'Cart item not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Cart item not found" },
+        { status: 404 },
+      );
     }
 
     if (quantity <= 0) {
       await prisma.cartItem.delete({ where: { id: existingItem.id } });
-      return NextResponse.json({ message: 'Item removed from cart' });
+      return NextResponse.json({ message: "Item removed from cart" });
     }
 
     const updatedItem = await prisma.cartItem.update({
       where: { id: existingItem.id },
       data: { quantity },
-      include: { product: true }
+      include: { product: true },
     });
 
     return NextResponse.json({ data: updatedItem });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to update cart item', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update cart item", detail: String(err) },
+      { status: 500 },
+    );
   }
 }
 
@@ -177,26 +195,29 @@ export async function PUT(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   const sp = req.nextUrl.searchParams;
-  const action = sp.get('action');
-  const productId = sp.get('productId');
+  const action = sp.get("action");
+  const productId = sp.get("productId");
 
   try {
     const cart = await prisma.cart.findUnique({ where: { userId } });
     if (!cart) {
-      return NextResponse.json({ error: 'Cart not found' }, { status: 404 });
+      return NextResponse.json({ error: "Cart not found" }, { status: 404 });
     }
 
-    if (action === 'clear') {
+    if (action === "clear") {
       await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
-      return NextResponse.json({ message: 'Cart cleared successfully' });
+      return NextResponse.json({ message: "Cart cleared successfully" });
     }
 
     if (!productId) {
-      return NextResponse.json({ error: 'productId is required to remove specific item' }, { status: 400 });
+      return NextResponse.json(
+        { error: "productId is required to remove specific item" },
+        { status: 400 },
+      );
     }
 
     const existingItem = await prisma.cartItem.findUnique({
@@ -204,17 +225,23 @@ export async function DELETE(req: NextRequest) {
         cartId_productId: {
           cartId: cart.id,
           productId: productId,
-        }
-      }
+        },
+      },
     });
 
     if (!existingItem) {
-      return NextResponse.json({ error: 'Cart item not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Cart item not found" },
+        { status: 404 },
+      );
     }
 
     await prisma.cartItem.delete({ where: { id: existingItem.id } });
-    return NextResponse.json({ message: 'Item removed from cart' });
+    return NextResponse.json({ message: "Item removed from cart" });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to delete cart item(s)', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete cart item(s)", detail: String(err) },
+      { status: 500 },
+    );
   }
 }

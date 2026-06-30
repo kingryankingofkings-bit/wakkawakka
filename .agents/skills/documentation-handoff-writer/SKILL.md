@@ -6,13 +6,16 @@ description: Use when writing project documentation, creating README files, API 
 # Documentation and Handoff Writer
 
 ## Goal
+
 Create clear, useful documentation that enables others to understand, run, and maintain the project.
 
 ## Do Not Use When
+
 - Documentation already exists and is current
 - The project is personal and won't be shared
 
 ## Required Inputs To Inspect
+
 - Project structure and tech stack
 - Environment variables
 - API endpoints
@@ -22,25 +25,30 @@ Create clear, useful documentation that enables others to understand, run, and m
 
 ## Documentation Structure
 
-```markdown
+````markdown
 # Project Name
 
 ## Overview
+
 What this project does, who built it, why.
 
 ## Tech Stack
+
 - Frontend:
 - Backend:
 - Database:
 - Hosting:
 
 ## Getting Started
+
 ### Prerequisites
+
 - Node.js version
 - Database
 - API keys
 
 ### Installation
+
 ```bash
 git clone <repo>
 cd project
@@ -49,20 +57,26 @@ cp .env.example .env
 # Fill in environment variables
 npm run dev
 ```
+````
 
 ## Environment Variables
-| Variable | Description | Required |
-|----------|-------------|----------|
-| DATABASE_URL | PostgreSQL connection string | Yes |
+
+| Variable     | Description                  | Required |
+| ------------ | ---------------------------- | -------- |
+| DATABASE_URL | PostgreSQL connection string | Yes      |
 
 ## API Documentation
+
 See `/docs/api.md` or OpenAPI spec.
 
 ## Deployment
+
 See `/docs/deployment.md`.
 
 ## Architecture
+
 See `/docs/architecture.md`.
+
 ```
 
 ## Quality Checks
@@ -74,3 +88,4 @@ See `/docs/architecture.md`.
 ## Coordinates With
 - `technical-architecture-planner` — for architecture docs
 - `hosting-platform-deployer` — for deployment docs
+```

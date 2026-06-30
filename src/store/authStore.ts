@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import type { User } from '@/types';
-import { CURRENT_USER } from '@/lib/mockData';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import type { User } from "@/types";
+import { CURRENT_USER } from "@/lib/mockData";
 
 interface AuthState {
   user: User | null;
@@ -27,7 +27,7 @@ export const useAuthStore = create<AuthStore>()(
       user: CURRENT_USER,
       isLoading: true,
       isAuthenticated: true,
-      token: 'mock-token-123',
+      token: "mock-token-123",
 
       // Actions
       setUser: (user) =>
@@ -58,7 +58,7 @@ export const useAuthStore = create<AuthStore>()(
       setToken: (token) => set({ token }),
     }),
     {
-      name: 'wakka-auth',
+      name: "wakka-auth",
       storage: createJSONStorage(() => localStorage),
       // Only persist user and token, not transient loading state
       partialize: (state) => ({
@@ -72,6 +72,6 @@ export const useAuthStore = create<AuthStore>()(
           state.isLoading = false;
         }
       },
-    }
-  )
+    },
+  ),
 );

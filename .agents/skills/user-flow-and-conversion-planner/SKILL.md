@@ -6,14 +6,17 @@ description: Use when designing user journeys, conversion funnels, onboarding fl
 # User Flow and Conversion Planner
 
 ## Goal
+
 Design user journeys that guide visitors toward key actions with minimal friction and maximum clarity.
 
 ## Do Not Use When
+
 - The site has no conversion goals (purely informational)
 - User flow is already documented
 - The task is visual/UI design only
 
 ## Required Inputs To Inspect
+
 - `project-brief.md` with stated goals
 - `information-architecture.md` for page structure
 - Target audience descriptions
@@ -39,12 +42,15 @@ Produce `user-flows.md`:
 # User Flows: [Project]
 
 ## Conversion Goals
+
 1. Primary: [Goal] — Target: [X]%
 2. Secondary: [Goal] — Target: [Y]%
 
 ## Primary Flow: [Goal Name]
 ```
+
 Landing Page → Value Prop → CTA Click → Form → Confirmation
+
 ```
 **Entry Points**: Google Ads, Organic search
 **Success Metric**: Form completion rate
@@ -72,6 +78,7 @@ Landing Page → Value Prop → CTA Click → Form → Confirmation
 ```
 
 ## Quality Checks
+
 - [ ] Every flow has a clear start and end
 - [ ] Each step has a defined success criteria
 - [ ] Error states are planned, not ignored
@@ -79,11 +86,13 @@ Landing Page → Value Prop → CTA Click → Form → Confirmation
 - [ ] Flows account for different user types
 
 ## Safety Rules
+
 - Never design flows that manipulate or deceive users
 - Always provide clear exit paths
 - Respect user data — no forced registration before value delivery
 
 ## Coordinates With
+
 - `information-architecture-planner` — page structure
 - `frontend-scaffold-builder` — flow implementation
 - `forms-validation-builder` — form design in flows

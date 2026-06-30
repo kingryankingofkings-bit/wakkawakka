@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Heart,
   MessageCircle,
@@ -24,25 +24,25 @@ import {
   Trash2,
   Link2,
   Repeat2,
-} from 'lucide-react';
-import { Post, ReactionType } from '@/types';
-import { CURRENT_USER } from '@/lib/mockData';
+} from "lucide-react";
+import { Post, ReactionType } from "@/types";
+import { CURRENT_USER } from "@/lib/mockData";
 import {
   cn,
   formatRelativeTime,
   formatCount,
   highlightText,
   REACTION_EMOJIS,
-} from '@/lib/utils';
-import { useFeedStore } from '@/store/feedStore';
-import { ReactionPicker } from './ReactionPicker';
-import { CommentsSection } from './CommentsSection';
-import { ShareModal } from './ShareModal';
-import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
-import toast from 'react-hot-toast';
-import { usePosts } from '@/hooks/usePosts';
-import { apiFetch } from '@/lib/apiClient';
+} from "@/lib/utils";
+import { useFeedStore } from "@/store/feedStore";
+import { ReactionPicker } from "./ReactionPicker";
+import { CommentsSection } from "./CommentsSection";
+import { ShareModal } from "./ShareModal";
+import { Modal } from "@/components/ui/Modal";
+import { Button } from "@/components/ui/Button";
+import toast from "react-hot-toast";
+import { usePosts } from "@/hooks/usePosts";
+import { apiFetch } from "@/lib/apiClient";
 
 interface PostCardProps {
   post: Post;
@@ -50,11 +50,11 @@ interface PostCardProps {
 
 // Verification badge component
 function VerificationBadge({ tier }: { tier: string }) {
-  if (tier === 'NONE') return null;
-  if (tier === 'GOLD') {
+  if (tier === "NONE") return null;
+  if (tier === "GOLD") {
     return <Shield className="w-4 h-4 text-yellow-500 fill-yellow-500" />;
   }
-  if (tier === 'GOVERNMENT') {
+  if (tier === "GOVERNMENT") {
     return <Shield className="w-4 h-4 text-gray-500 fill-gray-500" />;
   }
   return <BadgeCheck className="w-4 h-4 text-blue-500 fill-blue-500" />;
@@ -79,10 +79,12 @@ function MediaGrid({ urls, type }: { urls: string[]; type: string }) {
 
   const handleTimeUpdate = () => {
     if (!videoRef.current) return;
-    setProgress((videoRef.current.currentTime / videoRef.current.duration) * 100);
+    setProgress(
+      (videoRef.current.currentTime / videoRef.current.duration) * 100,
+    );
   };
 
-  if (type === 'VIDEO') {
+  if (type === "VIDEO") {
     return (
       <div className="relative rounded-xl overflow-hidden bg-black group">
         {/* Video placeholder (no actual video URL in mock data) */}
@@ -241,7 +243,9 @@ function MediaGrid({ urls, type }: { urls: string[]; type: string }) {
           />
           {i === 3 && urls.length > 5 && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span className="text-white text-lg font-bold">+{urls.length - 5}</span>
+              <span className="text-white text-lg font-bold">
+                +{urls.length - 5}
+              </span>
             </div>
           )}
         </div>
@@ -251,7 +255,9 @@ function MediaGrid({ urls, type }: { urls: string[]; type: string }) {
 }
 
 export function PostCard({ post }: PostCardProps) {
-  const isSpotlightThread = (post.likesCount * 1.5 + post.commentsCount * 3.0) > 15 || post.likesCount > 4;
+  const isSpotlightThread =
+    post.likesCount * 1.5 + post.commentsCount * 3.0 > 15 ||
+    post.likesCount > 4;
   const { updatePost, removePost } = useFeedStore();
   const { reactToPost } = usePosts();
 
@@ -260,7 +266,7 @@ export function PostCard({ post }: PostCardProps) {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(post.isBookmarked ?? false);
-  
+
   const currentReaction = post.userReaction;
   const likesCount = post.likesCount;
   const [isLikeAnimating, setIsLikeAnimating] = useState(false);
@@ -269,8 +275,8 @@ export function PostCard({ post }: PostCardProps) {
   // Block & Report States
   const [isHidden, setIsHidden] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
-  const [reportReason, setReportReason] = useState('SPAM');
-  const [reportText, setReportText] = useState('');
+  const [reportReason, setReportReason] = useState("SPAM");
+  const [reportText, setReportText] = useState("");
   const [showBtsModal, setShowBtsModal] = useState(false);
 
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -296,7 +302,7 @@ export function PostCard({ post }: PostCardProps) {
     if (currentReaction) {
       reactToPost(post.id, currentReaction);
     } else {
-      reactToPost(post.id, 'LIKE');
+      reactToPost(post.id, "LIKE");
     }
     setIsLikeAnimating(true);
     setTimeout(() => setIsLikeAnimating(false), 1300);
@@ -319,7 +325,9 @@ export function PostCard({ post }: PostCardProps) {
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/post/${post.id}`,
+      );
     } catch {}
     setShowCopied(true);
     setShowMenu(false);
@@ -338,27 +346,29 @@ export function PostCard({ post }: PostCardProps) {
 
   const handleReportSubmit = async () => {
     try {
-      const response = await apiFetch('/api/reports', {
-        method: 'POST',
+      const response = await apiFetch("/api/reports", {
+        method: "POST",
         body: JSON.stringify({
           targetId: post.id,
-          targetType: 'POST',
+          targetType: "POST",
           reason: reportReason,
           description: reportText,
         }),
       });
 
       if (response.ok) {
-        toast.success('Thank you for reporting. Our moderators will review this post shortly.');
+        toast.success(
+          "Thank you for reporting. Our moderators will review this post shortly.",
+        );
       } else {
-        toast.error('Failed to submit report');
+        toast.error("Failed to submit report");
       }
     } catch (err) {
       console.error(err);
-      toast.error('Failed to submit report');
+      toast.error("Failed to submit report");
     }
     setShowReportModal(false);
-    setReportText('');
+    setReportText("");
   };
 
   const handleVote = (optionId: string) => {
@@ -366,7 +376,7 @@ export function PostCard({ post }: PostCardProps) {
     const hasVoted = post.poll.userVotes && post.poll.userVotes.length > 0;
     if (hasVoted) return;
 
-    const updatedOptions = post.poll.options.map(opt => {
+    const updatedOptions = post.poll.options.map((opt) => {
       if (opt.id === optionId) {
         return { ...opt, votesCount: opt.votesCount + 1 };
       }
@@ -376,11 +386,11 @@ export function PostCard({ post }: PostCardProps) {
     const updatedPoll = {
       ...post.poll,
       options: updatedOptions,
-      userVotes: [optionId]
+      userVotes: [optionId],
     };
 
     updatePost(post.id, { poll: updatedPoll });
-    toast.success('Vote submitted!');
+    toast.success("Vote submitted!");
   };
 
   // Close menu on outside click
@@ -398,7 +408,8 @@ export function PostCard({ post }: PostCardProps) {
         "bg-card border border-border rounded-2xl overflow-hidden hover:shadow-card-hover transition-all duration-300 relative",
         isSpotlightThread
           ? "ring-2 ring-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.35)] bg-gradient-to-b from-amber-500/5 via-card to-card"
-          : (post.likesCount > 3 || post.isPinned) && "ring-2 ring-primary/60 shadow-[0_0_15px_rgba(59,130,246,0.25)] bg-gradient-to-b from-primary/5 to-transparent"
+          : (post.likesCount > 3 || post.isPinned) &&
+              "ring-2 ring-primary/60 shadow-[0_0_15px_rgba(59,130,246,0.25)] bg-gradient-to-b from-primary/5 to-transparent",
       )}
     >
       {/* Header */}
@@ -451,10 +462,12 @@ export function PostCard({ post }: PostCardProps) {
               <span>@{post.author.username}</span>
               <span>·</span>
               <span>{formatRelativeTime(post.createdAt)}</span>
-              {post.visibility !== 'PUBLIC' && (
+              {post.visibility !== "PUBLIC" && (
                 <>
                   <span>·</span>
-                  <span className="capitalize">{post.visibility.toLowerCase()}</span>
+                  <span className="capitalize">
+                    {post.visibility.toLowerCase()}
+                  </span>
                 </>
               )}
             </div>
@@ -468,14 +481,14 @@ export function PostCard({ post }: PostCardProps) {
             whileTap={{ scale: 0.9 }}
             onClick={handleBookmark}
             className={cn(
-              'p-1.5 rounded-lg transition-colors',
+              "p-1.5 rounded-lg transition-colors",
               isBookmarked
-                ? 'text-primary'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted",
             )}
           >
             <Bookmark
-              className={cn('w-4 h-4', isBookmarked && 'fill-primary')}
+              className={cn("w-4 h-4", isBookmarked && "fill-primary")}
             />
           </motion.button>
 
@@ -540,7 +553,10 @@ export function PostCard({ post }: PostCardProps) {
                       )}
                     </button>
                     <button
-                      onClick={() => { setShowShareModal(true); setShowMenu(false); }}
+                      onClick={() => {
+                        setShowShareModal(true);
+                        setShowMenu(false);
+                      }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
                     >
                       <Repeat2 className="w-4 h-4 text-muted-foreground" />
@@ -550,7 +566,10 @@ export function PostCard({ post }: PostCardProps) {
                       <>
                         <div className="h-px bg-border mx-2 my-1" />
                         <button
-                          onClick={() => { setShowReportModal(true); setShowMenu(false); }}
+                          onClick={() => {
+                            setShowReportModal(true);
+                            setShowMenu(false);
+                          }}
                           className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
                         >
                           <Flag className="w-4 h-4 text-muted-foreground" />
@@ -578,10 +597,10 @@ export function PostCard({ post }: PostCardProps) {
         <div className="px-4 pb-2">
           <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
             <Users className="w-3.5 h-3.5" />
-            Created with{' '}
+            Created with{" "}
             {post.collaborators.map((c, i) => (
               <span key={c.id}>
-                {i > 0 && ' & '}
+                {i > 0 && " & "}
                 <span className="font-semibold">@{c.username}</span>
               </span>
             ))}
@@ -600,67 +619,84 @@ export function PostCard({ post }: PostCardProps) {
       )}
 
       {/* Poll Visual Widget */}
-      {post.poll && (() => {
-        const poll = post.poll;
-        const hasVoted = poll.userVotes && poll.userVotes.length > 0;
-        const totalVotes = poll.options.reduce((sum, o) => sum + o.votesCount, 0) || 1;
-        
-        return (
-          <div className="px-4 pb-4">
-            <div className="bg-muted/40 border border-border/80 rounded-2xl p-4 space-y-3">
-              <h4 className="text-sm font-semibold text-foreground">{poll.question}</h4>
-              <div className="space-y-2">
-                {poll.options.map((opt) => {
-                  const percent = Math.round((opt.votesCount / totalVotes) * 100);
-                  const isUserChoice = poll.userVotes?.includes(opt.id);
-                  
-                  return (
-                    <button
-                      key={opt.id}
-                      disabled={hasVoted || poll.isClosed}
-                      onClick={() => handleVote(opt.id)}
-                      className={cn(
-                        "w-full text-left relative overflow-hidden rounded-xl h-10 border transition-all text-xs font-semibold px-4 flex items-center justify-between",
-                        hasVoted 
-                          ? "border-border/60 bg-transparent cursor-default" 
-                          : "border-border hover:bg-muted active:scale-[0.99] cursor-pointer"
-                      )}
-                    >
-                      {/* Voted progress indicator bar */}
-                      {hasVoted && (
-                        <div
-                          className={cn(
-                            "absolute left-0 top-0 bottom-0 z-0 transition-all duration-500",
-                            isUserChoice ? "bg-primary/15" : "bg-muted/80"
+      {post.poll &&
+        (() => {
+          const poll = post.poll;
+          const hasVoted = poll.userVotes && poll.userVotes.length > 0;
+          const totalVotes =
+            poll.options.reduce((sum, o) => sum + o.votesCount, 0) || 1;
+
+          return (
+            <div className="px-4 pb-4">
+              <div className="bg-muted/40 border border-border/80 rounded-2xl p-4 space-y-3">
+                <h4 className="text-sm font-semibold text-foreground">
+                  {poll.question}
+                </h4>
+                <div className="space-y-2">
+                  {poll.options.map((opt) => {
+                    const percent = Math.round(
+                      (opt.votesCount / totalVotes) * 100,
+                    );
+                    const isUserChoice = poll.userVotes?.includes(opt.id);
+
+                    return (
+                      <button
+                        key={opt.id}
+                        disabled={hasVoted || poll.isClosed}
+                        onClick={() => handleVote(opt.id)}
+                        className={cn(
+                          "w-full text-left relative overflow-hidden rounded-xl h-10 border transition-all text-xs font-semibold px-4 flex items-center justify-between",
+                          hasVoted
+                            ? "border-border/60 bg-transparent cursor-default"
+                            : "border-border hover:bg-muted active:scale-[0.99] cursor-pointer",
+                        )}
+                      >
+                        {/* Voted progress indicator bar */}
+                        {hasVoted && (
+                          <div
+                            className={cn(
+                              "absolute left-0 top-0 bottom-0 z-0 transition-all duration-500",
+                              isUserChoice ? "bg-primary/15" : "bg-muted/80",
+                            )}
+                            style={{ width: `${percent}%` }}
+                          />
+                        )}
+
+                        <span className="relative z-10 flex items-center gap-2 text-foreground">
+                          {opt.text}
+                          {isUserChoice && (
+                            <span className="text-primary text-[10px] bg-primary/10 rounded px-1 py-0.5">
+                              Your Vote
+                            </span>
                           )}
-                          style={{ width: `${percent}%` }}
-                        />
-                      )}
-                      
-                      <span className="relative z-10 flex items-center gap-2 text-foreground">
-                        {opt.text}
-                        {isUserChoice && <span className="text-primary text-[10px] bg-primary/10 rounded px-1 py-0.5">Your Vote</span>}
-                      </span>
-                      {hasVoted && (
-                        <span className="relative z-10 text-muted-foreground font-mono">
-                          {percent}% ({opt.votesCount})
                         </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="text-[10px] text-muted-foreground pt-1 flex justify-between">
-                <span>{poll.options.reduce((sum, o) => sum + o.votesCount, 0)} total votes</span>
-                {poll.isClosed && <span className="text-destructive font-semibold">Closed</span>}
+                        {hasVoted && (
+                          <span className="relative z-10 text-muted-foreground font-mono">
+                            {percent}% ({opt.votesCount})
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="text-[10px] text-muted-foreground pt-1 flex justify-between">
+                  <span>
+                    {poll.options.reduce((sum, o) => sum + o.votesCount, 0)}{" "}
+                    total votes
+                  </span>
+                  {poll.isClosed && (
+                    <span className="text-destructive font-semibold">
+                      Closed
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
 
       {/* Media */}
-      {(post.mediaUrls.length > 0 || post.type === 'VIDEO') && (
+      {(post.mediaUrls.length > 0 || post.type === "VIDEO") && (
         <div className="px-3 pb-3 relative">
           {post.greenScreenBg && (
             <div className="absolute top-5 left-5 z-10 bg-green-600 text-white font-bold text-[9px] px-2 py-0.5 rounded-md flex items-center gap-1 shadow-md select-none uppercase">
@@ -688,8 +724,12 @@ export function PostCard({ post }: PostCardProps) {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-foreground truncate">{post.musicTrack.title}</p>
-            <p className="text-xs text-muted-foreground truncate">{post.musicTrack.artist}</p>
+            <p className="text-sm font-semibold text-foreground truncate">
+              {post.musicTrack.title}
+            </p>
+            <p className="text-xs text-muted-foreground truncate">
+              {post.musicTrack.artist}
+            </p>
           </div>
           <Music2 className="w-4 h-4 text-primary animate-bounce-subtle flex-shrink-0" />
         </div>
@@ -703,7 +743,7 @@ export function PostCard({ post }: PostCardProps) {
             {likesCount > 0 && (
               <span className="flex items-center gap-1">
                 <span>{REACTION_EMOJIS.LIKE}</span>
-                {currentReaction && currentReaction !== 'LIKE' && (
+                {currentReaction && currentReaction !== "LIKE" && (
                   <span>{REACTION_EMOJIS[currentReaction]}</span>
                 )}
                 <span>{formatCount(likesCount)}</span>
@@ -737,17 +777,17 @@ export function PostCard({ post }: PostCardProps) {
               whileTap={{ scale: 0.85 }}
               onClick={handleLikeClick}
               className={cn(
-                'flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors',
+                "flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors",
                 currentReaction
-                  ? 'text-red-500 bg-red-500/10'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  ? "text-red-500 bg-red-500/10"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               {currentReaction ? (
                 <span
                   className={cn(
-                    'text-base leading-none',
-                    isLikeAnimating && 'animate-heart-beat'
+                    "text-base leading-none",
+                    isLikeAnimating && "animate-heart-beat",
                   )}
                 >
                   {REACTION_EMOJIS[currentReaction]}
@@ -755,15 +795,16 @@ export function PostCard({ post }: PostCardProps) {
               ) : (
                 <Heart
                   className={cn(
-                    'w-5 h-5',
-                    isLikeAnimating && 'animate-heart-beat'
+                    "w-5 h-5",
+                    isLikeAnimating && "animate-heart-beat",
                   )}
                 />
               )}
               <span>
                 {currentReaction
-                  ? currentReaction.charAt(0) + currentReaction.slice(1).toLowerCase()
-                  : 'Like'}
+                  ? currentReaction.charAt(0) +
+                    currentReaction.slice(1).toLowerCase()
+                  : "Like"}
               </span>
             </motion.button>
           </div>
@@ -773,13 +814,15 @@ export function PostCard({ post }: PostCardProps) {
             whileTap={{ scale: 0.85 }}
             onClick={() => setShowComments(!showComments)}
             className={cn(
-              'flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors',
+              "flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors",
               showComments
-                ? 'text-primary bg-primary/10'
-                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                ? "text-primary bg-primary/10"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
-            <MessageCircle className={cn('w-5 h-5', showComments && 'fill-primary/20')} />
+            <MessageCircle
+              className={cn("w-5 h-5", showComments && "fill-primary/20")}
+            />
             <span>Comment</span>
           </motion.button>
 
@@ -821,7 +864,9 @@ export function PostCard({ post }: PostCardProps) {
                 </div>
               )}
               <div>
-                <p className="text-sm font-semibold text-foreground">{post.productTag.name}</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {post.productTag.name}
+                </p>
                 <p className="text-sm text-primary font-bold">
                   ${post.productTag.price.toFixed(2)}
                 </p>
@@ -848,16 +893,26 @@ export function PostCard({ post }: PostCardProps) {
       />
 
       {/* Report Post Modal */}
-      <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)} title="Report Post" size="md">
+      <Modal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        title="Report Post"
+        size="md"
+      >
         <div className="p-4 space-y-4">
-          <p className="text-sm text-muted-foreground">Select a reason for reporting this post. We review all reports within 24 hours.</p>
+          <p className="text-sm text-muted-foreground">
+            Select a reason for reporting this post. We review all reports
+            within 24 hours.
+          </p>
           <div className="space-y-2">
-            {['SPAM', 'HARASSMENT', 'INAPPROPRIATE', 'OTHER'].map(reason => (
+            {["SPAM", "HARASSMENT", "INAPPROPRIATE", "OTHER"].map((reason) => (
               <label
                 key={reason}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-all",
-                  reportReason === reason ? "border-primary bg-primary/5" : "border-border hover:bg-muted"
+                  reportReason === reason
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:bg-muted",
                 )}
               >
                 <input
@@ -868,7 +923,9 @@ export function PostCard({ post }: PostCardProps) {
                   onChange={() => setReportReason(reason)}
                   className="accent-primary h-4 w-4"
                 />
-                <span className="text-sm font-semibold capitalize text-foreground">{reason.toLowerCase()}</span>
+                <span className="text-sm font-semibold capitalize text-foreground">
+                  {reason.toLowerCase()}
+                </span>
               </label>
             ))}
           </div>
@@ -876,22 +933,34 @@ export function PostCard({ post }: PostCardProps) {
           <textarea
             placeholder="Add details (optional)..."
             value={reportText}
-            onChange={e => setReportText(e.target.value)}
+            onChange={(e) => setReportText(e.target.value)}
             className="w-full min-h-[80px] p-3 rounded-xl border border-border bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
           />
 
           <div className="flex gap-3 justify-end pt-2">
-            <Button variant="ghost" onClick={() => setShowReportModal(false)}>Cancel</Button>
-            <Button onClick={handleReportSubmit} variant="destructive">Submit Report</Button>
+            <Button variant="ghost" onClick={() => setShowReportModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleReportSubmit} variant="destructive">
+              Submit Report
+            </Button>
           </div>
         </div>
       </Modal>
 
       {/* Behind-The-Scenes Video Player Modal */}
       {post.btsUrl && (
-        <Modal isOpen={showBtsModal} onClose={() => setShowBtsModal(false)} title="Behind-the-Scenes snippet" size="md">
+        <Modal
+          isOpen={showBtsModal}
+          onClose={() => setShowBtsModal(false)}
+          title="Behind-the-Scenes snippet"
+          size="md"
+        >
           <div className="p-4 flex flex-col items-center justify-center space-y-3">
-            <p className="text-xs text-muted-foreground">3-second Behind-The-Scenes snippet attached by @{post.author.username}</p>
+            <p className="text-xs text-muted-foreground">
+              3-second Behind-The-Scenes snippet attached by @
+              {post.author.username}
+            </p>
             <div className="relative rounded-2xl overflow-hidden bg-black border border-border w-full aspect-[9/16] max-w-[280px]">
               <video
                 src={post.btsUrl}
@@ -902,7 +971,9 @@ export function PostCard({ post }: PostCardProps) {
                 className="w-full h-full object-cover"
               />
             </div>
-            <Button size="sm" onClick={() => setShowBtsModal(false)}>Close Player</Button>
+            <Button size="sm" onClick={() => setShowBtsModal(false)}>
+              Close Player
+            </Button>
           </div>
         </Modal>
       )}

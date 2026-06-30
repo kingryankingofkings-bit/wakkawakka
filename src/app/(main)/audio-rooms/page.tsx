@@ -1,22 +1,34 @@
-'use client';
+"use client";
 
-import { Suspense } from 'react';
-import { useState, useEffect } from 'react';
-import { Mic, MicOff, Hand, LogOut, Users, Plus } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { Avatar } from '@/components/ui/Avatar';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { formatCount, cn } from '@/lib/utils';
-import { MOCK_AUDIO_ROOMS, MOCK_USERS } from '@/lib/mockData';
-import { AudioRoom } from '@/types';
-import { useSearchParams } from 'next/navigation';
-import { Modal } from '@/components/ui/Modal';
+import { Suspense } from "react";
+import { useState, useEffect } from "react";
+import { Mic, MicOff, Hand, LogOut, Users, Plus } from "lucide-react";
+import { motion } from "framer-motion";
+import { Avatar } from "@/components/ui/Avatar";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { formatCount, cn } from "@/lib/utils";
+import { MOCK_AUDIO_ROOMS, MOCK_USERS } from "@/lib/mockData";
+import { AudioRoom } from "@/types";
+import { useSearchParams } from "next/navigation";
+import { Modal } from "@/components/ui/Modal";
 
-function SpeakerAvatar({ user, isSpeaking }: { user: typeof MOCK_USERS[0]; isSpeaking: boolean }) {
+function SpeakerAvatar({
+  user,
+  isSpeaking,
+}: {
+  user: (typeof MOCK_USERS)[0];
+  isSpeaking: boolean;
+}) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className={cn('relative rounded-full transition-all', isSpeaking && 'ring-4 ring-primary ring-offset-2 ring-offset-background')}>
+      <div
+        className={cn(
+          "relative rounded-full transition-all",
+          isSpeaking &&
+            "ring-4 ring-primary ring-offset-2 ring-offset-background",
+        )}
+      >
         {isSpeaking && (
           <motion.div
             className="absolute inset-0 rounded-full bg-primary/20"
@@ -31,7 +43,9 @@ function SpeakerAvatar({ user, isSpeaking }: { user: typeof MOCK_USERS[0]; isSpe
           </span>
         )}
       </div>
-      <span className="text-xs font-medium text-center max-w-[60px] truncate">{user.displayName.split(' ')[0]}</span>
+      <span className="text-xs font-medium text-center max-w-[60px] truncate">
+        {user.displayName.split(" ")[0]}
+      </span>
     </div>
   );
 }
@@ -46,18 +60,20 @@ export default function AudioRoomsPage() {
 
 function AudioRoomsInner() {
   const searchParams = useSearchParams();
-  const roomId = searchParams.get('room');
+  const roomId = searchParams.get("room");
   const [activeRoom, setActiveRoom] = useState<AudioRoom | null>(
-    roomId ? MOCK_AUDIO_ROOMS.find(r => r.id === roomId) || null : null
+    roomId ? MOCK_AUDIO_ROOMS.find((r) => r.id === roomId) || null : null,
   );
   const [isMuted, setIsMuted] = useState(true);
   const [handRaised, setHandRaised] = useState(false);
-  const [speakingUserId, setSpeakingUserId] = useState<string>(MOCK_AUDIO_ROOMS[0]?.speakers[0]?.id || '');
-  
+  const [speakingUserId, setSpeakingUserId] = useState<string>(
+    MOCK_AUDIO_ROOMS[0]?.speakers[0]?.id || "",
+  );
+
   // Creation Modal State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newDesc, setNewDesc] = useState('');
+  const [newTitle, setNewTitle] = useState("");
+  const [newDesc, setNewDesc] = useState("");
 
   // Cycle through speakers "speaking"
   useEffect(() => {
@@ -65,7 +81,9 @@ function AudioRoomsInner() {
     const interval = setInterval(() => {
       const speakers = activeRoom.speakers;
       if (speakers.length === 0) return;
-      setSpeakingUserId(speakers[Math.floor(Math.random() * speakers.length)].id);
+      setSpeakingUserId(
+        speakers[Math.floor(Math.random() * speakers.length)].id,
+      );
     }, 3000);
     return () => clearInterval(interval);
   }, [activeRoom]);
@@ -79,11 +97,15 @@ function AudioRoomsInner() {
             <div>
               <h1 className="text-lg font-bold">{activeRoom.title}</h1>
               {activeRoom.description && (
-                <p className="text-sm text-muted-foreground mt-0.5">{activeRoom.description}</p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  {activeRoom.description}
+                </p>
               )}
               <div className="flex items-center gap-2 mt-2">
                 <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-xs text-muted-foreground">Live · {formatCount(activeRoom.listenerCount)} listening</span>
+                <span className="text-xs text-muted-foreground">
+                  Live · {formatCount(activeRoom.listenerCount)} listening
+                </span>
               </div>
             </div>
             <button
@@ -103,8 +125,12 @@ function AudioRoomsInner() {
               Speakers ({activeRoom.speakers.length})
             </h2>
             <div className="flex flex-wrap gap-6">
-              {activeRoom.speakers.map(speaker => (
-                <SpeakerAvatar key={speaker.id} user={speaker} isSpeaking={speakingUserId === speaker.id} />
+              {activeRoom.speakers.map((speaker) => (
+                <SpeakerAvatar
+                  key={speaker.id}
+                  user={speaker}
+                  isSpeaking={speakingUserId === speaker.id}
+                />
               ))}
             </div>
           </div>
@@ -114,17 +140,32 @@ function AudioRoomsInner() {
               Listeners ({activeRoom.listenerCount})
             </h2>
             <div className="flex flex-wrap gap-3">
-              {activeRoom.listeners.map(listener => (
-                <div key={listener.id} className="flex flex-col items-center gap-1">
-                  <Avatar src={listener.avatar} name={listener.displayName} size="sm" />
+              {activeRoom.listeners.map((listener) => (
+                <div
+                  key={listener.id}
+                  className="flex flex-col items-center gap-1"
+                >
+                  <Avatar
+                    src={listener.avatar}
+                    name={listener.displayName}
+                    size="sm"
+                  />
                   <span className="text-xs text-muted-foreground truncate max-w-[48px]">
-                    {listener.displayName.split(' ')[0]}
+                    {listener.displayName.split(" ")[0]}
                   </span>
                 </div>
               ))}
               {/* Ghost listeners */}
-              {Array.from({ length: Math.min(activeRoom.listenerCount - activeRoom.listeners.length, 12) }).map((_, i) => (
-                <div key={i} className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+              {Array.from({
+                length: Math.min(
+                  activeRoom.listenerCount - activeRoom.listeners.length,
+                  12,
+                ),
+              }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-8 w-8 rounded-full bg-muted flex items-center justify-center"
+                >
                   <Users className="h-3.5 w-3.5 text-muted-foreground" />
                 </div>
               ))}
@@ -137,24 +178,45 @@ function AudioRoomsInner() {
           <button
             onClick={() => setIsMuted(!isMuted)}
             className={cn(
-              'flex flex-col items-center gap-1.5 transition-colors',
-              isMuted ? 'text-muted-foreground' : 'text-primary'
+              "flex flex-col items-center gap-1.5 transition-colors",
+              isMuted ? "text-muted-foreground" : "text-primary",
             )}
           >
-            <div className={cn('h-14 w-14 rounded-full flex items-center justify-center', isMuted ? 'bg-muted' : 'bg-primary')}>
-              {isMuted ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6 text-white" />}
+            <div
+              className={cn(
+                "h-14 w-14 rounded-full flex items-center justify-center",
+                isMuted ? "bg-muted" : "bg-primary",
+              )}
+            >
+              {isMuted ? (
+                <MicOff className="h-6 w-6" />
+              ) : (
+                <Mic className="h-6 w-6 text-white" />
+              )}
             </div>
-            <span className="text-xs font-medium">{isMuted ? 'Unmute' : 'Mute'}</span>
+            <span className="text-xs font-medium">
+              {isMuted ? "Unmute" : "Mute"}
+            </span>
           </button>
 
           <button
             onClick={() => setHandRaised(!handRaised)}
-            className={cn('flex flex-col items-center gap-1.5', handRaised ? 'text-yellow-500' : 'text-muted-foreground')}
+            className={cn(
+              "flex flex-col items-center gap-1.5",
+              handRaised ? "text-yellow-500" : "text-muted-foreground",
+            )}
           >
-            <div className={cn('h-14 w-14 rounded-full flex items-center justify-center', handRaised ? 'bg-yellow-500/20' : 'bg-muted')}>
+            <div
+              className={cn(
+                "h-14 w-14 rounded-full flex items-center justify-center",
+                handRaised ? "bg-yellow-500/20" : "bg-muted",
+              )}
+            >
               <Hand className="h-6 w-6" />
             </div>
-            <span className="text-xs font-medium">{handRaised ? 'Lower Hand' : 'Raise Hand'}</span>
+            <span className="text-xs font-medium">
+              {handRaised ? "Lower Hand" : "Raise Hand"}
+            </span>
           </button>
 
           <button
@@ -182,15 +244,22 @@ function AudioRoomsInner() {
       </div>
 
       <div className="p-4 space-y-4">
-        {MOCK_AUDIO_ROOMS.filter(r => r.isActive).length === 0 ? (
+        {MOCK_AUDIO_ROOMS.filter((r) => r.isActive).length === 0 ? (
           <div className="flex flex-col items-center py-20 text-center">
             <Mic className="h-12 w-12 text-muted-foreground/40 mb-3" />
             <p className="font-semibold">No active rooms</p>
-            <p className="text-sm text-muted-foreground mt-1">Create a room to start talking</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Create a room to start talking
+            </p>
           </div>
         ) : (
-          MOCK_AUDIO_ROOMS.filter(r => r.isActive).map(room => (
-            <Card key={room.id} padding="md" hover onClick={() => setActiveRoom(room)}>
+          MOCK_AUDIO_ROOMS.filter((r) => r.isActive).map((room) => (
+            <Card
+              key={room.id}
+              padding="md"
+              hover
+              onClick={() => setActiveRoom(room)}
+            >
               <div className="flex items-start gap-3">
                 <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-primary/20 flex items-center justify-center flex-shrink-0">
                   <Mic className="h-6 w-6 text-purple-500" />
@@ -198,19 +267,30 @@ function AudioRoomsInner() {
                 <div className="flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <p className="font-semibold">{room.title}</p>
-                    <span className="text-xs bg-green-500/10 text-green-600 px-2 py-0.5 rounded-full font-medium flex-shrink-0">Live</span>
+                    <span className="text-xs bg-green-500/10 text-green-600 px-2 py-0.5 rounded-full font-medium flex-shrink-0">
+                      Live
+                    </span>
                   </div>
                   {room.description && (
-                    <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">{room.description}</p>
+                    <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">
+                      {room.description}
+                    </p>
                   )}
                   <div className="flex items-center gap-3 mt-2">
                     <div className="flex -space-x-2">
-                      {room.speakers.slice(0, 4).map(s => (
-                        <Avatar key={s.id} src={s.avatar} name={s.displayName} size="xs" className="ring-1 ring-background" />
+                      {room.speakers.slice(0, 4).map((s) => (
+                        <Avatar
+                          key={s.id}
+                          src={s.avatar}
+                          name={s.displayName}
+                          size="xs"
+                          className="ring-1 ring-background"
+                        />
                       ))}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {room.speakers.length} speaking · {formatCount(room.listenerCount)} listening
+                      {room.speakers.length} speaking ·{" "}
+                      {formatCount(room.listenerCount)} listening
                     </div>
                   </div>
                 </div>
@@ -220,31 +300,37 @@ function AudioRoomsInner() {
         )}
       </div>
 
-      <Modal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="Start an Audio Room">
-        <form 
+      <Modal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        title="Start an Audio Room"
+      >
+        <form
           className="p-5 flex flex-col gap-4"
           onSubmit={(e) => {
             e.preventDefault();
             // Mock API success behavior
             setIsCreateOpen(false);
-            setNewTitle('');
-            setNewDesc('');
+            setNewTitle("");
+            setNewDesc("");
           }}
         >
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Room Topic</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="What do you want to talk about?"
               className="w-full rounded-xl border border-border bg-background px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary"
-              required 
+              required
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Description (Optional)</label>
-            <textarea 
+            <label className="text-sm font-medium">
+              Description (Optional)
+            </label>
+            <textarea
               value={newDesc}
               onChange={(e) => setNewDesc(e.target.value)}
               placeholder="Add some details..."

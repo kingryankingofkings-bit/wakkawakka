@@ -1,14 +1,14 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import type { Theme } from '@/types';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import type { Theme } from "@/types";
 
 type ActiveModal =
   | null
-  | 'createPost'
-  | 'editProfile'
-  | 'newConversation'
-  | 'reportContent'
-  | 'settings';
+  | "createPost"
+  | "editProfile"
+  | "newConversation"
+  | "reportContent"
+  | "settings";
 
 interface UIState {
   theme: Theme;
@@ -32,8 +32,8 @@ export const useUIStore = create<UIStore>()(
   persist(
     (set) => ({
       // Initial state
-      theme: 'system',
-      accentColor: 'blue',
+      theme: "system",
+      accentColor: "blue",
       sidebarOpen: true,
       activeModal: null,
 
@@ -42,7 +42,8 @@ export const useUIStore = create<UIStore>()(
 
       setAccentColor: (accentColor) => set({ accentColor }),
 
-      toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+      toggleSidebar: () =>
+        set((state) => ({ sidebarOpen: !state.sidebarOpen })),
 
       setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
 
@@ -51,7 +52,7 @@ export const useUIStore = create<UIStore>()(
       closeModal: () => set({ activeModal: null }),
     }),
     {
-      name: 'wakka-ui',
+      name: "wakka-ui",
       storage: createJSONStorage(() => localStorage),
       // Persist preferences but not transient modal state
       partialize: (state) => ({
@@ -59,6 +60,6 @@ export const useUIStore = create<UIStore>()(
         accentColor: state.accentColor,
         sidebarOpen: state.sidebarOpen,
       }),
-    }
-  )
+    },
+  ),
 );

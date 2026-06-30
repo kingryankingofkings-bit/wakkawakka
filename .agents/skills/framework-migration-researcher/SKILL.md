@@ -6,13 +6,16 @@ description: Use when planning migration between frameworks, upgrading major ver
 # Framework Migration Researcher
 
 ## Goal
+
 Research and plan safe migrations between frameworks or major versions with minimal risk.
 
 ## Do Not Use When
+
 - Migration is already planned and documented
 - The change is minor (patch update)
 
 ## Required Inputs To Inspect
+
 - Current framework and version
 - Target framework and version
 - Codebase size and complexity
@@ -31,19 +34,21 @@ Research and plan safe migrations between frameworks or major versions with mini
 
 ## Migration Strategies
 
-| Strategy | When |
-|----------|------|
-| Big bang | Small codebase, simple migration |
-| Incremental | Large codebase, component-by-component |
-| Strangler fig | Legacy system, gradually replace |
-| Branch migration | Major rewrite, parallel development |
+| Strategy         | When                                   |
+| ---------------- | -------------------------------------- |
+| Big bang         | Small codebase, simple migration       |
+| Incremental      | Large codebase, component-by-component |
+| Strangler fig    | Legacy system, gradually replace       |
+| Branch migration | Major rewrite, parallel development    |
 
 ## Quality Checks
+
 - [ ] All breaking changes accounted for
 - [ ] Test suite passes after migration
 - [ ] No deprecated APIs remain
 - [ ] Performance not degraded
 
 ## Coordinates With
+
 - `refactor-safety-planner` — for safe changes
 - `test-suite-builder` — for regression testing

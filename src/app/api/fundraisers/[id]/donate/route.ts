@@ -1,17 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const { id } = params;
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
@@ -19,7 +19,10 @@ export async function POST(
     const { amount } = body;
 
     if (amount == null || parseFloat(amount) <= 0) {
-      return NextResponse.json({ error: 'Please specify a positive donation amount' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Please specify a positive donation amount" },
+        { status: 400 },
+      );
     }
 
     const donationAmount = parseFloat(amount);
@@ -29,7 +32,10 @@ export async function POST(
     });
 
     if (!fundraiser) {
-      return NextResponse.json({ error: 'Fundraiser not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Fundraiser not found" },
+        { status: 404 },
+      );
     }
 
     const result = await prisma.$transaction(async (tx) => {
@@ -54,7 +60,7 @@ export async function POST(
       if (updatedFundraiser.raisedAmount >= updatedFundraiser.goalAmount) {
         await tx.fundraiser.update({
           where: { id },
-          data: { status: 'COMPLETED' },
+          data: { status: "COMPLETED" },
         });
       }
 
@@ -63,6 +69,9 @@ export async function POST(
 
     return NextResponse.json({ data: result });
   } catch (err) {
-    return NextResponse.json({ error: 'Donation failed to process', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Donation failed to process", detail: String(err) },
+      { status: 500 },
+    );
   }
 }

@@ -1,46 +1,109 @@
-'use client';
+"use client";
 
-import { useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  size?: "sm" | "md" | "lg" | "xl" | "full";
   className?: string;
   showCloseButton?: boolean;
 }
 
 const sizeClasses = {
-  sm: 'max-w-sm',
-  md: 'max-w-md',
-  lg: 'max-w-lg',
-  xl: 'max-w-2xl',
-  full: 'max-w-[95vw] h-[95vh]',
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-lg",
+  xl: "max-w-2xl",
+  full: "max-w-[95vw] h-[95vh]",
 };
 
-export function Modal({ isOpen, onClose, title, children, size = 'md', className, showCloseButton = true }: ModalProps) {
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') onClose();
-  }, [onClose]);
+export function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  size = "md",
+  className,
+  showCloseButton = true,
+}: ModalProps) {
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+
+      if (e.key === "Tab" && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+          'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex="0"], [contenteditable]'
+        );
+        
+        if (focusableElements.length === 0) {
+          e.preventDefault();
+          return;
+        }
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    },
+    [onClose],
+  );
 
   useEffect(() => {
     if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'hidden';
+      previousFocusRef.current = document.activeElement as HTMLElement;
+      document.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
+
+      // Small delay to let rendering complete before focusing
+      const timer = setTimeout(() => {
+        if (modalRef.current) {
+          const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+            'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex="0"], [contenteditable]'
+          );
+          if (focusableElements.length > 0) {
+            focusableElements[0].focus();
+          } else {
+            modalRef.current.focus();
+          }
+        }
+      }, 50);
+
+      return () => {
+        clearTimeout(timer);
+        document.removeEventListener("keydown", handleKeyDown);
+        document.body.style.overflow = "";
+        if (previousFocusRef.current) {
+          previousFocusRef.current.focus();
+        }
+      };
     }
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
-    };
   }, [isOpen, handleKeyDown]);
 
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
 
   return createPortal(
     <AnimatePresence>
@@ -58,25 +121,35 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', className
           />
           {/* Modal Content Card */}
           <motion.div
+            ref={modalRef}
+            tabIndex={-1}
             initial={{ opacity: 0, scale: 0.95, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
-            transition={{ duration: 0.2, type: 'spring', stiffness: 300, damping: 30 }}
+            transition={{
+              duration: 0.2,
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+            }}
             role="dialog"
             aria-modal="true"
-            aria-labelledby={title ? 'modal-title' : undefined}
+            aria-labelledby={title ? "modal-title" : undefined}
             className={cn(
-              'relative z-50 w-full',
-              'bg-card border border-border rounded-2xl shadow-2xl',
-              'overflow-hidden flex flex-col max-h-[90vh]',
+              "relative z-50 w-full outline-none",
+              "bg-card border border-border rounded-2xl shadow-2xl",
+              "overflow-hidden flex flex-col max-h-[90vh]",
               sizeClasses[size],
-              className
+              className,
             )}
           >
             {(title || showCloseButton) && (
               <div className="flex items-center justify-between px-5 py-4 border-b border-border">
                 {title && (
-                  <h2 id="modal-title" className="text-lg font-semibold text-foreground">
+                  <h2
+                    id="modal-title"
+                    className="text-lg font-semibold text-foreground"
+                  >
                     {title}
                   </h2>
                 )}
@@ -96,6 +169,6 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', className
         </div>
       )}
     </AnimatePresence>,
-    document.body
+    document.body,
   );
 }

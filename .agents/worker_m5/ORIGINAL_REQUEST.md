@@ -34,7 +34,7 @@ Follow these exact steps:
    - Run type-check: `npm run type-check`
    - Run lint: `npm run lint`
    - Run tests: `node tests/e2e_runner.js`
-   Ensure everything compiles cleanly before writing code.
+     Ensure everything compiles cleanly before writing code.
 
 2. Implement API Endpoints for Messaging:
    - Create `/api/messages/conversations/route.ts`:

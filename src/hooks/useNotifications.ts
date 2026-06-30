@@ -1,11 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useNotificationStore } from '@/store/notificationStore';
+import { useEffect } from "react";
+import { useNotificationStore } from "@/store/notificationStore";
 // socket integration available via useSocket hook
 
 export function useNotifications() {
-  const { notifications, unreadCount, markAsRead, markAllAsRead, addNotification } = useNotificationStore();
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    addNotification,
+  } = useNotificationStore();
 
   // Hook up socket events (if socket is connected)
   useEffect(() => {

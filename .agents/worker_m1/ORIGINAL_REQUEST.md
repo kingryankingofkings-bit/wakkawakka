@@ -2,6 +2,7 @@
 
 You are teamwork_preview_worker. Your working directory is C:\Users\Kingr\OneDrive\Documents\wakkawakka-local\.agents\worker_m1.
 Your task is to:
+
 1. Delete the following fake mockup components and their data files:
    - src/components/settings/FeatureRegistry.tsx
    - src/components/settings/featuresData.ts
@@ -29,7 +30,7 @@ Your task is to:
    - Post & Message Reactions (incorporating DB persistence using Like and MessageReaction models)
    - Real Voice Messages (recording, upload, message save, playback UI)
    - Content Moderation & Reporting (report endpoint, admin moderation queue UI)
-   Set status of these Batch 1 items in the inventory to "Not Started".
+     Set status of these Batch 1 items in the inventory to "Not Started".
 6. Write a handoff report in `C:\Users\Kingr\OneDrive\Documents\wakkawakka-local\.agents\worker_m1\handoff.md` and message us when done.
 
 MANDATORY INTEGRITY WARNING:

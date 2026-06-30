@@ -1,47 +1,50 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { BookMarked, Search, Grid, List, Trash2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useFeedStore } from '@/store/feedStore';
-import { PostCard } from '@/components/feed/PostCard';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { BookMarked, Search, Grid, List, Trash2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useFeedStore } from "@/store/feedStore";
+import { PostCard } from "@/components/feed/PostCard";
+import { cn } from "@/lib/utils";
 
 const FILTER_TYPES = [
-  { id: 'ALL', label: 'All Saved' },
-  { id: 'TEXT', label: 'Text' },
-  { id: 'IMAGE', label: 'Photos' },
-  { id: 'VIDEO', label: 'Videos' },
+  { id: "ALL", label: "All Saved" },
+  { id: "TEXT", label: "Text" },
+  { id: "IMAGE", label: "Photos" },
+  { id: "VIDEO", label: "Videos" },
 ] as const;
 
 export default function BookmarksPage() {
   const { posts, updatePost } = useFeedStore();
-  const [filter, setFilter] = useState<'ALL' | 'TEXT' | 'IMAGE' | 'VIDEO'>('ALL');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [filter, setFilter] = useState<"ALL" | "TEXT" | "IMAGE" | "VIDEO">(
+    "ALL",
+  );
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
   // Filter bookmarked posts
-  const bookmarkedPosts = posts.filter(post => {
+  const bookmarkedPosts = posts.filter((post) => {
     if (!post.isBookmarked) return false;
-    
+
     // Type filter
-    if (filter !== 'ALL' && post.type !== filter) return false;
-    
+    if (filter !== "ALL" && post.type !== filter) return false;
+
     // Search query filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       const contentMatch = post.content?.toLowerCase().includes(query);
-      const authorMatch = post.author.displayName.toLowerCase().includes(query) || 
-                          post.author.username.toLowerCase().includes(query);
+      const authorMatch =
+        post.author.displayName.toLowerCase().includes(query) ||
+        post.author.username.toLowerCase().includes(query);
       return contentMatch || authorMatch;
     }
-    
+
     return true;
   });
 
   const handleClearAll = () => {
     // Unbookmark all posts in local store
-    posts.forEach(post => {
+    posts.forEach((post) => {
       if (post.isBookmarked) {
         updatePost(post.id, { isBookmarked: false });
       }
@@ -57,8 +60,12 @@ export default function BookmarksPage() {
             <BookMarked className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Saved Bookmarks</h1>
-            <p className="text-sm text-muted-foreground">Keep track of your favorite posts and links</p>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Saved Bookmarks
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Keep track of your favorite posts and links
+            </p>
           </div>
         </div>
 
@@ -95,10 +102,10 @@ export default function BookmarksPage() {
                 key={type.id}
                 onClick={() => setFilter(type.id)}
                 className={cn(
-                  'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
+                  "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all",
                   filter === type.id
-                    ? 'bg-card text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {type.label}
@@ -108,20 +115,24 @@ export default function BookmarksPage() {
 
           <div className="flex border border-border p-1 rounded-xl bg-card">
             <button
-              onClick={() => setViewMode('list')}
+              onClick={() => setViewMode("list")}
               className={cn(
-                'p-1.5 rounded-lg transition-colors',
-                viewMode === 'list' ? 'bg-muted text-primary' : 'text-muted-foreground hover:text-foreground'
+                "p-1.5 rounded-lg transition-colors",
+                viewMode === "list"
+                  ? "bg-muted text-primary"
+                  : "text-muted-foreground hover:text-foreground",
               )}
               title="List View"
             >
               <List className="h-4 w-4" />
             </button>
             <button
-              onClick={() => setViewMode('grid')}
+              onClick={() => setViewMode("grid")}
               className={cn(
-                'p-1.5 rounded-lg transition-colors',
-                viewMode === 'grid' ? 'bg-muted text-primary' : 'text-muted-foreground hover:text-foreground'
+                "p-1.5 rounded-lg transition-colors",
+                viewMode === "grid"
+                  ? "bg-muted text-primary"
+                  : "text-muted-foreground hover:text-foreground",
               )}
               title="Grid View"
             >
@@ -137,8 +148,10 @@ export default function BookmarksPage() {
           <motion.div
             layout
             className={cn(
-              'gap-6',
-              viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2' : 'flex flex-col'
+              "gap-6",
+              viewMode === "grid"
+                ? "grid grid-cols-1 md:grid-cols-2"
+                : "flex flex-col",
             )}
           >
             {bookmarkedPosts.map((post) => (
@@ -150,7 +163,8 @@ export default function BookmarksPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
                 className={cn(
-                  viewMode === 'grid' && 'bg-card border border-border rounded-2xl overflow-hidden hover:shadow-md transition-shadow'
+                  viewMode === "grid" &&
+                    "bg-card border border-border rounded-2xl overflow-hidden hover:shadow-md transition-shadow",
                 )}
               >
                 <PostCard post={post} />
@@ -167,18 +181,20 @@ export default function BookmarksPage() {
               <BookMarked className="h-8 w-8" />
             </div>
             <div className="space-y-1">
-              <h3 className="font-semibold text-lg">No saved bookmarks found</h3>
+              <h3 className="font-semibold text-lg">
+                No saved bookmarks found
+              </h3>
               <p className="text-sm text-muted-foreground max-w-sm">
-                {searchQuery || filter !== 'ALL'
+                {searchQuery || filter !== "ALL"
                   ? "We couldn't find any saved posts matching your active filters."
                   : "Tap the bookmark icon on any post in the feed to save it here for later."}
               </p>
             </div>
-            {(searchQuery || filter !== 'ALL') && (
+            {(searchQuery || filter !== "ALL") && (
               <button
                 onClick={() => {
-                  setFilter('ALL');
-                  setSearchQuery('');
+                  setFilter("ALL");
+                  setSearchQuery("");
                 }}
                 className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
               >

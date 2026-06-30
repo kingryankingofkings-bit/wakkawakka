@@ -9,6 +9,7 @@ The Project Root Workspace is: C:\Users\Kingr\OneDrive\Documents\wakkawakka-loca
 Your task is to orchestrate the implementation of the Wakka social media platform features based on the new follow-up request in ORIGINAL_REQUEST.md.
 
 CRITICAL INSTRUCTIONS:
+
 1. The previous attempt failed because it created fake registry/console components (FeatureRegistry.tsx, ProfileCommunityConsole.tsx, ContentFeedConsole.tsx, MessagingFeaturesConsole.tsx, CommerceToolsConsole.tsx, and their batch data files) that merely listed features. You must CLEAN UP and REMOVE these fake components.
 2. Build REAL, functional, integrated features into the actual website UI/UX. For example, a Reaction feature must have actual buttons on posts that persist to the database; a Voice Messages feature must capture and send audio; a Content Moderation feature must have report flows, review queues, and filters.
 3. Read the codebase, read social_media_feature_bible.md, and create a master integration inventory file `integration_inventory.md` at the project root workspace directory.

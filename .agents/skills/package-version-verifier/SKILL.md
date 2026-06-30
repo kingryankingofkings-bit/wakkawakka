@@ -6,13 +6,16 @@ description: Use when checking package versions, verifying dependency compatibil
 # Package Version Verifier
 
 ## Goal
+
 Verify package versions and compatibility before installation or upgrades.
 
 ## Do Not Use When
+
 - Versions are already specified and working
 - No version concerns exist
 
 ## Required Inputs To Inspect
+
 - package.json dependencies
 - npm registry or package documentation
 - Changelog/release notes
@@ -47,11 +50,13 @@ npm outdated
 ```
 
 ## Safety Rules
+
 - Pin critical dependencies (exact version)
 - Use caret (^) for stable packages
 - Read changelogs for major version updates
 - Test after version changes
 
 ## Coordinates With
+
 - `dependency-conflict-resolver` — for conflict resolution
 - `current-docs-researcher` — for API verification

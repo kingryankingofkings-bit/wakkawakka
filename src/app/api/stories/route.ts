@@ -1,20 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
 export async function GET(req: NextRequest) {
   try {
     const activeUserId = getRequestUserId(req);
     if (!activeUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get followed users
     const follows = await prisma.follow.findMany({
-      where: { followerId: activeUserId, status: 'ACCEPTED' },
+      where: { followerId: activeUserId, status: "ACCEPTED" },
       select: { followingId: true },
     });
-    const followedUserIds = follows.map(f => f.followingId);
+    const followedUserIds = follows.map((f) => f.followingId);
     const authorIds = [...followedUserIds, activeUserId];
 
     const dbStories = await prisma.story.findMany({
@@ -27,12 +27,12 @@ export async function GET(req: NextRequest) {
         author: true,
         views: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     // Map database stories to the Story frontend contract
-    const data = dbStories.map(story => {
-      const viewerIds = story.views.map(v => v.viewerId);
+    const data = dbStories.map((story) => {
+      const viewerIds = story.views.map((v) => v.viewerId);
       const hasViewed = viewerIds.includes(activeUserId);
       return {
         id: story.id,
@@ -51,8 +51,11 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ data });
   } catch (error) {
-    console.error('Error fetching stories:', error);
-    return NextResponse.json({ error: 'Failed to fetch stories' }, { status: 500 });
+    console.error("Error fetching stories:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch stories" },
+      { status: 500 },
+    );
   }
 }
 
@@ -60,12 +63,12 @@ export async function POST(req: NextRequest) {
   try {
     const activeUserId = getRequestUserId(req);
     if (!activeUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
-    const mediaUrl = body.mediaUrl || '';
-    const type = body.type || 'IMAGE'; // IMAGE or VIDEO
+    const mediaUrl = body.mediaUrl || "";
+    const type = body.type || "IMAGE"; // IMAGE or VIDEO
     const caption = body.caption || null;
     const duration = body.duration !== undefined ? parseInt(body.duration) : 5; // default 5s
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // now + 24 hours
@@ -83,7 +86,7 @@ export async function POST(req: NextRequest) {
       include: {
         author: true,
         views: true,
-      }
+      },
     });
 
     const data = {
@@ -102,7 +105,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ data }, { status: 201 });
   } catch (error) {
-    console.error('Error creating story:', error);
-    return NextResponse.json({ error: 'Invalid request body or creation failed' }, { status: 400 });
+    console.error("Error creating story:", error);
+    return NextResponse.json(
+      { error: "Invalid request body or creation failed" },
+      { status: 400 },
+    );
   }
 }

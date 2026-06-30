@@ -6,13 +6,16 @@ description: Use when setting up testing frameworks, writing unit tests, integra
 # Test Suite Builder
 
 ## Goal
+
 Implement comprehensive testing with unit, integration, and e2e tests for critical paths.
 
 ## Do Not Use When
+
 - Tests already exist and pass
 - The project is a quick prototype
 
 ## Required Inputs To Inspect
+
 - Framework and test tools available
 - Critical user paths
 - Component complexity
@@ -44,18 +47,19 @@ Implement comprehensive testing with unit, integration, and e2e tests for critic
 ## Component Test Example
 
 ```tsx
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Button } from './Button';
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Button } from "./Button";
 
-test('calls onClick when clicked', () => {
+test("calls onClick when clicked", () => {
   const handleClick = vi.fn();
   render(<Button onClick={handleClick}>Click me</Button>);
-  fireEvent.click(screen.getByText('Click me'));
+  fireEvent.click(screen.getByText("Click me"));
   expect(handleClick).toHaveBeenCalled();
 });
 ```
 
 ## Quality Checks
+
 - [ ] Unit tests for pure functions
 - [ ] Component tests for user interactions
 - [ ] E2E tests for critical paths
@@ -63,11 +67,13 @@ test('calls onClick when clicked', () => {
 - [ ] Tests run in CI
 
 ## Safety Rules
+
 - Test behavior, not implementation
 - Use `screen` queries (not `container`)
 - Clean up after each test
 - Mock external APIs
 
 ## Coordinates With
+
 - `frontend-scaffold-builder` — for test setup
 - `bug-reproduction-debugger` — for regression tests

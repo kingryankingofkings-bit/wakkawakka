@@ -5,6 +5,7 @@
 **Verdict**: CLEAN
 
 ### Phase Results
+
 - **Prisma Schema Updates**: PASS — Verified `scheduledAt` in `Post` model, `SearchHistory` model, and `searchHistories` in `User` model are implemented in `prisma/schema.prisma`.
 - **Ephemeral Stories Features**: PASS — Verified `/api/stories` GET/POST and `/api/stories/[id]/view` POST endpoints query and write to the database correctly. `StoryViewer.tsx` animates using the custom story duration parameter.
 - **Stories Active/Viewed Ring Styling**: PASS with Caveat (Bug) — Verified `StoriesRow.tsx` dynamically fetches stories and sets `hasStory={true}` and `storyViewed={!group.hasUnviewed}` correctly. However, a styling bug exists in `src/components/ui/Avatar.tsx` and `src/app/globals.css`: the class name used in `Avatar.tsx` is `story-ring`, but the class defined in `globals.css` is `.story-ring-animated`. Consequently, the active rings are rendered transparent/invisible instead of showing the intended orange-pink-purple gradient.
@@ -18,15 +19,23 @@
 ### Evidence
 
 #### 1. Stories Durations and Progress Calculation (`src/components/feed/StoryViewer.tsx`)
+
 ```typescript
 const DURATION = (current?.duration || 5) * 1000;
 
 useEffect(() => {
-  if (isPaused) { clearInterval(intervalRef.current); return; }
+  if (isPaused) {
+    clearInterval(intervalRef.current);
+    return;
+  }
   intervalRef.current = setInterval(() => {
-    setProgress(p => {
-      if (p >= 100) { clearInterval(intervalRef.current); goNext(); return 100; }
-      return p + (100 / (DURATION / 50));
+    setProgress((p) => {
+      if (p >= 100) {
+        clearInterval(intervalRef.current);
+        goNext();
+        return 100;
+      }
+      return p + 100 / (DURATION / 50);
     });
   }, 50);
   return () => clearInterval(intervalRef.current);
@@ -34,6 +43,7 @@ useEffect(() => {
 ```
 
 #### 2. For You Decay Score Calculation & Future Filtering (`src/app/api/posts/route.ts`)
+
 ```typescript
 whereClause.isDeleted = false;
 whereClause.OR = [
@@ -51,6 +61,7 @@ dbPosts.sort((a, b) => {
 ```
 
 #### 3. Atomic Post Reaction (`src/app/api/posts/[id]/react/route.ts`)
+
 ```typescript
 const updatedPost = await prisma.$transaction(async (tx) => {
   ...
@@ -69,17 +80,20 @@ const updatedPost = await prisma.$transaction(async (tx) => {
 ```
 
 #### 4. Search Logging & Block Filtering (`src/app/api/search/route.ts`)
+
 ```typescript
 // Save search history in DB
 if (activeUserId) {
-  await prisma.searchHistory.create({
-    data: {
-      userId: activeUserId,
-      query: q,
-    },
-  }).catch(err => {
-    console.error('Failed to create search history:', err);
-  });
+  await prisma.searchHistory
+    .create({
+      data: {
+        userId: activeUserId,
+        query: q,
+      },
+    })
+    .catch((err) => {
+      console.error("Failed to create search history:", err);
+    });
 }
 
 // Filter blocked users
@@ -87,24 +101,24 @@ let blockedUserIds: string[] = [];
 if (activeUserId) {
   const blocks = await prisma.block.findMany({
     where: {
-      OR: [
-        { blockerId: activeUserId },
-        { blockedId: activeUserId },
-      ],
+      OR: [{ blockerId: activeUserId }, { blockedId: activeUserId }],
     },
     select: {
       blockerId: true,
       blockedId: true,
     },
   });
-  blockedUserIds = blocks.map(b => b.blockerId === activeUserId ? b.blockedId : b.blockerId);
+  blockedUserIds = blocks.map((b) =>
+    b.blockerId === activeUserId ? b.blockedId : b.blockerId,
+  );
 }
 ```
 
 #### 5. E2E Test Execution Summary
+
 ```
 ====================================================
-                  TEST RUN SUMMARY                  
+                  TEST RUN SUMMARY
 ====================================================
 Total Tests Run: 12
 Passed:          12

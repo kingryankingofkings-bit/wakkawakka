@@ -6,12 +6,15 @@ description: Use when integrating maps, geolocation services, address autocomple
 # Maps and Location Integrations
 
 ## Goal
+
 Integrate maps and location services with proper API key management and performance optimization.
 
 ## Do Not Use When
+
 - No location features needed
 
 ## Required Inputs To Inspect
+
 - Map provider (Google Maps, Mapbox, Leaflet)
 - Features needed (display, search, routing, geocoding)
 - API key management
@@ -30,16 +33,19 @@ Integrate maps and location services with proper API key management and performa
 9. **Optimize**: Lazy load, cluster markers, limit re-renders
 
 ## Quality Checks
+
 - [ ] Map loads without blocking page
 - [ ] Markers display correctly
 - [ ] Mobile performance acceptable
 - [ ] Geolocation permission handled gracefully
 
 ## Safety Rules
+
 - Restrict API keys by domain
 - Don't expose unrestricted keys client-side
 - Handle geolocation denial gracefully
 
 ## Coordinates With
+
 - `third-party-api-integration` — for API setup
 - `performance-audit-optimizer` — for map performance

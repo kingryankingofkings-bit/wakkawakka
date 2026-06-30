@@ -1,19 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // GET /api/users/requests - fetch incoming pending follow requests for the acting user
 export async function GET(req: NextRequest) {
   const userId = getRequestUserId(req);
-  if (!userId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  if (!userId)
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   try {
     const requests = await prisma.follow.findMany({
       where: {
         followingId: userId,
-        status: 'PENDING',
+        status: "PENDING",
       },
       include: {
         follower: {
@@ -29,12 +30,15 @@ export async function GET(req: NextRequest) {
         },
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
 
     return NextResponse.json({ data: requests });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to fetch follow requests', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch follow requests", detail: String(err) },
+      { status: 500 },
+    );
   }
 }

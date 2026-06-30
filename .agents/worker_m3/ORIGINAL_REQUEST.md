@@ -1,4 +1,5 @@
 ## 2026-06-30T09:36:19Z
+
 You are teamwork_preview_worker. Your working directory is C:\Users\Kingr\OneDrive\Documents\wakkawakka-local\.agents\worker_m3.
 
 Your task is to implement the REAL, integrated, database-backed features for Batch 2 (Profiles & Communities).
@@ -9,10 +10,10 @@ Follow these exact steps:
    - Run type-check: `npm run type-check`
    - Run lint: `npm run lint`
    - Run tests: `node tests/e2e_runner.js`
-   Ensure everything compiles and passes before you write any new features.
+     Ensure everything compiles and passes before you write any new features.
 
 2. Implement Profile Features:
-   - **Follow Requests & Approvals**: 
+   - **Follow Requests & Approvals**:
      - Update the follow API so that if the target user has `isPrivate: true` in the DB, the follow status is set to `'PENDING'` (in the `Follow` model) and a follow notification is generated.
      - Implement API endpoints `GET /api/users/requests` (fetch incoming pending follow requests) and `PATCH /api/users/requests/[id]` (to approve or reject a request by updating `Follow.status` to `'ACCEPTED'` or deleting the record).
      - Add a "Follow Requests" interface to the `/settings` or `/profile` page, enabling users to accept/reject incoming follow requests.

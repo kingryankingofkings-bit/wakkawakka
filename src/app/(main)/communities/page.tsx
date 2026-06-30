@@ -1,25 +1,35 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Plus, Users, Lock, Globe, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { formatCount } from '@/lib/utils';
-import Link from 'next/link';
-import { Modal } from '@/components/ui/Modal';
-import toast from 'react-hot-toast';
+import { useState, useEffect } from "react";
+import { Plus, Users, Lock, Globe, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { formatCount } from "@/lib/utils";
+import Link from "next/link";
+import { Modal } from "@/components/ui/Modal";
+import toast from "react-hot-toast";
 
-
-const CATEGORIES = ['All', 'Art & Design', 'Technology', 'Health & Wellness', 'Music', 'Gaming', 'Education', 'Sports'];
+const CATEGORIES = [
+  "All",
+  "Art & Design",
+  "Technology",
+  "Health & Wellness",
+  "Music",
+  "Gaming",
+  "Education",
+  "Sports",
+];
 
 export default function CommunitiesPage() {
-  const [activeCategory, setActiveCategory] = useState('All');
-  const [activeView, setActiveView] = useState<'explore' | 'console'>('explore');
-  
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeView, setActiveView] = useState<"explore" | "console">(
+    "explore",
+  );
+
   // Creation Modal State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [newCommName, setNewCommName] = useState('');
-  const [newCommDesc, setNewCommDesc] = useState('');
+  const [newCommName, setNewCommName] = useState("");
+  const [newCommDesc, setNewCommDesc] = useState("");
   const [newCommPrivate, setNewCommPrivate] = useState(false);
 
   // Database-backed state
@@ -48,56 +58,56 @@ export default function CommunitiesPage() {
   async function handleJoin(commId: string) {
     try {
       const res = await fetch(`/api/communities/${commId}/join`, {
-        method: 'POST',
+        method: "POST",
       });
       if (res.ok) {
         const json = await res.json();
-        if (json.data?.status === 'MEMBER') {
-          toast.success('Joined community successfully!');
-        } else if (json.data?.status === 'PENDING') {
-          toast.success('Join request sent!');
+        if (json.data?.status === "MEMBER") {
+          toast.success("Joined community successfully!");
+        } else if (json.data?.status === "PENDING") {
+          toast.success("Join request sent!");
         }
         loadCommunities();
       } else {
-        toast.error('Failed to join community');
+        toast.error("Failed to join community");
       }
     } catch (err) {
       console.error(err);
-      toast.error('An error occurred');
+      toast.error("An error occurred");
     }
   }
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     try {
-      const res = await fetch('/api/communities', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/communities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: newCommName,
           description: newCommDesc,
-          visibility: newCommPrivate ? 'PRIVATE' : 'PUBLIC',
+          visibility: newCommPrivate ? "PRIVATE" : "PUBLIC",
         }),
       });
       if (res.ok) {
-        toast.success('Community created successfully!');
+        toast.success("Community created successfully!");
         setIsCreateOpen(false);
-        setNewCommName('');
-        setNewCommDesc('');
+        setNewCommName("");
+        setNewCommDesc("");
         setNewCommPrivate(false);
         loadCommunities();
       } else {
         const errJson = await res.json();
-        toast.error(errJson.error || 'Failed to create community');
+        toast.error(errJson.error || "Failed to create community");
       }
     } catch (err) {
       console.error(err);
-      toast.error('An error occurred');
+      toast.error("An error occurred");
     }
   }
 
-  const myCommunities = communities.filter(c => c.isMember);
-  const discover = communities.filter(c => !c.isMember);
+  const myCommunities = communities.filter((c) => c.isMember);
+  const discover = communities.filter((c) => !c.isMember);
 
   return (
     <div className="min-h-screen">
@@ -107,21 +117,21 @@ export default function CommunitiesPage() {
           {/* Tab selectors to toggle console */}
           <div className="flex bg-muted/80 p-0.5 rounded-xl border border-border text-xs">
             <button
-              onClick={() => setActiveView('explore')}
+              onClick={() => setActiveView("explore")}
               className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
-                activeView === 'explore' 
-                  ? 'bg-background shadow text-foreground' 
-                  : 'text-muted-foreground hover:text-foreground'
+                activeView === "explore"
+                  ? "bg-background shadow text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Explore
             </button>
             <button
-              onClick={() => setActiveView('console')}
+              onClick={() => setActiveView("console")}
               className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1 ${
-                activeView === 'console' 
-                  ? 'bg-background shadow text-foreground' 
-                  : 'text-muted-foreground hover:text-foreground'
+                activeView === "console"
+                  ? "bg-background shadow text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
@@ -136,7 +146,7 @@ export default function CommunitiesPage() {
       </div>
 
       <div className="p-4 space-y-6">
-        {activeView === 'console' ? (
+        {activeView === "console" ? (
           <div className="text-center py-12 text-muted-foreground">
             Console tools are currently unavailable.
           </div>
@@ -150,9 +160,15 @@ export default function CommunitiesPage() {
                   Profiles & Communities Console
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Interactive simulations for collaborative posts, &ldquo;Add Yours&rdquo; prompts, broadcast channels, affiliation badges, channel points, and community join requests.
+                  Interactive simulations for collaborative posts, &ldquo;Add
+                  Yours&rdquo; prompts, broadcast channels, affiliation badges,
+                  channel points, and community join requests.
                 </p>
-                <Button size="xs" onClick={() => setActiveView('console')} className="mt-1 font-bold">
+                <Button
+                  size="xs"
+                  onClick={() => setActiveView("console")}
+                  className="mt-1 font-bold"
+                >
                   Launch Console ⚡
                 </Button>
               </div>
@@ -163,21 +179,35 @@ export default function CommunitiesPage() {
               <section>
                 <h2 className="font-bold mb-3">Your Communities</h2>
                 <div className="grid grid-cols-1 gap-3">
-                  {myCommunities.map(c => (
+                  {myCommunities.map((c) => (
                     <Link key={c.id} href={`/communities/${c.id}`}>
                       <Card padding="none" hover className="overflow-hidden">
                         {c.coverImage && (
                           <div className="h-16 bg-gradient-to-r from-primary/30 to-purple-500/30">
-                            <img src={c.coverImage} alt="" className="h-full w-full object-cover opacity-70" />
+                            <img
+                              src={c.coverImage}
+                              alt=""
+                              className="h-full w-full object-cover opacity-70"
+                            />
                           </div>
                         )}
                         <div className="p-3 flex items-center gap-3">
-                          {c.avatarUrl && <img src={c.avatarUrl} alt={c.name} className="h-10 w-10 rounded-xl object-cover flex-shrink-0" />}
+                          {c.avatarUrl && (
+                            <img
+                              src={c.avatarUrl}
+                              alt={c.name}
+                              className="h-10 w-10 rounded-xl object-cover flex-shrink-0"
+                            />
+                          )}
                           <div className="flex-1 min-w-0">
                             <p className="font-semibold truncate">{c.name}</p>
-                            <p className="text-xs text-muted-foreground">{formatCount(c.memberCount)} members</p>
+                            <p className="text-xs text-muted-foreground">
+                              {formatCount(c.memberCount)} members
+                            </p>
                           </div>
-                          <span className="text-xs text-primary font-medium">View</span>
+                          <span className="text-xs text-primary font-medium">
+                            View
+                          </span>
                         </div>
                       </Card>
                     </Link>
@@ -192,12 +222,14 @@ export default function CommunitiesPage() {
 
               {/* Category filters */}
               <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 mb-4">
-                {CATEGORIES.map(cat => (
+                {CATEGORIES.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 transition-colors ${
-                      activeCategory === cat ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                      activeCategory === cat
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80"
                     }`}
                   >
                     {cat}
@@ -206,29 +238,56 @@ export default function CommunitiesPage() {
               </div>
 
               <div className="grid grid-cols-1 gap-4">
-                {discover.map(c => (
+                {discover.map((c) => (
                   <Card key={c.id} padding="none" className="overflow-hidden">
                     {c.coverImage && (
                       <div className="h-28 bg-gradient-to-r from-primary/30 to-purple-500/30 relative">
-                        <img src={c.coverImage} alt="" className="h-full w-full object-cover opacity-70" />
+                        <img
+                          src={c.coverImage}
+                          alt=""
+                          className="h-full w-full object-cover opacity-70"
+                        />
                         <div className="absolute bottom-3 left-3">
-                          {c.avatarUrl && <img src={c.avatarUrl} alt={c.name} className="h-14 w-14 rounded-xl object-cover ring-2 ring-background" />}
+                          {c.avatarUrl && (
+                            <img
+                              src={c.avatarUrl}
+                              alt={c.name}
+                              className="h-14 w-14 rounded-xl object-cover ring-2 ring-background"
+                            />
+                          )}
                         </div>
                         <div className="absolute top-3 right-3">
-                          {c.isPrivate
-                            ? <span className="text-xs bg-black/50 text-white px-2 py-0.5 rounded-full flex items-center gap-1"><Lock className="h-3 w-3" />Private</span>
-                            : <span className="text-xs bg-black/50 text-white px-2 py-0.5 rounded-full flex items-center gap-1"><Globe className="h-3 w-3" />Public</span>
-                          }
+                          {c.isPrivate ? (
+                            <span className="text-xs bg-black/50 text-white px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <Lock className="h-3 w-3" />
+                              Private
+                            </span>
+                          ) : (
+                            <span className="text-xs bg-black/50 text-white px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <Globe className="h-3 w-3" />
+                              Public
+                            </span>
+                          )}
                         </div>
                       </div>
                     )}
                     <div className="p-4 pt-5">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <Link href={`/communities/${c.id}`} className="font-bold hover:underline">{c.name}</Link>
-                          <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">{c.description}</p>
+                          <Link
+                            href={`/communities/${c.id}`}
+                            className="font-bold hover:underline"
+                          >
+                            {c.name}
+                          </Link>
+                          <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">
+                            {c.description}
+                          </p>
                           <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1"><Users className="h-3 w-3" />{formatCount(c.memberCount)} members</span>
+                            <span className="flex items-center gap-1">
+                              <Users className="h-3 w-3" />
+                              {formatCount(c.memberCount)} members
+                            </span>
                             <span>{c.category}</span>
                           </div>
                         </div>
@@ -249,25 +308,26 @@ export default function CommunitiesPage() {
         )}
       </div>
 
-      <Modal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="Create a Community">
-        <form 
-          className="p-5 flex flex-col gap-4"
-          onSubmit={handleCreate}
-        >
+      <Modal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        title="Create a Community"
+      >
+        <form className="p-5 flex flex-col gap-4" onSubmit={handleCreate}>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Community Name</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={newCommName}
               onChange={(e) => setNewCommName(e.target.value)}
               placeholder="e.g. Next.js Developers"
               className="w-full rounded-xl border border-border bg-background px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary"
-              required 
+              required
             />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Description</label>
-            <textarea 
+            <textarea
               value={newCommDesc}
               onChange={(e) => setNewCommDesc(e.target.value)}
               placeholder="What is this community about?"
@@ -283,7 +343,10 @@ export default function CommunitiesPage() {
               onChange={(e) => setNewCommPrivate(e.target.checked)}
               className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-2 focus:ring-primary"
             />
-            <label htmlFor="newCommPrivate" className="text-sm font-medium cursor-pointer">
+            <label
+              htmlFor="newCommPrivate"
+              className="text-sm font-medium cursor-pointer"
+            >
               Private Community (requires approval to join)
             </label>
           </div>
@@ -295,4 +358,3 @@ export default function CommunitiesPage() {
     </div>
   );
 }
-

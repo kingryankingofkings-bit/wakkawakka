@@ -6,13 +6,16 @@ description: Use when conducting security audits, reviewing code for vulnerabili
 # Security Audit Reviewer
 
 ## Goal
+
 Identify and fix security vulnerabilities across the application stack.
 
 ## Do Not Use When
+
 - The request is for a specific known fix
 - A professional penetration test is needed (this is a checklist, not a pentest)
 
 ## Required Inputs To Inspect
+
 - Full codebase
 - Dependencies and versions
 - Authentication implementation
@@ -23,6 +26,7 @@ Identify and fix security vulnerabilities across the application stack.
 ## Security Checklist
 
 ### Authentication & Authorization
+
 - [ ] Passwords hashed with bcrypt/argon2
 - [ ] Brute force protection (rate limiting)
 - [ ] Session tokens are secure (HttpOnly, Secure, SameSite)
@@ -31,6 +35,7 @@ Identify and fix security vulnerabilities across the application stack.
 - [ ] CORS properly configured (whitelist, not wildcard)
 
 ### Input & Output
+
 - [ ] All inputs validated (Zod, Joi)
 - [ ] SQL injection prevented (parameterized queries)
 - [ ] XSS prevented (output encoding, CSP headers)
@@ -38,6 +43,7 @@ Identify and fix security vulnerabilities across the application stack.
 - [ ] File upload validated (type, size, content)
 
 ### Infrastructure
+
 - [ ] HTTPS only in production
 - [ ] Security headers set (HSTS, X-Frame-Options, CSP)
 - [ ] Secrets in environment variables (not code)
@@ -46,14 +52,15 @@ Identify and fix security vulnerabilities across the application stack.
 
 ### Severity Labels
 
-| Severity | Description | Response |
-|----------|-------------|----------|
-| Critical | Remote code execution, auth bypass | Fix immediately |
-| High | SQL injection, XSS, data exposure | Fix within 24h |
-| Medium | CSRF, info disclosure | Fix within a week |
-| Low | Missing headers, verbose errors | Fix in next sprint |
+| Severity | Description                        | Response           |
+| -------- | ---------------------------------- | ------------------ |
+| Critical | Remote code execution, auth bypass | Fix immediately    |
+| High     | SQL injection, XSS, data exposure  | Fix within 24h     |
+| Medium   | CSRF, info disclosure              | Fix within a week  |
+| Low      | Missing headers, verbose errors    | Fix in next sprint |
 
 ## Coordinates With
+
 - `authentication-authorization-builder` — for auth fixes
 - `backend-api-architect` — for API security
 - `deployment-preflight-checker` — for infra security

@@ -1,12 +1,19 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Reply, Trash2, ChevronDown, ChevronUp, Send } from 'lucide-react';
-import { Comment, Post } from '@/types';
-import { CURRENT_USER } from '@/lib/mockData';
-import { formatRelativeTime, cn } from '@/lib/utils';
-import { apiFetch } from '@/lib/apiClient';
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Heart,
+  Reply,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  Send,
+} from "lucide-react";
+import { Comment, Post } from "@/types";
+import { CURRENT_USER } from "@/lib/mockData";
+import { formatRelativeTime, cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/apiClient";
 
 interface CommentsSectionProps {
   post: Post;
@@ -20,29 +27,29 @@ function generateMockComments(postId: string): Comment[] {
       id: `${postId}-c1`,
       postId,
       author: {
-        id: 'u2',
-        username: 'tech_sam',
-        email: 'sam@example.com',
-        displayName: 'Sam Chen',
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=sam',
+        id: "u2",
+        username: "tech_sam",
+        email: "sam@example.com",
+        displayName: "Sam Chen",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sam",
         isVerified: true,
-        verificationTier: 'BLUE',
+        verificationTier: "BLUE",
         isPremium: false,
         isPrivate: false,
         twoFactorEnabled: false,
-        theme: 'system',
-        accentColor: 'blue',
-        language: 'en',
+        theme: "system",
+        accentColor: "blue",
+        language: "en",
         followersCount: 28400,
         followingCount: 1240,
         postsCount: 456,
         streakDays: 12,
         badges: [],
-        createdAt: '2024-03-20',
-        updatedAt: '2025-06-27',
+        createdAt: "2024-03-20",
+        updatedAt: "2025-06-27",
       },
-      authorId: 'u2',
-      content: 'This is absolutely incredible! The detail work is stunning 🔥',
+      authorId: "u2",
+      content: "This is absolutely incredible! The detail work is stunning 🔥",
       likesCount: 47,
       userLiked: false,
       replies: [
@@ -50,30 +57,30 @@ function generateMockComments(postId: string): Comment[] {
           id: `${postId}-c1-r1`,
           postId,
           author: {
-            id: 'u3',
-            username: 'maya_lifestyle',
-            email: 'maya@example.com',
-            displayName: 'Maya Johnson',
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=maya',
+            id: "u3",
+            username: "maya_lifestyle",
+            email: "maya@example.com",
+            displayName: "Maya Johnson",
+            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=maya",
             isVerified: false,
-            verificationTier: 'NONE',
+            verificationTier: "NONE",
             isPremium: true,
             isPrivate: false,
             twoFactorEnabled: false,
-            theme: 'light',
-            accentColor: 'green',
-            language: 'en',
+            theme: "light",
+            accentColor: "green",
+            language: "en",
             followersCount: 8920,
             followingCount: 2100,
             postsCount: 892,
             streakDays: 5,
             badges: [],
-            createdAt: '2024-05-10',
-            updatedAt: '2025-06-27',
+            createdAt: "2024-05-10",
+            updatedAt: "2025-06-27",
           },
-          authorId: 'u3',
+          authorId: "u3",
           parentId: `${postId}-c1`,
-          content: 'Totally agree! The composition is chef\'s kiss 😍',
+          content: "Totally agree! The composition is chef's kiss 😍",
           likesCount: 12,
           userLiked: false,
           createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
@@ -85,29 +92,29 @@ function generateMockComments(postId: string): Comment[] {
       id: `${postId}-c2`,
       postId,
       author: {
-        id: 'u4',
-        username: 'jordan_music',
-        email: 'jordan@example.com',
-        displayName: 'Jordan Blake',
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=jordan',
+        id: "u4",
+        username: "jordan_music",
+        email: "jordan@example.com",
+        displayName: "Jordan Blake",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=jordan",
         isVerified: true,
-        verificationTier: 'BLUE',
+        verificationTier: "BLUE",
         isPremium: true,
         isPrivate: false,
         twoFactorEnabled: true,
-        theme: 'dark',
-        accentColor: 'orange',
-        language: 'en',
+        theme: "dark",
+        accentColor: "orange",
+        language: "en",
         followersCount: 67300,
         followingCount: 450,
         postsCount: 723,
         streakDays: 89,
         badges: [],
-        createdAt: '2024-02-14',
-        updatedAt: '2025-06-27',
+        createdAt: "2024-02-14",
+        updatedAt: "2025-06-27",
       },
-      authorId: 'u4',
-      content: 'How long did this take? The colors are insane! 🎨',
+      authorId: "u4",
+      content: "How long did this take? The colors are insane! 🎨",
       likesCount: 23,
       userLiked: true,
       replies: [],
@@ -118,7 +125,7 @@ function generateMockComments(postId: string): Comment[] {
       postId,
       author: CURRENT_USER,
       authorId: CURRENT_USER.id,
-      content: 'This just made my day! Following for more 🙌',
+      content: "This just made my day! Following for more 🙌",
       likesCount: 5,
       userLiked: false,
       replies: [],
@@ -135,7 +142,13 @@ interface CommentItemProps {
   isReply?: boolean;
 }
 
-function CommentItem({ comment, onReply, onDelete, onLike, isReply = false }: CommentItemProps) {
+function CommentItem({
+  comment,
+  onReply,
+  onDelete,
+  onLike,
+  isReply = false,
+}: CommentItemProps) {
   const isOwn = comment.authorId === CURRENT_USER.id;
   const [showReplies, setShowReplies] = useState(false);
   const replyCount = comment.replies?.length ?? 0;
@@ -145,7 +158,7 @@ function CommentItem({ comment, onReply, onDelete, onLike, isReply = false }: Co
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className={cn('flex gap-2.5', isReply && 'ml-10')}
+      className={cn("flex gap-2.5", isReply && "ml-10")}
     >
       {/* Avatar */}
       <div className="flex-shrink-0">
@@ -175,7 +188,9 @@ function CommentItem({ comment, onReply, onDelete, onLike, isReply = false }: Co
               <span className="text-xs text-blue-500">✓</span>
             )}
           </div>
-          <p className="text-sm text-foreground leading-relaxed">{comment.content}</p>
+          <p className="text-sm text-foreground leading-relaxed">
+            {comment.content}
+          </p>
         </div>
 
         {/* Actions */}
@@ -186,12 +201,14 @@ function CommentItem({ comment, onReply, onDelete, onLike, isReply = false }: Co
           <button
             onClick={() => onLike(comment.id)}
             className={cn(
-              'flex items-center gap-1 text-xs font-medium transition-colors',
-              comment.userLiked ? 'text-red-500' : 'text-muted-foreground hover:text-foreground'
+              "flex items-center gap-1 text-xs font-medium transition-colors",
+              comment.userLiked
+                ? "text-red-500"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             <Heart
-              className={cn('w-3 h-3', comment.userLiked && 'fill-red-500')}
+              className={cn("w-3 h-3", comment.userLiked && "fill-red-500")}
             />
             {comment.likesCount > 0 && <span>{comment.likesCount}</span>}
           </button>
@@ -229,7 +246,7 @@ function CommentItem({ comment, onReply, onDelete, onLike, isReply = false }: Co
             ) : (
               <>
                 <ChevronDown className="w-3.5 h-3.5" />
-                View {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
+                View {replyCount} {replyCount === 1 ? "reply" : "replies"}
               </>
             )}
           </button>
@@ -240,7 +257,7 @@ function CommentItem({ comment, onReply, onDelete, onLike, isReply = false }: Co
           {showReplies && comment.replies && comment.replies.length > 0 && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
+              animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="overflow-hidden mt-2 space-y-2"
@@ -266,8 +283,11 @@ function CommentItem({ comment, onReply, onDelete, onLike, isReply = false }: Co
 export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showAll, setShowAll] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [replyingTo, setReplyingTo] = useState<{ id: string; name: string } | null>(null);
+  const [inputValue, setInputValue] = useState("");
+  const [replyingTo, setReplyingTo] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -282,7 +302,7 @@ export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
             }
           }
         } catch (err) {
-          console.error('Failed to load comments:', err);
+          console.error("Failed to load comments:", err);
         }
       };
       loadComments();
@@ -304,7 +324,7 @@ export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
         .map((c) => ({
           ...c,
           replies: c.replies?.filter((r) => r.id !== commentId) ?? [],
-        }))
+        })),
     );
   };
 
@@ -331,7 +351,7 @@ export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
 
     try {
       const response = await apiFetch(`/api/posts/${post.id}/comments`, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({
           content: inputValue.trim(),
           parentId: replyingTo?.id || null,
@@ -347,29 +367,29 @@ export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
             prev.map((c) =>
               c.id === replyingTo.id
                 ? { ...c, replies: [...(c.replies ?? []), newComment] }
-                : c
-            )
+                : c,
+            ),
           );
           setReplyingTo(null);
         } else {
           setComments((prev) => [...prev, newComment]);
         }
-        setInputValue('');
+        setInputValue("");
         setShowAll(true);
       }
     } catch (err) {
-      console.error('Failed to submit comment:', err);
+      console.error("Failed to submit comment:", err);
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e as unknown as React.FormEvent);
     }
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       setReplyingTo(null);
-      setInputValue('');
+      setInputValue("");
     }
   };
 
@@ -378,9 +398,9 @@ export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
       {isExpanded && (
         <motion.div
           initial={{ height: 0, opacity: 0 }}
-          animate={{ height: 'auto', opacity: 1 }}
+          animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.25, ease: 'easeInOut' }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
           className="overflow-hidden"
         >
           <div className="pt-3 pb-1 border-t border-border space-y-3">
@@ -403,9 +423,7 @@ export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
                 onClick={() => setShowAll(!showAll)}
                 className="text-sm font-semibold text-primary hover:underline ml-10.5"
               >
-                {showAll
-                  ? 'Show less'
-                  : `View all ${comments.length} comments`}
+                {showAll ? "Show less" : `View all ${comments.length} comments`}
               </button>
             )}
 
@@ -414,17 +432,20 @@ export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
               {replyingTo && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
+                  animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-3 py-1.5 mx-0"
                 >
                   <span className="text-xs text-muted-foreground">
-                    Replying to <span className="text-primary font-medium">{replyingTo.name}</span>
+                    Replying to{" "}
+                    <span className="text-primary font-medium">
+                      {replyingTo.name}
+                    </span>
                   </span>
                   <button
                     onClick={() => {
                       setReplyingTo(null);
-                      setInputValue('');
+                      setInputValue("");
                     }}
                     className="text-xs text-muted-foreground hover:text-foreground"
                   >

@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { id: postId } = params;
@@ -21,16 +21,16 @@ export async function GET(
             author: true,
           },
           orderBy: {
-            createdAt: 'asc',
+            createdAt: "asc",
           },
         },
       },
       orderBy: {
-        createdAt: 'desc', // newer root comments first or asc? Let's check how mock generated.
+        createdAt: "desc", // newer root comments first or asc? Let's check how mock generated.
       },
     });
 
-    const data = comments.map(comment => ({
+    const data = comments.map((comment) => ({
       id: comment.id,
       postId: comment.postId,
       author: comment.author,
@@ -40,7 +40,7 @@ export async function GET(
       likesCount: comment.likesCount,
       userLiked: false,
       createdAt: comment.createdAt.toISOString(),
-      replies: comment.replies.map(reply => ({
+      replies: comment.replies.map((reply) => ({
         id: reply.id,
         postId: reply.postId,
         author: reply.author,
@@ -55,25 +55,31 @@ export async function GET(
 
     return NextResponse.json({ data });
   } catch (error) {
-    console.error('Error fetching comments:', error);
-    return NextResponse.json({ error: 'Failed to fetch comments' }, { status: 500 });
+    console.error("Error fetching comments:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch comments" },
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { id: postId } = params;
     const activeUserId = getRequestUserId(req);
     if (!activeUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
     if (!body.content || !body.content.trim()) {
-      return NextResponse.json({ error: 'Comment content is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Comment content is required" },
+        { status: 400 },
+      );
     }
 
     const newComment = await prisma.$transaction(async (tx) => {
@@ -114,7 +120,10 @@ export async function POST(
 
     return NextResponse.json({ data }, { status: 201 });
   } catch (error) {
-    console.error('Error creating comment:', error);
-    return NextResponse.json({ error: 'Failed to create comment' }, { status: 500 });
+    console.error("Error creating comment:", error);
+    return NextResponse.json(
+      { error: "Failed to create comment" },
+      { status: 500 },
+    );
   }
 }

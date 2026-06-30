@@ -1,20 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // PATCH /api/users/requests/[id] - approve or reject a follow request
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
   const userId = getRequestUserId(req);
-  if (!userId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  if (!userId)
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   try {
     const body = await req.json().catch(() => ({}));
-    const action = body.action || (body.status === 'ACCEPTED' ? 'approve' : body.status === 'REJECTED' ? 'reject' : null);
+    const action =
+      body.action ||
+      (body.status === "ACCEPTED"
+        ? "approve"
+        : body.status === "REJECTED"
+          ? "reject"
+          : null);
 
-    if (!action || !['approve', 'reject', 'accept'].includes(action)) {
-      return NextResponse.json({ error: 'Valid action (approve/reject) is required' }, { status: 400 });
+    if (!action || !["approve", "reject", "accept"].includes(action)) {
+      return NextResponse.json(
+        { error: "Valid action (approve/reject) is required" },
+        { status: 400 },
+      );
     }
 
     // Try to find the follow request by Follow.id or by followerId + followingId
@@ -28,13 +41,16 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     });
 
     if (!follow) {
-      return NextResponse.json({ error: 'Follow request not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Follow request not found" },
+        { status: 404 },
+      );
     }
 
-    if (action === 'approve' || action === 'accept') {
+    if (action === "approve" || action === "accept") {
       const updated = await prisma.follow.update({
         where: { id: follow.id },
-        data: { status: 'ACCEPTED' },
+        data: { status: "ACCEPTED" },
       });
       return NextResponse.json({ data: updated });
     } else {
@@ -42,9 +58,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       await prisma.follow.delete({
         where: { id: follow.id },
       });
-      return NextResponse.json({ success: true, message: 'Request rejected' });
+      return NextResponse.json({ success: true, message: "Request rejected" });
     }
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to update follow request', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update follow request", detail: String(err) },
+      { status: 500 },
+    );
   }
 }

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
   Link2,
@@ -11,10 +11,10 @@ import {
   Twitter,
   Check,
   Search,
-} from 'lucide-react';
-import { Post, User } from '@/types';
-import { MOCK_USERS, CURRENT_USER } from '@/lib/mockData';
-import { cn } from '@/lib/utils';
+} from "lucide-react";
+import { Post, User } from "@/types";
+import { MOCK_USERS, CURRENT_USER } from "@/lib/mockData";
+import { cn } from "@/lib/utils";
 
 interface ShareModalProps {
   post: Post;
@@ -23,19 +23,26 @@ interface ShareModalProps {
   onShare?: () => void;
 }
 
-export function ShareModal({ post, isOpen, onClose, onShare }: ShareModalProps) {
+export function ShareModal({
+  post,
+  isOpen,
+  onClose,
+  onShare,
+}: ShareModalProps) {
   const [copied, setCopied] = useState(false);
   const [reposted, setReposted] = useState(false);
   const [sharedToStory, setSharedToStory] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [sentTo, setSentTo] = useState<Set<string>>(new Set());
 
-  const suggestedUsers: User[] = MOCK_USERS.filter((u) => u.id !== CURRENT_USER.id).slice(0, 4);
+  const suggestedUsers: User[] = MOCK_USERS.filter(
+    (u) => u.id !== CURRENT_USER.id,
+  ).slice(0, 4);
 
   const filteredUsers = suggestedUsers.filter(
     (u) =>
       u.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.username.toLowerCase().includes(searchQuery.toLowerCase())
+      u.username.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleCopyLink = async () => {
@@ -74,9 +81,14 @@ export function ShareModal({ post, isOpen, onClose, onShare }: ShareModalProps) 
   };
 
   const handleShareTwitter = () => {
-    const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/post/${post.id}`;
-    const text = encodeURIComponent(`Check out this post: ${post.content.slice(0, 80)}...`);
-    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`, '_blank');
+    const url = `${typeof window !== "undefined" ? window.location.origin : ""}/post/${post.id}`;
+    const text = encodeURIComponent(
+      `Check out this post: ${post.content.slice(0, 80)}...`,
+    );
+    window.open(
+      `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`,
+      "_blank",
+    );
     onShare?.();
   };
 
@@ -98,7 +110,7 @@ export function ShareModal({ post, isOpen, onClose, onShare }: ShareModalProps) 
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl overflow-hidden"
           >
             {/* Header */}
@@ -120,13 +132,18 @@ export function ShareModal({ post, isOpen, onClose, onShare }: ShareModalProps) 
                   whileTap={{ scale: 0.98 }}
                   onClick={handleCopyLink}
                   className={cn(
-                    'flex items-center gap-3 p-3 rounded-xl border transition-all',
+                    "flex items-center gap-3 p-3 rounded-xl border transition-all",
                     copied
-                      ? 'border-green-500 bg-green-500/10 text-green-600'
-                      : 'border-border hover:border-primary/50 hover:bg-muted'
+                      ? "border-green-500 bg-green-500/10 text-green-600"
+                      : "border-border hover:border-primary/50 hover:bg-muted",
                   )}
                 >
-                  <div className={cn('p-2 rounded-lg', copied ? 'bg-green-500/20' : 'bg-muted')}>
+                  <div
+                    className={cn(
+                      "p-2 rounded-lg",
+                      copied ? "bg-green-500/20" : "bg-muted",
+                    )}
+                  >
                     {copied ? (
                       <Check className="w-4 h-4 text-green-600" />
                     ) : (
@@ -134,7 +151,7 @@ export function ShareModal({ post, isOpen, onClose, onShare }: ShareModalProps) 
                     )}
                   </div>
                   <span className="text-sm font-medium">
-                    {copied ? 'Copied!' : 'Copy link'}
+                    {copied ? "Copied!" : "Copy link"}
                   </span>
                 </motion.button>
 
@@ -143,13 +160,18 @@ export function ShareModal({ post, isOpen, onClose, onShare }: ShareModalProps) 
                   whileTap={{ scale: 0.98 }}
                   onClick={handleShareToStory}
                   className={cn(
-                    'flex items-center gap-3 p-3 rounded-xl border transition-all',
+                    "flex items-center gap-3 p-3 rounded-xl border transition-all",
                     sharedToStory
-                      ? 'border-purple-500 bg-purple-500/10 text-purple-600'
-                      : 'border-border hover:border-primary/50 hover:bg-muted'
+                      ? "border-purple-500 bg-purple-500/10 text-purple-600"
+                      : "border-border hover:border-primary/50 hover:bg-muted",
                   )}
                 >
-                  <div className={cn('p-2 rounded-lg', sharedToStory ? 'bg-purple-500/20' : 'bg-muted')}>
+                  <div
+                    className={cn(
+                      "p-2 rounded-lg",
+                      sharedToStory ? "bg-purple-500/20" : "bg-muted",
+                    )}
+                  >
                     {sharedToStory ? (
                       <Check className="w-4 h-4 text-purple-600" />
                     ) : (
@@ -157,7 +179,7 @@ export function ShareModal({ post, isOpen, onClose, onShare }: ShareModalProps) 
                     )}
                   </div>
                   <span className="text-sm font-medium">
-                    {sharedToStory ? 'Shared!' : 'Add to story'}
+                    {sharedToStory ? "Shared!" : "Add to story"}
                   </span>
                 </motion.button>
 
@@ -166,13 +188,18 @@ export function ShareModal({ post, isOpen, onClose, onShare }: ShareModalProps) 
                   whileTap={{ scale: 0.98 }}
                   onClick={handleRepost}
                   className={cn(
-                    'flex items-center gap-3 p-3 rounded-xl border transition-all',
+                    "flex items-center gap-3 p-3 rounded-xl border transition-all",
                     reposted
-                      ? 'border-green-500 bg-green-500/10 text-green-600'
-                      : 'border-border hover:border-primary/50 hover:bg-muted'
+                      ? "border-green-500 bg-green-500/10 text-green-600"
+                      : "border-border hover:border-primary/50 hover:bg-muted",
                   )}
                 >
-                  <div className={cn('p-2 rounded-lg', reposted ? 'bg-green-500/20' : 'bg-muted')}>
+                  <div
+                    className={cn(
+                      "p-2 rounded-lg",
+                      reposted ? "bg-green-500/20" : "bg-muted",
+                    )}
+                  >
                     {reposted ? (
                       <Check className="w-4 h-4 text-green-600" />
                     ) : (
@@ -180,7 +207,7 @@ export function ShareModal({ post, isOpen, onClose, onShare }: ShareModalProps) 
                     )}
                   </div>
                   <span className="text-sm font-medium">
-                    {reposted ? 'Reposted!' : 'Repost'}
+                    {reposted ? "Reposted!" : "Repost"}
                   </span>
                 </motion.button>
 
@@ -240,8 +267,12 @@ export function ShareModal({ post, isOpen, onClose, onShare }: ShareModalProps) 
                           )}
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-foreground">{user.displayName}</p>
-                          <p className="text-xs text-muted-foreground">@{user.username}</p>
+                          <p className="text-sm font-medium text-foreground">
+                            {user.displayName}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            @{user.username}
+                          </p>
                         </div>
                       </div>
                       <motion.button
@@ -249,14 +280,14 @@ export function ShareModal({ post, isOpen, onClose, onShare }: ShareModalProps) 
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleSendDM(user.id)}
                         className={cn(
-                          'px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+                          "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
                           sentTo.has(user.id)
-                            ? 'bg-green-500/20 text-green-600 cursor-default'
-                            : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                            ? "bg-green-500/20 text-green-600 cursor-default"
+                            : "bg-primary text-primary-foreground hover:bg-primary/90",
                         )}
                         disabled={sentTo.has(user.id)}
                       >
-                        {sentTo.has(user.id) ? 'Sent' : 'Send'}
+                        {sentTo.has(user.id) ? "Sent" : "Send"}
                       </motion.button>
                     </motion.div>
                   ))}

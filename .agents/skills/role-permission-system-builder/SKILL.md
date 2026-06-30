@@ -6,13 +6,16 @@ description: Use when implementing role-based access control (RBAC), permission 
 # Role and Permission System Builder
 
 ## Goal
+
 Implement flexible, maintainable role-based access control with clear permission definitions.
 
 ## Do Not Use When
+
 - All users have same access
 - Using a third-party auth service with built-in RBAC (Clerk, Auth0)
 
 ## Required Inputs To Inspect
+
 - Roles needed (admin, editor, viewer, etc.)
 - Permissions per role
 - Resource types to protect
@@ -39,17 +42,20 @@ view:analytics  |   ✓   |   ✓    |   ✗
 ```
 
 ## Quality Checks
+
 - [ ] Every protected endpoint checks permissions
 - [ ] Frontend doesn't rely solely on UI hiding (backend enforces)
 - [ ] Role changes reflect immediately
 - [ ] Audit log for permission changes
 
 ## Safety Rules
+
 - Always enforce authorization server-side
 - Never trust client-side permission checks
 - Log authorization failures
 - Principle of least privilege
 
 ## Coordinates With
+
 - `authentication-authorization-builder` — for auth integration
 - `admin-dashboard-builder` — for admin role management

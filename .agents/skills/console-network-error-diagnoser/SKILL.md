@@ -6,13 +6,16 @@ description: Use when diagnosing browser console errors, network request failure
 # Console and Network Error Diagnoser
 
 ## Goal
+
 Diagnose browser console and network errors with systematic troubleshooting steps.
 
 ## Do Not Use When
+
 - The error is clearly described with a known fix
 - The issue is purely visual (not console/network)
 
 ## Required Inputs To Inspect
+
 - Exact error message from console
 - Network tab entries (status, headers, response)
 - Request URL and method
@@ -33,22 +36,24 @@ Diagnose browser console and network errors with systematic troubleshooting step
 
 ## Common Errors and Fixes
 
-| Error | Likely Cause | Fix |
-|-------|-------------|-----|
-| 404 | Wrong path or file missing | Check path, ensure file exists |
-| 500 | Server error | Check server logs |
-| CORS | Cross-origin headers missing | Add CORS middleware |
-| 401/403 | Auth issue | Check token, permissions |
-| TypeError | Code bug (null reference) | Add null checks |
-| SyntaxError | Invalid JS/JSON | Check for typos, missing brackets |
-| Failed to fetch | Network or CORS | Check URL, CORS, connectivity |
+| Error           | Likely Cause                 | Fix                               |
+| --------------- | ---------------------------- | --------------------------------- |
+| 404             | Wrong path or file missing   | Check path, ensure file exists    |
+| 500             | Server error                 | Check server logs                 |
+| CORS            | Cross-origin headers missing | Add CORS middleware               |
+| 401/403         | Auth issue                   | Check token, permissions          |
+| TypeError       | Code bug (null reference)    | Add null checks                   |
+| SyntaxError     | Invalid JS/JSON              | Check for typos, missing brackets |
+| Failed to fetch | Network or CORS              | Check URL, CORS, connectivity     |
 
 ## Quality Checks
+
 - [ ] Exact error captured
 - [ ] Root cause identified
 - [ ] Fix addresses cause not symptom
 - [ ] Error resolved in target environment
 
 ## Coordinates With
+
 - `bug-reproduction-debugger` — for bug investigation
 - `security-audit-reviewer` — for auth errors

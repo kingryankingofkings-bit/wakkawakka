@@ -6,13 +6,16 @@ description: Use when setting up application monitoring, error tracking, log agg
 # Monitoring and Logging Setup
 
 ## Goal
+
 Implement production monitoring with error tracking, logging, and alerting.
 
 ## Do Not Use When
+
 - Monitoring is already configured
 - This is a development environment only
 
 ## Required Inputs To Inspect
+
 - Monitoring tools preference
 - Alert channels (email, Slack, PagerDuty)
 - Critical metrics to track
@@ -32,7 +35,7 @@ Implement production monitoring with error tracking, logging, and alerting.
 ## Error Tracking Setup (Sentry)
 
 ```typescript
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -48,16 +51,18 @@ Sentry.init({
 export async function GET() {
   // Check database connectivity
   // Check external services
-  return Response.json({ status: 'ok', timestamp: new Date().toISOString() });
+  return Response.json({ status: "ok", timestamp: new Date().toISOString() });
 }
 ```
 
 ## Quality Checks
+
 - [ ] Errors are captured and reported
 - [ ] Alerts fire on issues
 - [ ] Health check responds correctly
 - [ ] Logs are structured and searchable
 
 ## Coordinates With
+
 - `hosting-platform-deployer` — for platform monitoring
 - `backup-rollback-planner` — for incident response

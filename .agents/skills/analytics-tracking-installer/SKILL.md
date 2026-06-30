@@ -6,13 +6,16 @@ description: Use when integrating analytics platforms, setting up tracking, impl
 # Analytics and Tracking Installer
 
 ## Goal
+
 Implement analytics tracking that respects user privacy and provides actionable insights.
 
 ## Do Not Use When
+
 - No analytics needed
 - Analytics is already installed and working
 
 ## Required Inputs To Inspect
+
 - Analytics platform (Google Analytics 4, Plausible, Fathom, Mixpanel)
 - Privacy requirements (GDPR, CCPA)
 - Events to track (page views, conversions, custom events)
@@ -31,6 +34,7 @@ Implement analytics tracking that respects user privacy and provides actionable 
 8. **Document**: What each event means, naming convention
 
 ## Privacy Checklist
+
 - [ ] Cookie consent implemented (if required)
 - [ ] IP anonymization enabled (if needed)
 - [ ] Data processing agreement signed (GDPR)
@@ -38,11 +42,13 @@ Implement analytics tracking that respects user privacy and provides actionable 
 - [ ] No PII in event data
 
 ## Quality Checks
+
 - [ ] Page views tracked on all routes
 - [ ] Custom events fire correctly
 - [ ] No tracking in development
 - [ ] Consent respected before tracking
 
 ## Coordinates With
+
 - `frontend-routing-navigation` — for SPA route tracking
 - `seo-structured-data-builder` — for search analytics

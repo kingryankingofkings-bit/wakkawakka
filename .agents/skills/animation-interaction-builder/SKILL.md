@@ -6,14 +6,17 @@ description: Use when implementing animations, transitions, micro-interactions, 
 # Animation and Interaction Builder
 
 ## Goal
+
 Add meaningful, performant motion that enhances UX without hindering accessibility or performance.
 
 ## Do Not Use When
+
 - The design specifies no animation
 - Performance is critical and animation adds overhead
 - The task is purely functional with no visual enhancement needed
 
 ## Required Inputs To Inspect
+
 - Design specifications for motion
 - Target devices and performance constraints
 - Accessibility requirements (reduced-motion)
@@ -49,6 +52,7 @@ Add meaningful, performant motion that enhances UX without hindering accessibili
 ```
 
 ## Quality Checks
+
 - [ ] Animations are smooth (60fps)
 - [ ] `prefers-reduced-motion` is respected
 - [ ] No layout thrashing
@@ -56,11 +60,13 @@ Add meaningful, performant motion that enhances UX without hindering accessibili
 - [ ] Loading states are animated
 
 ## Safety Rules
+
 - Never auto-play animations that can't be paused
 - Don't block interaction during animations
 - Test on low-end devices
 
 ## Coordinates With
+
 - `component-system-builder` — for component animations
 - `performance-audit-optimizer` — for animation performance
 - `accessibility-builder` — for reduced-motion support

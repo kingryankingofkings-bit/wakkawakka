@@ -1,6 +1,7 @@
 # Handoff Report — Batch 3 Features (Content Creation, Feeds & Discovery)
 
 ## 1. Observation
+
 - Modified `prisma/schema.prisma` to incorporate database schema updates for Batch 3:
   - Add `scheduledAt DateTime?` field to the `Post` model.
   - Add `SearchHistory` model mapping `userId`, `query`, and `createdAt` with indexes.
@@ -27,6 +28,7 @@
 - Cataloged status in `integration_inventory.md`.
 
 ## 2. Logic Chain
+
 1. Schema changes were pushed to SQLite database ensuring that client operations targeting `scheduledAt` or `SearchHistory` are backed by persistence.
 2. Story components and backend endpoints now query from SQLite using followed/self relations, grouping them, and recording viewed history via the `StoryView` model.
 3. Feed endpoints were updated to compute chronological decay scores in memory for dynamic feed ordering and exclude posts that have a future `scheduledAt`.
@@ -34,12 +36,15 @@
 5. CreatePostModal was modified to provide datepicker scheduling, alt-text descriptions, and drop restrictions, connecting the frontend uploader directly to the SQLite backend.
 
 ## 3. Caveats
+
 No caveats. All features are fully implemented, database-backed, type-checked, and integrated.
 
 ## 4. Conclusion
+
 Batch 3 features (Content Creation, Feeds & Discovery) have been successfully implemented, linted, compiled, and validated with no errors or failures.
 
 ## 5. Verification Method
+
 - Execute the type-checker: `npm run type-check`
 - Execute the linter: `npm run lint`
 - Execute the E2E test runner: `node tests/e2e_runner.js`

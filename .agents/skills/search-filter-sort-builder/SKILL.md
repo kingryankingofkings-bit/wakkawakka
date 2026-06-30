@@ -6,13 +6,16 @@ description: Use when implementing search functionality, filtering data, sorting
 # Search, Filter, and Sort Builder
 
 ## Goal
+
 Implement efficient search, filtering, and sorting with proper pagination and query optimization.
 
 ## Do Not Use When
+
 - Static list with no search needs
 - Using a dedicated search service (Algolia, Elasticsearch) — use `third-party-api-integration`
 
 ## Required Inputs To Inspect
+
 - Data volume (hundreds, thousands, millions)
 - Search requirements (exact, partial, fuzzy, full-text)
 - Filter fields and types
@@ -21,11 +24,11 @@ Implement efficient search, filtering, and sorting with proper pagination and qu
 
 ## Decision: Client vs Server
 
-| Data Volume | Search Type | Implementation |
-|-------------|-------------|----------------|
-| < 1000 rows | Simple | Client-side filtering |
-| 1000-100K | Structured | Server-side query params |
-| > 100K | Full-text | Dedicated search (Algolia, etc.) |
+| Data Volume | Search Type | Implementation                   |
+| ----------- | ----------- | -------------------------------- |
+| < 1000 rows | Simple      | Client-side filtering            |
+| 1000-100K   | Structured  | Server-side query params         |
+| > 100K      | Full-text   | Dedicated search (Algolia, etc.) |
 
 ## Workflow
 
@@ -45,6 +48,7 @@ Implement efficient search, filtering, and sorting with proper pagination and qu
 ```
 
 ## Quality Checks
+
 - [ ] Search is debounced
 - [ ] Pagination works correctly
 - [ ] Filters combine correctly (AND logic)
@@ -53,10 +57,12 @@ Implement efficient search, filtering, and sorting with proper pagination and qu
 - [ ] Loading state during search
 
 ## Safety Rules
+
 - Sanitize search inputs (prevent injection)
 - Limit max page size (prevent DOS)
 - Index database columns used in filters
 
 ## Coordinates With
+
 - `backend-api-architect` — for query endpoints
 - `database-schema-designer` — for indexes

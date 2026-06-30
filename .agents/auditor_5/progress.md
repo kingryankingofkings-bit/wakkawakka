@@ -4,6 +4,7 @@
 - **Current task**: Reporting audit findings and final handoff.
 
 ## Steps
+
 1. [x] Read and verify schema changes in `prisma/schema.prisma`
 2. [x] Analyze persistent cart API `/api/cart` and checkout API `/api/marketplace/checkout`
 3. [x] Audit `/shop` frontend integration

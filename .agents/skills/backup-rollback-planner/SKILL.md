@@ -6,13 +6,16 @@ description: Use when planning database backups, creating rollback strategies, d
 # Backup and Rollback Planner
 
 ## Goal
+
 Implement automated backups with tested rollback procedures for disaster recovery.
 
 ## Do Not Use When
+
 - No production data to protect
 - Backup strategy already exists
 
 ## Required Inputs To Inspect
+
 - Database type and size
 - Data change frequency
 - Recovery point objective (RPO)
@@ -30,10 +33,10 @@ Implement automated backups with tested rollback procedures for disaster recover
 
 ## Backup Strategy
 
-| Type | Frequency | Retention |
-|------|-----------|-----------|
-| Full database | Daily | 30 days |
-| Incremental | Hourly | 7 days |
+| Type              | Frequency | Retention             |
+| ----------------- | --------- | --------------------- |
+| Full database     | Daily     | 30 days               |
+| Incremental       | Hourly    | 7 days                |
 | Before deployment | On demand | Until next deployment |
 
 ## Rollback Procedure
@@ -49,17 +52,20 @@ Implement automated backups with tested rollback procedures for disaster recover
 ```
 
 ## Quality Checks
+
 - [ ] Backups run automatically
 - [ ] Restore tested successfully
 - [ ] Rollback procedure documented
 - [ ] Team knows rollback steps
 
 ## Safety Rules
+
 - Always backup before deploying
 - Test restores, don't assume they work
 - Keep backups in different region from primary
 - Encrypt backups at rest
 
 ## Coordinates With
+
 - `database-migration-safety` — for migration rollbacks
 - `hosting-platform-deployer` — for deployment versioning

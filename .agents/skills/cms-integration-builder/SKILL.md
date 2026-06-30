@@ -6,14 +6,17 @@ description: Use when integrating content management systems, connecting headles
 # CMS Integration Builder
 
 ## Goal
+
 Integrate headless CMS platforms for content-driven websites with proper data fetching, caching, and preview modes.
 
 ## Do Not Use When
+
 - Content is static and rarely changes
 - All content is user-generated
 - Using a page builder exclusively (Webflow, etc.)
 
 ## Required Inputs To Inspect
+
 - CMS platform choice (Sanity, Contentful, Strapi, WordPress, MDX)
 - Content types needed (blog posts, pages, products)
 - Preview/draft mode requirements
@@ -34,6 +37,7 @@ Integrate headless CMS platforms for content-driven websites with proper data fe
 10. **Train editors**: Document content creation process
 
 ## Quality Checks
+
 - [ ] Content updates reflect quickly (< 60 seconds)
 - [ ] Preview mode works for drafts
 - [ ] Rich text renders correctly
@@ -41,12 +45,14 @@ Integrate headless CMS platforms for content-driven websites with proper data fe
 - [ ] 404 handled for deleted content
 
 ## Safety Rules
+
 - Sanitize rich text content (XSS prevention)
 - Rate limit CMS API calls
 - Handle CMS downtime gracefully (cache fallback)
 - Don't expose CMS tokens client-side
 
 ## Coordinates With
+
 - `frontend-scaffold-builder` — for SDK setup
 - `cache-and-data-fetching-strategy` — for content caching
 - `third-party-api-integration` — for CMS API calls

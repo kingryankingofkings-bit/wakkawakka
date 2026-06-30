@@ -1,64 +1,71 @@
-# BRIEFING — 2026-06-30T10:46:12Z
+# BRIEFING — 2026-06-30T14:26:00Z
 
 ## Mission
-Implement the REAL, integrated, database-backed features for Batch 5 (E-Commerce, Creator Tools, Analytics, APIs) and the 13 platform audit gaps & corrections in wakkawakka-local.
+
+Remediate the Batch 6 implementation based on the Reviewer's findings (Prisma schema, LiveStreamChatMessage, chat/gift/cohost/predictions APIs, and live frontend UI fixes).
 
 ## 🔒 My Identity
+
 - Archetype: teamwork_preview_worker
 - Roles: implementer, qa, specialist
 - Working directory: C:\Users\Kingr\OneDrive\Documents\wakkawakka-local\.agents\worker_m6
-- Original parent: 0ea6d17f-caaf-473b-8498-766ddc48978b
-- Milestone: Batch 5 Features & Gaps
+- Original parent: 5667ff35-081a-422c-ab72-bf5a56ebfc1a
+- Milestone: Batch 6 Remediation
 
 ## 🔒 Key Constraints
+
 - CODE_ONLY network mode: no external website access, no curl/wget to external URLs.
 - Minimal change principle: only modify what is necessary, no unnecessary refactoring.
 - Real implementations only: no hardcoding of test results or fake implementations.
 - Write only to own folder for metadata, read any folder.
 
 ## Current Parent
-- Conversation ID: 0ea6d17f-caaf-473b-8498-766ddc48978b
-- Updated: 2026-06-30T10:46:12Z
+
+- Conversation ID: 5667ff35-081a-422c-ab72-bf5a56ebfc1a
+- Updated: 2026-06-30T14:26:00Z
 
 ## Task Summary
-- **What to build**: Real implementations of shopping cart, checkout transaction, creator analytics dashboard, ad campaigns, developer webhooks, plus 13 gaps & corrections (Facebook Dating, Facebook Fundraisers, Facebook Gaming, Instagram Notes, WhatsApp Flows, WhatsApp Ads, Telegram Mini Apps, Discord Activities, Kick Bounties, BeReal BTS, Bluesky Labelers, Threads Highlighter, TikTok Green Screen, and Apaya/Publer content scheduling).
-- **Success criteria**: All tests run and pass (`node tests/e2e_runner.js`), type-check/lint/build checks pass.
-- **Interface contracts**: `integration_inventory.md`
-- **Code layout**: Source in `src/`, tests in `tests/` or co-located.
+
+- **What to build**:
+  - Add `LiveStreamChatMessage` database schema.
+  - Fix chat and gift APIs to use database persistence instead of in-memory.
+  - Fix gift API response (points balance display name typo), save comment, and enforce positive amount and quantity.
+  - Fix co-host API with user validation, status fields, and authorization check for `ACCEPT`.
+  - Fix predictions API with transactional payout/refund distribution, integer bet verification, and clean P2002 error handling.
+  - Fix Live stream page with tab state, accessibility, and mobile layout container height constraints.
+- **Success criteria**:
+  - `npm run type-check`, `npm run lint`, `npm run build` passes.
+  - E2E tests (`node tests/e2e_runner.js`) run and pass.
+- **Interface contracts**: `prisma/schema.prisma`, `tests/e2e_runner.js`
+- **Code layout**: `src/app/(main)/live/page.tsx`, `src/app/api/live/streams/...`
 
 ## Change Tracker
+
 - **Files modified**:
-  - `prisma/schema.prisma`
-  - `src/types/index.ts`
-  - `src/store/cartStore.ts`
-  - `src/components/commerce/ProductCard.tsx`
-  - `src/app/(main)/shop/page.tsx`
-  - `src/app/(main)/feed/page.tsx`
-  - `src/app/(main)/explore/page.tsx`
-  - `src/app/(main)/analytics/page.tsx`
-  - `src/app/api/cart/route.ts`
-  - `src/app/api/marketplace/checkout/route.ts`
-  - `src/app/api/creator/analytics/route.ts`
-  - `src/app/api/ads/route.ts`
-  - `src/app/api/ads/serve/route.ts`
-  - `src/app/api/ads/[id]/track/route.ts`
-  - `src/components/ads/SponsoredAd.tsx`
-  - `src/app/api/developer/webhooks/route.ts`
-  - `src/app/api/developer/webhooks/test-trigger/route.ts`
-  - `src/app/(main)/settings/developer/page.tsx`
-- **Build status**: Pass (before gap requirements)
-- **Pending issues**: Implement 13 platform audit gaps and corrections.
+  - `prisma/schema.prisma` (Added `LiveStreamChatMessage` model and relations, added `status` to `LiveStreamCoHost`)
+  - `src/app/api/live/streams/[id]/chat/route.ts` (Persisted chat log to database)
+  - `src/app/api/live/streams/[id]/gifts/route.ts` (Fixed typo, persisted GIFT comment, added validation checks for positive inputs)
+  - `src/app/api/live/streams/[id]/cohost/route.ts` (Enforced target user existence, status-based accepted state for cohost requests)
+  - `src/app/api/live/streams/[id]/predictions/route.ts` (Ensured transaction atomic payouts/refunds, unique bet constraints, integer validation)
+  - `src/app/(main)/live/page.tsx` (Added active state tab switching, ARIA accessibility attributes, mobile max-height responsiveness, only render accepted cohosts in split-screen layout)
+  - `tests/e2e_runner.js` (Updated cohost invitation status, chat, and gift comment database persistence verification checks)
+- **Build status**: Pass.
+- **Pending issues**: None.
 
 ## Quality Status
-- **Build/test result**: In progress
-- **Lint status**: TBD
-- **Tests added/modified**: None yet.
+
+- **Build/test result**: Pass (All 13 tests passed, types verified, built compiled successfully)
+- **Lint status**: Pass (Clean lint checks, no errors, only static image path warnings)
+- **Tests added/modified**: Updated Live Streaming E2E test.
 
 ## Loaded Skills
+
 - None.
 
 ## Key Decisions Made
-- Create `/settings/developer/page.tsx` to host both Advertiser Campaigns and Webhooks Console.
+
+- Utilize status checks on `LiveStreamCoHost` to ensure only accepted users trigger overlays, and enforce authorization check of invitation existence for `ACCEPT`.
 
 ## Artifact Index
+
 - C:\Users\Kingr\OneDrive\Documents\wakkawakka-local\.agents\worker_m6\handoff.md — Handoff report for final delivery.

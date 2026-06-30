@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ReactionType } from '@/types';
-import { REACTION_EMOJIS } from '@/lib/utils';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ReactionType } from "@/types";
+import { REACTION_EMOJIS } from "@/lib/utils";
 
 interface ReactionPickerProps {
   isVisible: boolean;
@@ -12,26 +12,37 @@ interface ReactionPickerProps {
 }
 
 const REACTION_LABELS: Record<ReactionType, string> = {
-  LIKE: 'Like',
-  LOVE: 'Love',
-  HAHA: 'Haha',
-  WOW: 'Wow',
-  SAD: 'Sad',
-  ANGRY: 'Angry',
+  LIKE: "Like",
+  LOVE: "Love",
+  HAHA: "Haha",
+  WOW: "Wow",
+  SAD: "Sad",
+  ANGRY: "Angry",
 };
 
 const REACTION_COLORS: Record<ReactionType, string> = {
-  LIKE: '#3b82f6',
-  LOVE: '#ef4444',
-  HAHA: '#f59e0b',
-  WOW: '#8b5cf6',
-  SAD: '#60a5fa',
-  ANGRY: '#f97316',
+  LIKE: "#3b82f6",
+  LOVE: "#ef4444",
+  HAHA: "#f59e0b",
+  WOW: "#8b5cf6",
+  SAD: "#60a5fa",
+  ANGRY: "#f97316",
 };
 
-const reactions: ReactionType[] = ['LIKE', 'LOVE', 'HAHA', 'WOW', 'SAD', 'ANGRY'];
+const reactions: ReactionType[] = [
+  "LIKE",
+  "LOVE",
+  "HAHA",
+  "WOW",
+  "SAD",
+  "ANGRY",
+];
 
-export function ReactionPicker({ isVisible, onReact, currentReaction }: ReactionPickerProps) {
+export function ReactionPicker({
+  isVisible,
+  onReact,
+  currentReaction,
+}: ReactionPickerProps) {
   return (
     <AnimatePresence>
       {isVisible && (
@@ -39,7 +50,7 @@ export function ReactionPicker({ isVisible, onReact, currentReaction }: Reaction
           initial={{ opacity: 0, scale: 0.8, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.8, y: 8 }}
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
           className="absolute bottom-full left-0 mb-2 z-50 flex items-center gap-1 bg-card border border-border rounded-full px-2 py-1.5 shadow-lg"
           onMouseLeave={(e) => e.stopPropagation()}
         >
@@ -48,7 +59,12 @@ export function ReactionPicker({ isVisible, onReact, currentReaction }: Reaction
               key={reaction}
               initial={{ opacity: 0, scale: 0.5, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ delay: index * 0.04, type: 'spring', stiffness: 400, damping: 20 }}
+              transition={{
+                delay: index * 0.04,
+                type: "spring",
+                stiffness: 400,
+                damping: 20,
+              }}
               whileHover={{ scale: 1.4, y: -4 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => onReact(reaction)}
@@ -58,7 +74,10 @@ export function ReactionPicker({ isVisible, onReact, currentReaction }: Reaction
               <span
                 className="text-2xl leading-none cursor-pointer select-none"
                 style={{
-                  filter: currentReaction === reaction ? 'drop-shadow(0 0 4px currentColor)' : 'none',
+                  filter:
+                    currentReaction === reaction
+                      ? "drop-shadow(0 0 4px currentColor)"
+                      : "none",
                 }}
               >
                 {REACTION_EMOJIS[reaction]}

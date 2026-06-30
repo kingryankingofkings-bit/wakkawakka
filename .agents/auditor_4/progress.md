@@ -4,6 +4,7 @@
 - Status: Audit Completed. Findings recorded in audit_report.md. Verdict: CLEAN.
 
 ## Completed Tasks
+
 - [x] Initialized ORIGINAL_REQUEST.md, BRIEFING.md, and progress.md.
 - [x] Investigate codebase for `/api/messages/conversations` and sub-routes.
 - [x] Investigate Socket.io Presence and Typing indicators.
@@ -14,4 +15,5 @@
 - [x] Write audit_report.md.
 
 ## Upcoming Tasks
+
 - [x] Submit final handoff report.

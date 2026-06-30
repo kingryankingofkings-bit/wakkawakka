@@ -6,14 +6,17 @@ description: Use when designing database schemas, creating data models, planning
 # Database Schema Designer
 
 ## Goal
+
 Design normalized, performant database schemas with proper relationships, indexes, and constraints.
 
 ## Do Not Use When
+
 - Using a backend-as-a-service with automatic schemas
 - Schema is already defined and implemented
 - The database is a simple key-value store
 
 ## Required Inputs To Inspect
+
 - Domain model / entities from requirements
 - Relationship cardinality (one-to-one, one-to-many, many-to-many)
 - Query patterns (what will be read/written most)
@@ -61,6 +64,7 @@ enum Role {
 ```
 
 ## Quality Checks
+
 - [ ] No redundant data (normalized)
 - [ ] All relationships have foreign keys
 - [ ] Indexes on query columns
@@ -69,12 +73,14 @@ enum Role {
 - [ ] Soft deletes considered
 
 ## Safety Rules
+
 - Never store passwords in plain text (use bcrypt/argon2)
 - Use parameterized queries (ORM handles this)
 - Don't expose auto-incrementing IDs publicly (use UUIDs/CUIDs)
 - Back up before schema migrations
 
 ## Coordinates With
+
 - `backend-api-architect` — API needs data
 - `database-migration-safety` — for migrations
 - `technical-architecture-planner` — for data flow

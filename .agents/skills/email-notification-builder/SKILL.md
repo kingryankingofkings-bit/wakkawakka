@@ -6,13 +6,16 @@ description: Use when implementing email sending, notification systems, transact
 # Email and Notification Builder
 
 ## Goal
+
 Implement reliable email delivery with templated emails, fallback handling, and delivery tracking.
 
 ## Do Not Use When
+
 - No email functionality needed
 - Using a third-party service with built-in templates (Clerk, etc.)
 
 ## Required Inputs To Inspect
+
 - Email types needed (transactional, marketing, notification)
 - Email service provider (Resend, SendGrid, Postmark, AWS SES)
 - Template design requirements
@@ -32,13 +35,14 @@ Implement reliable email delivery with templated emails, fallback handling, and 
 
 ## Email Types
 
-| Type | Examples | Priority |
-|------|----------|----------|
-| Transactional | Password reset, welcome, receipt | High |
-| Notification | New message, alert, reminder | Medium |
-| Marketing | Newsletter, promotion | Low |
+| Type          | Examples                         | Priority |
+| ------------- | -------------------------------- | -------- |
+| Transactional | Password reset, welcome, receipt | High     |
+| Notification  | New message, alert, reminder     | Medium   |
+| Marketing     | Newsletter, promotion            | Low      |
 
 ## Quality Checks
+
 - [ ] HTML and plain text versions
 - [ ] Tested in major email clients
 - [ ] Unsubscribe link in marketing emails
@@ -48,12 +52,14 @@ Implement reliable email delivery with templated emails, fallback handling, and 
 - [ ] SPF/DKIM configured
 
 ## Safety Rules
+
 - Never expose BCC lists
 - Rate limit email sending
 - Validate email addresses before sending
 - Don't send emails in request cycle for high volume (use queue)
 
 ## Coordinates With
+
 - `authentication-authorization-builder` — for auth emails
 - `background-jobs-and-queues` — for queued sending
 - `third-party-api-integration` — for email provider APIs

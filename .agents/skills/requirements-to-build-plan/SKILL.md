@@ -6,14 +6,17 @@ description: Use when a project brief or requirements document exists and needs 
 # Requirements to Build Plan
 
 ## Goal
+
 Convert approved requirements into a sequenced, phased build plan with milestones, dependencies, and effort estimates.
 
 ## Do Not Use When
+
 - No requirements or brief exists (use `web-project-discovery` first)
 - The task is a single small change
 - User explicitly provided a task list
 
 ## Required Inputs To Inspect
+
 - `project-brief.md` or equivalent requirements document
 - Any existing codebase or project structure
 - Team constraints (solo, team size)
@@ -37,53 +40,63 @@ Produce a `build-plan.md`:
 # Build Plan: [Project Name]
 
 ## Phase 1: Foundation (Week 1)
-| Task | Effort | Dependencies | Deliverable |
-|------|--------|--------------|-------------|
-| Setup project scaffold | S | None | Repo + dev env |
-| Design database schema | M | None | Schema diagram |
-| Implement auth | L | Schema | Login/signup working |
+
+| Task                   | Effort | Dependencies | Deliverable          |
+| ---------------------- | ------ | ------------ | -------------------- |
+| Setup project scaffold | S      | None         | Repo + dev env       |
+| Design database schema | M      | None         | Schema diagram       |
+| Implement auth         | L      | Schema       | Login/signup working |
 
 **Milestone**: [Description of done state]
 **Review Checkpoint**: User reviews [specific thing]
 
 ## Phase 2: Core Features (Weeks 2-3)
+
 ...
 
 ## Risk Register
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Third-party API unavailable | High | Mock early, integrate late |
+
+| Risk                        | Impact | Mitigation                 |
+| --------------------------- | ------ | -------------------------- |
+| Third-party API unavailable | High   | Mock early, integrate late |
 
 ## Next Action
+
 - [ ] Task to start immediately
 ```
 
 ## Quality Checks
+
 - [ ] Every requirement maps to at least one task
 - [ ] No orphan tasks without a phase
 - [ ] Dependencies form a DAG (no circular)
 - [ ] Each phase has a clear "definition of done"
 
 ## Safety Rules
+
 - Never promise specific dates without explicit user confirmation
 - Always flag external dependencies as risks
 - Include buffer time for unknowns
 
 ## Failure Handling
+
 If requirements are incomplete, build the plan for known requirements and append a "Requirements Gap" section with questions.
 
 ## Examples That Should Trigger
+
 - "Create a build plan for this"
 - "How should we approach this project?"
 - "What are the steps to build this?"
 - "Plan out the development"
 
 ## Examples That Should Not Trigger
+
 - "Fix this bug"
 - "Add a button here"
 - "How do I center a div"
 
 ## Coordinates With
+
 - `web-project-discovery` — receives the brief
 - `information-architecture-planner` — parallel for IA work
 - `stack-selection-advisor` — for tech stack decisions

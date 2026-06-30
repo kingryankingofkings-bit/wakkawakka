@@ -1,23 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // POST /api/users/[id]/block - block a user
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
   const blockerId = getRequestUserId(req);
-  if (!blockerId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  if (!blockerId)
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const blockedId = params.id;
   if (blockerId === blockedId) {
-    return NextResponse.json({ error: 'You cannot block yourself' }, { status: 400 });
+    return NextResponse.json(
+      { error: "You cannot block yourself" },
+      { status: 400 },
+    );
   }
 
   try {
-    const targetUser = await prisma.user.findUnique({ where: { id: blockedId } });
+    const targetUser = await prisma.user.findUnique({
+      where: { id: blockedId },
+    });
     if (!targetUser) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const existingBlock = await prisma.block.findUnique({
@@ -25,7 +34,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     });
 
     if (existingBlock) {
-      return NextResponse.json({ message: 'User is already blocked', data: { blocked: true } });
+      return NextResponse.json({
+        message: "User is already blocked",
+        data: { blocked: true },
+      });
     }
 
     // Write record to Block table and delete follow connections in both directions
@@ -62,14 +74,21 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     return NextResponse.json({ data: { blocked: true } });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to block user', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to block user", detail: String(err) },
+      { status: 500 },
+    );
   }
 }
 
 // DELETE /api/users/[id]/block - unblock a user
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
   const blockerId = getRequestUserId(req);
-  if (!blockerId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  if (!blockerId)
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const blockedId = params.id;
   try {
@@ -78,7 +97,10 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     });
 
     if (!existingBlock) {
-      return NextResponse.json({ message: 'User is not blocked', data: { blocked: false } });
+      return NextResponse.json({
+        message: "User is not blocked",
+        data: { blocked: false },
+      });
     }
 
     await prisma.block.delete({
@@ -87,14 +109,21 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
     return NextResponse.json({ data: { blocked: false } });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to unblock user', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to unblock user", detail: String(err) },
+      { status: 500 },
+    );
   }
 }
 
 // GET /api/users/[id]/block - check if user is blocked
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
   const blockerId = getRequestUserId(req);
-  if (!blockerId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  if (!blockerId)
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const blockedId = params.id;
   try {
@@ -104,6 +133,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
     return NextResponse.json({ data: { blocked: !!block } });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to check block status', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to check block status", detail: String(err) },
+      { status: 500 },
+    );
   }
 }

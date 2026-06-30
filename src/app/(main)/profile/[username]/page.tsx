@@ -1,29 +1,46 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Grid3X3, Film, Tag, Heart, Users, Library, Folder, Plus, ChevronLeft, ChevronRight, X, Pin } from 'lucide-react';
-import Image from 'next/image';
-import { MOCK_USERS, MOCK_POSTS, CURRENT_USER } from '@/lib/mockData';
-import { cn } from '@/lib/utils';
-import { ProfileHeader } from '@/components/profile/ProfileHeader';
-import { EditProfileModal } from '@/components/profile/EditProfileModal';
-import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { useAuthStore } from '@/store/authStore';
-import toast from 'react-hot-toast';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Lock,
+  Grid3X3,
+  Film,
+  Tag,
+  Heart,
+  Users,
+  Library,
+  Folder,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Pin,
+  Briefcase,
+} from "lucide-react";
+import Image from "next/image";
+import { MOCK_USERS, MOCK_POSTS, CURRENT_USER } from "@/lib/mockData";
+import { cn } from "@/lib/utils";
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { EditProfileModal } from "@/components/profile/EditProfileModal";
+import { Modal } from "@/components/ui/Modal";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { useAuthStore } from "@/store/authStore";
+import toast from "react-hot-toast";
+import { ProfessionalTab } from "@/components/profile/ProfessionalTab";
 
 const PROFILE_TABS = [
-  { id: 'posts', label: 'Posts', icon: Grid3X3 },
-  { id: 'albums', label: 'Albums', icon: Library },
-  { id: 'reels', label: 'Reels', icon: Film },
-  { id: 'tagged', label: 'Tagged', icon: Tag },
-  { id: 'liked', label: 'Liked', icon: Heart },
-  { id: 'communities', label: 'Communities', icon: Users },
+  { id: "posts", label: "Posts", icon: Grid3X3 },
+  { id: "albums", label: "Albums", icon: Library },
+  { id: "reels", label: "Reels", icon: Film },
+  { id: "tagged", label: "Tagged", icon: Tag },
+  { id: "liked", label: "Liked", icon: Heart },
+  { id: "communities", label: "Communities", icon: Users },
+  { id: "professional", label: "Professional", icon: Briefcase },
 ] as const;
 
-type TabId = (typeof PROFILE_TABS)[number]['id'];
+type TabId = (typeof PROFILE_TABS)[number]["id"];
 
 interface ProfilePageProps {
   params: { username: string };
@@ -37,32 +54,32 @@ interface Album {
 
 const DEFAULT_ALBUMS: Album[] = [
   {
-    id: '1',
-    title: 'Summer Trip 🏝️',
+    id: "1",
+    title: "Summer Trip 🏝️",
     photos: [
-      'https://picsum.photos/seed/summer1/800/800',
-      'https://picsum.photos/seed/summer2/800/800',
-      'https://picsum.photos/seed/summer3/800/800',
-    ]
+      "https://picsum.photos/seed/summer1/800/800",
+      "https://picsum.photos/seed/summer2/800/800",
+      "https://picsum.photos/seed/summer3/800/800",
+    ],
   },
   {
-    id: '2',
-    title: 'Design Setup 💻',
+    id: "2",
+    title: "Design Setup 💻",
     photos: [
-      'https://picsum.photos/seed/desk1/800/800',
-      'https://picsum.photos/seed/desk2/800/800',
-    ]
+      "https://picsum.photos/seed/desk1/800/800",
+      "https://picsum.photos/seed/desk2/800/800",
+    ],
   },
   {
-    id: '3',
-    title: 'Vibes ✨',
+    id: "3",
+    title: "Vibes ✨",
     photos: [
-      'https://picsum.photos/seed/vibe1/800/800',
-      'https://picsum.photos/seed/vibe2/800/800',
-      'https://picsum.photos/seed/vibe3/800/800',
-      'https://picsum.photos/seed/vibe4/800/800',
-    ]
-  }
+      "https://picsum.photos/seed/vibe1/800/800",
+      "https://picsum.photos/seed/vibe2/800/800",
+      "https://picsum.photos/seed/vibe3/800/800",
+      "https://picsum.photos/seed/vibe4/800/800",
+    ],
+  },
 ];
 
 export default function ProfilePage({ params }: ProfilePageProps) {
@@ -77,13 +94,19 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
   const isOwnProfile = profileUser.username === currentUser.username;
   // Fallback to checking a generic following array or default to true for demo purposes if it's the 2nd mock user
-  const isFollowing = (currentUser as any).following?.includes(profileUser.id) || profileUser.id === 'u2';
+  const isFollowing =
+    (currentUser as any).following?.includes(profileUser.id) ||
+    profileUser.id === "u2";
 
-  const orderedTabs = profileUser.profileTabOrder 
-    ? profileUser.profileTabOrder.map(id => PROFILE_TABS.find(t => t.id === id)).filter(Boolean) as (typeof PROFILE_TABS[number])[]
+  const orderedTabs = profileUser.profileTabOrder
+    ? (profileUser.profileTabOrder
+        .map((id) => PROFILE_TABS.find((t) => t.id === id))
+        .filter(Boolean) as (typeof PROFILE_TABS)[number][])
     : PROFILE_TABS;
 
-  const [activeTab, setActiveTab] = useState<TabId>(orderedTabs[0]?.id || 'posts');
+  const [activeTab, setActiveTab] = useState<TabId>(
+    orderedTabs[0]?.id || "posts",
+  );
   const [editOpen, setEditOpen] = useState(false);
 
   // Albums State
@@ -91,57 +114,62 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   const [activeAlbum, setActiveAlbum] = useState<Album | null>(null);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [createAlbumOpen, setCreateAlbumOpen] = useState(false);
-  const [newAlbumTitle, setNewAlbumTitle] = useState('');
+  const [newAlbumTitle, setNewAlbumTitle] = useState("");
   const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
 
   const userPosts = MOCK_POSTS.filter((p) => p.authorId === profileUser.id);
-  const isPrivateLocked = profileUser.isPrivate && !isOwnProfile && !isFollowing;
+  const isPrivateLocked =
+    profileUser.isPrivate && !isOwnProfile && !isFollowing;
 
   // Find all post images user could select from
   const selectablePostImages = userPosts
-    .filter(p => p.mediaUrls.length > 0)
-    .flatMap(p => p.mediaUrls);
+    .filter((p) => p.mediaUrls.length > 0)
+    .flatMap((p) => p.mediaUrls);
 
   const handleCreateAlbum = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAlbumTitle.trim()) {
-      toast.error('Please enter an album title');
+      toast.error("Please enter an album title");
       return;
     }
     if (selectedPhotos.length === 0) {
-      toast.error('Please select at least 1 photo for your album');
+      toast.error("Please select at least 1 photo for your album");
       return;
     }
 
     const newAlbum: Album = {
       id: Date.now().toString(),
       title: newAlbumTitle,
-      photos: [...selectedPhotos]
+      photos: [...selectedPhotos],
     };
 
-    setAlbums(prev => [newAlbum, ...prev]);
+    setAlbums((prev) => [newAlbum, ...prev]);
     setCreateAlbumOpen(false);
-    setNewAlbumTitle('');
+    setNewAlbumTitle("");
     setSelectedPhotos([]);
     toast.success(`Album "${newAlbum.title}" created successfully!`);
   };
 
   const toggleSelectPhoto = (url: string) => {
-    setSelectedPhotos(prev => 
-      prev.includes(url) ? prev.filter(x => x !== url) : [...prev, url]
+    setSelectedPhotos((prev) =>
+      prev.includes(url) ? prev.filter((x) => x !== url) : [...prev, url],
     );
   };
 
   const handlePrevPhoto = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!activeAlbum) return;
-    setActivePhotoIndex(prev => (prev === 0 ? activeAlbum.photos.length - 1 : prev - 1));
+    setActivePhotoIndex((prev) =>
+      prev === 0 ? activeAlbum.photos.length - 1 : prev - 1,
+    );
   };
 
   const handleNextPhoto = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!activeAlbum) return;
-    setActivePhotoIndex(prev => (prev === activeAlbum.photos.length - 1 ? 0 : prev + 1));
+    setActivePhotoIndex((prev) =>
+      prev === activeAlbum.photos.length - 1 ? 0 : prev + 1,
+    );
   };
 
   return (
@@ -164,9 +192,12 @@ export default function ProfilePage({ params }: ProfilePageProps) {
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
               <Lock className="w-7 h-7 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">This account is private</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              This account is private
+            </h3>
             <p className="text-sm text-muted-foreground max-w-xs">
-              Follow @{profileUser.username} to see their photos, reels, and posts.
+              Follow @{profileUser.username} to see their photos, reels, and
+              posts.
             </p>
           </motion.div>
         ) : (
@@ -181,10 +212,10 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
                       className={cn(
-                        'flex items-center gap-1.5 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors shrink-0',
+                        "flex items-center gap-1.5 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors shrink-0",
                         activeTab === tab.id
-                          ? 'border-primary text-primary'
-                          : 'border-transparent text-muted-foreground hover:text-foreground'
+                          ? "border-primary text-primary"
+                          : "border-transparent text-muted-foreground hover:text-foreground",
                       )}
                     >
                       <Icon className="w-4 h-4" />
@@ -204,20 +235,34 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
               >
-                {activeTab === 'posts' && (
-                  <PostsGrid posts={userPosts} pinnedPostId={profileUser.pinnedPostId} />
+                {activeTab === "posts" && (
+                  <PostsGrid
+                    posts={userPosts}
+                    pinnedPostId={profileUser.pinnedPostId}
+                  />
                 )}
 
-                {activeTab === 'albums' && (
+                {activeTab === "professional" && (
+                  <ProfessionalTab
+                    profileUserId={profileUser.id}
+                    isOwnProfile={isOwnProfile}
+                  />
+                )}
+
+                {activeTab === "albums" && (
                   <div className="p-4 space-y-4">
                     {isOwnProfile && (
                       <div className="flex justify-between items-center mb-2">
-                        <h3 className="text-sm font-bold text-foreground">Photo Collections</h3>
-                        <Button 
-                          size="xs" 
+                        <h3 className="text-sm font-bold text-foreground">
+                          Photo Collections
+                        </h3>
+                        <Button
+                          size="xs"
                           onClick={() => {
                             if (selectablePostImages.length === 0) {
-                              toast.error("You don't have any uploaded post images to organize into albums!");
+                              toast.error(
+                                "You don't have any uploaded post images to organize into albums!",
+                              );
                               return;
                             }
                             setCreateAlbumOpen(true);
@@ -257,7 +302,9 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                           </div>
                           <div className="p-2 flex items-center gap-2">
                             <Folder className="h-4 w-4 text-primary shrink-0" />
-                            <p className="font-bold text-xs truncate text-foreground">{album.title}</p>
+                            <p className="font-bold text-xs truncate text-foreground">
+                              {album.title}
+                            </p>
                           </div>
                         </div>
                       ))}
@@ -265,17 +312,33 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                   </div>
                 )}
 
-                {activeTab === 'reels' && (
-                  <EmptyTab label="No Reels yet" description="Reels will appear here" icon={Film} />
+                {activeTab === "reels" && (
+                  <EmptyTab
+                    label="No Reels yet"
+                    description="Reels will appear here"
+                    icon={Film}
+                  />
                 )}
-                {activeTab === 'tagged' && (
-                  <EmptyTab label="No tagged posts" description="Posts you're tagged in will appear here" icon={Tag} />
+                {activeTab === "tagged" && (
+                  <EmptyTab
+                    label="No tagged posts"
+                    description="Posts you're tagged in will appear here"
+                    icon={Tag}
+                  />
                 )}
-                {activeTab === 'liked' && (
-                  <EmptyTab label="No liked posts" description="Posts you've liked will appear here" icon={Heart} />
+                {activeTab === "liked" && (
+                  <EmptyTab
+                    label="No liked posts"
+                    description="Posts you've liked will appear here"
+                    icon={Heart}
+                  />
                 )}
-                {activeTab === 'communities' && (
-                  <EmptyTab label="No communities yet" description="Communities will appear here" icon={Users} />
+                {activeTab === "communities" && (
+                  <EmptyTab
+                    label="No communities yet"
+                    description="Communities will appear here"
+                    icon={Users}
+                  />
                 )}
               </motion.div>
             </AnimatePresence>
@@ -285,19 +348,28 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
       {/* Edit Profile Modal */}
       {editOpen && (
-        <EditProfileModal user={profileUser} onClose={() => setEditOpen(false)} />
+        <EditProfileModal
+          user={profileUser}
+          onClose={() => setEditOpen(false)}
+        />
       )}
 
       {/* Album Creation Modal */}
-      <Modal isOpen={createAlbumOpen} onClose={() => setCreateAlbumOpen(false)} title="Create New Photo Album">
+      <Modal
+        isOpen={createAlbumOpen}
+        onClose={() => setCreateAlbumOpen(false)}
+        title="Create New Photo Album"
+      >
         <form onSubmit={handleCreateAlbum} className="space-y-4 p-1">
           <div className="space-y-1.5">
-            <label className="text-[10px] uppercase font-bold text-muted-foreground">Album Title</label>
+            <label className="text-[10px] uppercase font-bold text-muted-foreground">
+              Album Title
+            </label>
             <Input
               required
               placeholder="e.g. Summer Vacation 🏖️"
               value={newAlbumTitle}
-              onChange={e => setNewAlbumTitle(e.target.value)}
+              onChange={(e) => setNewAlbumTitle(e.target.value)}
             />
           </div>
 
@@ -314,13 +386,21 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                     onClick={() => toggleSelectPhoto(url)}
                     className={cn(
                       "aspect-square rounded-lg overflow-hidden relative cursor-pointer border-2 transition-all",
-                      isSelected ? "border-primary scale-[0.95]" : "border-transparent"
+                      isSelected
+                        ? "border-primary scale-[0.95]"
+                        : "border-transparent",
                     )}
                   >
-                    <img src={url} alt="" className="h-full w-full object-cover" />
+                    <img
+                      src={url}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                     {isSelected && (
                       <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                        <div className="h-4 w-4 bg-primary text-white rounded-full flex items-center justify-center text-[9px] font-bold">✓</div>
+                        <div className="h-4 w-4 bg-primary text-white rounded-full flex items-center justify-center text-[9px] font-bold">
+                          ✓
+                        </div>
                       </div>
                     )}
                   </div>
@@ -330,7 +410,9 @@ export default function ProfilePage({ params }: ProfilePageProps) {
           </div>
 
           <div className="flex gap-2 justify-end pt-2">
-            <Button variant="ghost" onClick={() => setCreateAlbumOpen(false)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => setCreateAlbumOpen(false)}>
+              Cancel
+            </Button>
             <Button type="submit">Create Album</Button>
           </div>
         </form>
@@ -400,15 +482,29 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   );
 }
 
-function PostsGrid({ posts, pinnedPostId }: { posts: typeof MOCK_POSTS, pinnedPostId?: string }) {
+function PostsGrid({
+  posts,
+  pinnedPostId,
+}: {
+  posts: typeof MOCK_POSTS;
+  pinnedPostId?: string;
+}) {
   if (posts.length === 0) {
     return (
-      <EmptyTab label="No posts yet" description="Posts will appear here when shared" icon={Grid3X3} />
+      <EmptyTab
+        label="No posts yet"
+        description="Posts will appear here when shared"
+        icon={Grid3X3}
+      />
     );
   }
 
-  const pinnedPost = pinnedPostId ? posts.find(p => p.id === pinnedPostId) : null;
-  const standardPosts = pinnedPost ? posts.filter(p => p.id !== pinnedPostId) : posts;
+  const pinnedPost = pinnedPostId
+    ? posts.find((p) => p.id === pinnedPostId)
+    : null;
+  const standardPosts = pinnedPost
+    ? posts.filter((p) => p.id !== pinnedPostId)
+    : posts;
 
   const imagePosts = standardPosts.filter((p) => p.mediaUrls.length > 0);
   const textPosts = standardPosts.filter((p) => p.mediaUrls.length === 0);
@@ -428,14 +524,23 @@ function PostsGrid({ posts, pinnedPostId }: { posts: typeof MOCK_POSTS, pinnedPo
           >
             {pinnedPost.mediaUrls.length > 0 ? (
               <div className="relative aspect-video w-full rounded-xl overflow-hidden cursor-pointer group">
-                <Image src={pinnedPost.mediaUrls[0]} alt="Pinned" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image
+                  src={pinnedPost.mediaUrls[0]}
+                  alt="Pinned"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                  <p className="text-white font-medium line-clamp-2">{pinnedPost.content}</p>
+                  <p className="text-white font-medium line-clamp-2">
+                    {pinnedPost.content}
+                  </p>
                 </div>
               </div>
             ) : (
               <div className="p-4 bg-card rounded-xl shadow-sm cursor-pointer hover:shadow-md transition-shadow">
-                <p className="text-sm font-medium leading-relaxed text-foreground">{pinnedPost.content}</p>
+                <p className="text-sm font-medium leading-relaxed text-foreground">
+                  {pinnedPost.content}
+                </p>
               </div>
             )}
           </motion.div>
@@ -480,7 +585,9 @@ function PostsGrid({ posts, pinnedPostId }: { posts: typeof MOCK_POSTS, pinnedPo
               animate={{ opacity: 1, y: 0 }}
               className="p-4 rounded-xl bg-card border border-border hover:border-primary/30 transition-colors cursor-pointer"
             >
-              <p className="text-sm leading-relaxed line-clamp-3 text-foreground">{post.content}</p>
+              <p className="text-sm leading-relaxed line-clamp-3 text-foreground">
+                {post.content}
+              </p>
               <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
                 <span>❤️ {post.likesCount}</span>
                 <span>💬 {post.commentsCount}</span>

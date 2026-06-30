@@ -34,7 +34,7 @@ Follow these exact steps:
    - Run type-check: `npm run type-check`
    - Run lint: `npm run lint`
    - Run tests: `node tests/e2e_runner.js`
-   Ensure everything compiles and passes before you write any new features.
+     Ensure everything compiles and passes before you write any new features.
 
 2. Implement Post & Message Reactions:
    - Modify `src/app/api/posts/route.ts` to read and write from/to the Prisma database.

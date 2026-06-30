@@ -1,24 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
   const viewerId = getRequestUserId(req);
 
   try {
     const user = await prisma.user.findFirst({
       where: {
-        OR: [
-          { id: params.id },
-          { username: params.id },
-        ],
+        OR: [{ id: params.id }, { username: params.id }],
       },
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Check block
@@ -32,17 +32,23 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         },
       });
       if (block) {
-        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
     }
 
     return NextResponse.json({ data: user });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to fetch user', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch user", detail: String(err) },
+      { status: 500 },
+    );
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
   const activeUserId = getRequestUserId(req);
   if (activeUserId !== params.id) {
     // If not matching, verify if it's admin or allow if requested by self
@@ -51,7 +57,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   try {
     const body = await req.json();
-    
+
     // Clean up fields that might be read-only or relations
     const { id, createdAt, updatedAt, email, ...updates } = body;
 
@@ -62,6 +68,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     return NextResponse.json({ data: user });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to update user', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update user", detail: String(err) },
+      { status: 500 },
+    );
   }
 }

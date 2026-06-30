@@ -6,14 +6,17 @@ description: Use when initializing new frontend projects, setting up web applica
 # Frontend Scaffold Builder
 
 ## Goal
+
 Initialize production-ready frontend projects with correct structure, tooling, and configuration.
 
 ## Do Not Use When
+
 - Project already exists and has configuration
 - Adding to an existing project (use the specific feature skill)
 - The request is to set up backend only
 
 ## Required Inputs To Inspect
+
 - Chosen framework (React, Vue, Svelte, Astro, etc.)
 - Rendering strategy (SSR, SSG, SPA, hybrid)
 - Styling approach (Tailwind, CSS Modules, Sass, etc.)
@@ -60,6 +63,7 @@ my-app/
 ```
 
 ## Quality Checks
+
 - [ ] `npm run dev` starts without errors
 - [ ] `npm run build` completes successfully
 - [ ] TypeScript compiles without errors
@@ -68,14 +72,17 @@ my-app/
 - [ ] README has install and run instructions
 
 ## Safety Rules
+
 - Never commit .env files or secrets
 - Use exact package versions in package.json (pin dependencies)
 - Include .nvmrc or engines field for Node version
 
 ## Failure Handling
+
 If scaffold fails, capture the exact error, check Node version compatibility, and try the next most stable initialization method.
 
 ## Coordinates With
+
 - `stack-selection-advisor` — for framework choices
 - `design-system-enforcer` — for styling setup
 - `responsive-layout-builder` — for initial layouts

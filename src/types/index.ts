@@ -1,13 +1,26 @@
-export type Theme = 'light' | 'dark' | 'system';
-export type PostType = 'TEXT' | 'IMAGE' | 'VIDEO' | 'REEL' | 'STORY' | 'AUDIO' | 'LIVE';
-export type Visibility = 'PUBLIC' | 'FOLLOWERS' | 'PRIVATE';
-export type ReactionType = 'LIKE' | 'LOVE' | 'HAHA' | 'WOW' | 'SAD' | 'ANGRY';
-export type NotificationType = 'LIKE' | 'COMMENT' | 'FOLLOW' | 'MESSAGE' | 'MENTION' | 'SHARE' | 'LIVE' | 'GIFT' | 'SUBSCRIPTION' | 'TIP' | 'BADGE';
-export type VerificationTier = 'NONE' | 'BLUE' | 'GOLD' | 'GOVERNMENT';
-export type FollowStatus = 'PENDING' | 'ACCEPTED';
-export type ReportStatus = 'PENDING' | 'REVIEWED' | 'RESOLVED' | 'DISMISSED';
-export type OrderStatus = 'PENDING' | 'PAID' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
-export type SubscriptionStatus = 'ACTIVE' | 'CANCELLED' | 'EXPIRED';
+export type Theme = "light" | "dark" | "system";
+export type PostType =
+  "TEXT" | "IMAGE" | "VIDEO" | "REEL" | "STORY" | "AUDIO" | "LIVE";
+export type Visibility = "PUBLIC" | "FOLLOWERS" | "PRIVATE";
+export type ReactionType = "LIKE" | "LOVE" | "HAHA" | "WOW" | "SAD" | "ANGRY";
+export type NotificationType =
+  | "LIKE"
+  | "COMMENT"
+  | "FOLLOW"
+  | "MESSAGE"
+  | "MENTION"
+  | "SHARE"
+  | "LIVE"
+  | "GIFT"
+  | "SUBSCRIPTION"
+  | "TIP"
+  | "BADGE";
+export type VerificationTier = "NONE" | "BLUE" | "GOLD" | "GOVERNMENT";
+export type FollowStatus = "PENDING" | "ACCEPTED";
+export type ReportStatus = "PENDING" | "REVIEWED" | "RESOLVED" | "DISMISSED";
+export type OrderStatus =
+  "PENDING" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+export type SubscriptionStatus = "ACTIVE" | "CANCELLED" | "EXPIRED";
 
 export interface User {
   id: string;
@@ -39,6 +52,8 @@ export interface User {
   followingCount: number;
   postsCount: number;
   streakDays: number;
+  channelPoints?: number;
+  redditKarma?: number;
   badges: Badge[];
   createdAt: string;
   updatedAt: string;
@@ -132,7 +147,7 @@ export interface Message {
   senderId: string;
   content: string;
   mediaUrl?: string;
-  mediaType?: 'image' | 'video' | 'audio' | 'file';
+  mediaType?: "image" | "video" | "audio" | "file";
   type?: string;
   isRead: boolean;
   isDeleted: boolean;
@@ -172,7 +187,7 @@ export interface Story {
   author: User;
   authorId: string;
   mediaUrl: string;
-  type: 'IMAGE' | 'VIDEO' | 'TEXT';
+  type: "IMAGE" | "VIDEO" | "TEXT";
   textContent?: string;
   backgroundColor?: string;
   duration?: number;
@@ -222,7 +237,7 @@ export interface LiveComment {
   id: string;
   user: User;
   message: string;
-  type: 'COMMENT' | 'GIFT' | 'JOIN' | 'FOLLOW';
+  type: "COMMENT" | "GIFT" | "JOIN" | "FOLLOW";
   giftAmount?: number;
   createdAt: string;
 }
@@ -364,14 +379,14 @@ export interface Report {
   reporter: User;
   reporterId: string;
   targetId: string;
-  targetType: 'POST' | 'USER' | 'COMMENT' | 'COMMUNITY';
+  targetType: "POST" | "USER" | "COMMENT" | "COMMUNITY";
   reason: string;
   status: ReportStatus;
   createdAt: string;
 }
 
 export interface ActivityPubActor {
-  '@context': string;
+  "@context": string;
   id: string;
   type: string;
   preferredUsername: string;
@@ -391,7 +406,7 @@ export interface ActivityPubActor {
 export interface PrivacySettings {
   showEmail: boolean;
   showBirthdate: boolean;
-  allowDMsFrom: 'EVERYONE' | 'FOLLOWERS' | 'NONE';
+  allowDMsFrom: "EVERYONE" | "FOLLOWERS" | "NONE";
   showOnlineStatus: boolean;
   allowTagging: boolean;
   showActivityStatus: boolean;

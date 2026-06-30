@@ -6,13 +6,16 @@ description: Use when checking compatibility between dependencies, verifying pee
 # Compatibility Matrix Builder
 
 ## Goal
+
 Build compatibility matrices showing which versions of dependencies work together.
 
 ## Do Not Use When
+
 - Using standard, well-tested combinations
 - Compatibility is already verified
 
 ## Required Inputs To Inspect
+
 - Package.json dependencies
 - Peer dependency requirements
 - Framework version constraints
@@ -37,10 +40,12 @@ Next.js 15        ✗           ✓            ✗             ✓
 ```
 
 ## Safety Rules
+
 - Always check peer dependencies
 - Test before committing to version combination
 - Pin versions once verified
 
 ## Coordinates With
+
 - `package-version-verifier` — for version checking
 - `dependency-conflict-resolver` — for conflicts

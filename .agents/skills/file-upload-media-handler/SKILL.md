@@ -6,13 +6,16 @@ description: Use when implementing file upload functionality, image processing, 
 # File Upload and Media Handler
 
 ## Goal
+
 Implement secure, performant file uploads with proper validation, storage, and delivery.
 
 ## Do Not Use When
+
 - No file uploads needed
 - Using a third-party upload service exclusively (UploadThing, etc.)
 
 ## Required Inputs To Inspect
+
 - File types allowed
 - Size limits
 - Storage solution (S3, Cloudflare R2, local, etc.)
@@ -30,6 +33,7 @@ Implement secure, performant file uploads with proper validation, storage, and d
 7. **Clean up**: Delete from storage when record is deleted
 
 ## Security Checklist
+
 - [ ] File type validated (extension + mime type + magic bytes)
 - [ ] File size limited
 - [ ] Filename sanitized (no path traversal)
@@ -45,6 +49,7 @@ Client → Request upload URL → Server generates presigned URL → Client uplo
 ```
 
 ## Quality Checks
+
 - [ ] Upload progress shown to user
 - [ ] Errors handled gracefully
 - [ ] Images optimized for web
@@ -52,5 +57,6 @@ Client → Request upload URL → Server generates presigned URL → Client uplo
 - [ ] Cleanup on deletion
 
 ## Coordinates With
+
 - `backend-api-architect` — for upload endpoints
 - `third-party-api-integration` — for S3/Cloudinary

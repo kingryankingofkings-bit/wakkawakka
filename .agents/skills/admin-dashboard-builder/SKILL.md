@@ -6,13 +6,16 @@ description: Use when building admin panels, dashboards, back-office interfaces,
 # Admin Dashboard Builder
 
 ## Goal
+
 Build efficient admin interfaces for data management with tables, filters, forms, and analytics.
 
 ## Do Not Use When
+
 - No admin functionality needed
 - Using an existing admin framework (ActiveAdmin, etc.)
 
 ## Required Inputs To Inspect
+
 - Entities to manage (users, orders, posts)
 - CRUD operations needed
 - Role-based access (who can do what)
@@ -34,16 +37,17 @@ Build efficient admin interfaces for data management with tables, filters, forms
 
 ## Common Components
 
-| Component | Use |
-|-----------|-----|
-| DataTable | Sortable, filterable grid |
-| StatCard | Key metric display |
-| FilterBar | Search + filters |
-| CRUDModal | Create/edit form |
-| ConfirmDialog | Delete confirmation |
-| Pagination | Page controls |
+| Component     | Use                       |
+| ------------- | ------------------------- |
+| DataTable     | Sortable, filterable grid |
+| StatCard      | Key metric display        |
+| FilterBar     | Search + filters          |
+| CRUDModal     | Create/edit form          |
+| ConfirmDialog | Delete confirmation       |
+| Pagination    | Page controls             |
 
 ## Quality Checks
+
 - [ ] All CRUD operations work
 - [ ] Filters combine correctly
 - [ ] Bulk actions have confirmation
@@ -51,12 +55,14 @@ Build efficient admin interfaces for data management with tables, filters, forms
 - [ ] Actions are audited
 
 ## Safety Rules
+
 - Admin routes must be protected
 - All admin actions logged
 - Sensitive data masked in UI
 - Rate limit admin endpoints
 
 ## Coordinates With
+
 - `authentication-authorization-builder` — for admin auth
 - `role-permission-system-builder` — for access control
 - `search-filter-sort-builder` — for data tables

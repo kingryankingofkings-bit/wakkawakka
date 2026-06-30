@@ -6,13 +6,16 @@ description: Use when implementing SEO optimizations, adding structured data/sch
 # SEO and Structured Data Builder
 
 ## Goal
+
 Implement comprehensive SEO with proper meta tags, structured data, sitemaps, and social sharing optimization.
 
 ## Do Not Use When
+
 - Site is not public (internal tools, dashboards)
 - SEO is already implemented and audited
 
 ## Required Inputs To Inspect
+
 - Site structure and pages
 - Target keywords (if known)
 - Social sharing requirements
@@ -34,17 +37,18 @@ Implement comprehensive SEO with proper meta tags, structured data, sitemaps, an
 
 ## Common Schema Types
 
-| Type | Use Case |
-|------|----------|
-| WebSite | Homepage |
-| WebPage | All pages |
-| Article | Blog posts |
-| Product | Product pages |
-| FAQPage | FAQ sections |
+| Type           | Use Case               |
+| -------------- | ---------------------- |
+| WebSite        | Homepage               |
+| WebPage        | All pages              |
+| Article        | Blog posts             |
+| Product        | Product pages          |
+| FAQPage        | FAQ sections           |
 | BreadcrumbList | Navigation breadcrumbs |
-| Organization | About page |
+| Organization   | About page             |
 
 ## Quality Checks
+
 - [ ] Every page has unique title and description
 - [ ] Structured data validates (Google Rich Results Test)
 - [ ] Sitemap submitted to Google Search Console
@@ -52,11 +56,13 @@ Implement comprehensive SEO with proper meta tags, structured data, sitemaps, an
 - [ ] No duplicate content issues
 
 ## Safety Rules
+
 - Don't stuff keywords
 - Use descriptive, not deceptive titles
 - Don't cloak content (show different to bots vs users)
 
 ## Coordinates With
+
 - `information-architecture-planner` — for URL structure
 - `frontend-routing-navigation` — for dynamic meta tags
 - `performance-audit-optimizer` — for Core Web Vitals

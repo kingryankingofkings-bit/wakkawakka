@@ -1,9 +1,9 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from "@/lib/prisma";
 
 interface NotifyInput {
-  userId: string;       // recipient
-  actorId?: string;     // who triggered it
-  type: string;         // NotificationType
+  userId: string; // recipient
+  actorId?: string; // who triggered it
+  type: string; // NotificationType
   targetId?: string;
   targetType?: string;
   message?: string;

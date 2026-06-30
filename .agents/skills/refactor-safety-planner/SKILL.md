@@ -6,13 +6,16 @@ description: Use when planning code refactoring, restructuring components, migra
 # Refactor Safety Planner
 
 ## Goal
+
 Refactor code safely with clear steps, verification at each point, and rollback capability.
 
 ## Do Not Use When
+
 - The change adds new functionality (not refactoring)
 - Code is working fine and no improvement needed
 
 ## Required Inputs To Inspect
+
 - Code to refactor
 - Current tests (must exist before refactoring)
 - Desired outcome
@@ -31,27 +34,30 @@ Refactor code safely with clear steps, verification at each point, and rollback 
 
 ## Refactoring Patterns
 
-| Pattern | When |
-|---------|------|
-| Extract function | Function too long |
-| Extract component | Component too complex |
-| Rename | Unclear names |
-| Simplify conditionals | Nested ifs |
-| Remove duplication | Repeated code |
-| Move function | Wrong file/module |
+| Pattern               | When                  |
+| --------------------- | --------------------- |
+| Extract function      | Function too long     |
+| Extract component     | Component too complex |
+| Rename                | Unclear names         |
+| Simplify conditionals | Nested ifs            |
+| Remove duplication    | Repeated code         |
+| Move function         | Wrong file/module     |
 
 ## Safety Rules
+
 - Never refactor without tests
 - One refactoring per commit
 - Don't refactor and add features simultaneously
 - If tests break, fix immediately before continuing
 
 ## Quality Checks
+
 - [ ] Tests pass before and after
 - [ ] No functionality changed
 - [ ] Code is cleaner/more maintainable
 - [ ] Performance not degraded
 
 ## Coordinates With
+
 - `test-suite-builder` — for test coverage
 - `code-reviewer` — for review after refactoring

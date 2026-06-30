@@ -3,6 +3,7 @@
 Last visited: 2026-06-30T09:20:00Z
 
 ## Milestone 2 (Batch 1 Real Integration) Steps
+
 - [x] Initial verification of current codebase (type-check, lint, e2e tests) (Completed)
 - [x] Implement Post & Message Reactions (Prisma GET/POST, react endpoint, store integration, PostCard integration) (Completed)
 - [x] Implement Voice Messages (Upload API, record/upload UI, bubbles rendering) (Completed)

@@ -1,23 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
     // Get my matched and crushed IDs to exclude them from discover
-    const myProfile = await prisma.datingProfile.findUnique({ where: { userId } });
-    
+    const myProfile = await prisma.datingProfile.findUnique({
+      where: { userId },
+    });
+
     let excludeIds = [userId];
     if (myProfile) {
       try {
-        const matches = JSON.parse(myProfile.matches || '[]');
+        const matches = JSON.parse(myProfile.matches || "[]");
         excludeIds = [...excludeIds, ...matches];
       } catch {}
     }
@@ -40,6 +42,9 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ data: discoverableUsers });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to fetch discoverable users', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch discoverable users", detail: String(err) },
+      { status: 500 },
+    );
   }
 }

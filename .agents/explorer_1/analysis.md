@@ -5,57 +5,62 @@
 The codebase currently contains several fake components and in-memory data files designed for mockup previews. Below is the list of these files, where they are imported and rendered, and their corresponding line numbers:
 
 ### 1.1. CommerceToolsConsole (CommerceToolsConsole.tsx / batch5Data.ts)
-*   **Component Location**: `src/components/commerce/CommerceToolsConsole.tsx`
-*   **Data File Location**: `src/components/commerce/batch5Data.ts`
-*   **Usage / Import Locations**:
-    *   `src/app/(main)/analytics/page.tsx`:
-        *   Line 12: `import CommerceToolsConsole from '@/components/commerce/CommerceToolsConsole';`
-        *   Line 301: `<CommerceToolsConsole />` (rendered in the analytics page body)
-    *   `src/app/(main)/shop/page.tsx`:
-        *   Line 15: `import CommerceToolsConsole from '@/components/commerce/CommerceToolsConsole';`
-        *   Line 429: `<CommerceToolsConsole />` (rendered in the shop page body)
+
+- **Component Location**: `src/components/commerce/CommerceToolsConsole.tsx`
+- **Data File Location**: `src/components/commerce/batch5Data.ts`
+- **Usage / Import Locations**:
+  - `src/app/(main)/analytics/page.tsx`:
+    - Line 12: `import CommerceToolsConsole from '@/components/commerce/CommerceToolsConsole';`
+    - Line 301: `<CommerceToolsConsole />` (rendered in the analytics page body)
+  - `src/app/(main)/shop/page.tsx`:
+    - Line 15: `import CommerceToolsConsole from '@/components/commerce/CommerceToolsConsole';`
+    - Line 429: `<CommerceToolsConsole />` (rendered in the shop page body)
 
 ### 1.2. ProfileCommunityConsole (ProfileCommunityConsole.tsx / featuresBatch2Data.ts)
-*   **Component Location**: `src/components/profile/ProfileCommunityConsole.tsx`
-*   **Data File Location**: `src/components/profile/featuresBatch2Data.ts`
-*   **Usage / Import Locations**:
-    *   `src/app/(main)/communities/page.tsx`:
-        *   Line 11: `import ProfileCommunityConsole from '@/components/profile/ProfileCommunityConsole';`
-        *   Line 70: `<ProfileCommunityConsole />` (rendered in the communities page body)
-    *   `src/components/profile/EditProfileModal.tsx`:
-        *   Line 10: `import ProfileCommunityConsole from './ProfileCommunityConsole';`
-        *   Line 384: `<ProfileCommunityConsole />` (rendered in the edit profile modal body)
+
+- **Component Location**: `src/components/profile/ProfileCommunityConsole.tsx`
+- **Data File Location**: `src/components/profile/featuresBatch2Data.ts`
+- **Usage / Import Locations**:
+  - `src/app/(main)/communities/page.tsx`:
+    - Line 11: `import ProfileCommunityConsole from '@/components/profile/ProfileCommunityConsole';`
+    - Line 70: `<ProfileCommunityConsole />` (rendered in the communities page body)
+  - `src/components/profile/EditProfileModal.tsx`:
+    - Line 10: `import ProfileCommunityConsole from './ProfileCommunityConsole';`
+    - Line 384: `<ProfileCommunityConsole />` (rendered in the edit profile modal body)
 
 ### 1.3. ContentFeedConsole (ContentFeedConsole.tsx / batch3Data.ts)
-*   **Component Location**: `src/components/feed/ContentFeedConsole.tsx`
-*   **Data File Location**: `src/components/feed/batch3Data.ts`
-*   **Usage / Import Locations**:
-    *   `src/app/(main)/explore/page.tsx`:
-        *   Line 13: `import { ContentFeedConsole } from '@/components/feed/ContentFeedConsole';`
-        *   Line 161: `<ContentFeedConsole />` (rendered in the explore page body)
-    *   `src/app/(main)/feed/page.tsx`:
-        *   Line 12: `import { ContentFeedConsole } from '@/components/feed/ContentFeedConsole';`
-        *   Line 144: `<ContentFeedConsole />` (rendered in the main feed page layout)
+
+- **Component Location**: `src/components/feed/ContentFeedConsole.tsx`
+- **Data File Location**: `src/components/feed/batch3Data.ts`
+- **Usage / Import Locations**:
+  - `src/app/(main)/explore/page.tsx`:
+    - Line 13: `import { ContentFeedConsole } from '@/components/feed/ContentFeedConsole';`
+    - Line 161: `<ContentFeedConsole />` (rendered in the explore page body)
+  - `src/app/(main)/feed/page.tsx`:
+    - Line 12: `import { ContentFeedConsole } from '@/components/feed/ContentFeedConsole';`
+    - Line 144: `<ContentFeedConsole />` (rendered in the main feed page layout)
 
 ### 1.4. MessagingFeaturesConsole (MessagingFeaturesConsole.tsx / batch4Data.ts)
-*   **Component Location**: `src/components/messaging/MessagingFeaturesConsole.tsx`
-*   **Data File Location**: `src/components/messaging/batch4Data.ts`
-*   **Usage / Import Locations**:
-    *   `src/app/(main)/messages/page.tsx`:
-        *   Line 11: `import MessagingFeaturesConsole from '@/components/messaging/MessagingFeaturesConsole';`
-        *   Line 122: `<MessagingFeaturesConsole />` (rendered in the conversations sidebar / messages list)
-    *   `src/components/messaging/ChatWindow.tsx`:
-        *   Line 26: `import MessagingFeaturesConsole from './MessagingFeaturesConsole';`
-        *   Line 580: `<MessagingFeaturesConsole />` (rendered as side drawer panel for desktop)
-        *   Line 605: `<MessagingFeaturesConsole />` (rendered as fullscreen panel for mobile)
+
+- **Component Location**: `src/components/messaging/MessagingFeaturesConsole.tsx`
+- **Data File Location**: `src/components/messaging/batch4Data.ts`
+- **Usage / Import Locations**:
+  - `src/app/(main)/messages/page.tsx`:
+    - Line 11: `import MessagingFeaturesConsole from '@/components/messaging/MessagingFeaturesConsole';`
+    - Line 122: `<MessagingFeaturesConsole />` (rendered in the conversations sidebar / messages list)
+  - `src/components/messaging/ChatWindow.tsx`:
+    - Line 26: `import MessagingFeaturesConsole from './MessagingFeaturesConsole';`
+    - Line 580: `<MessagingFeaturesConsole />` (rendered as side drawer panel for desktop)
+    - Line 605: `<MessagingFeaturesConsole />` (rendered as fullscreen panel for mobile)
 
 ### 1.5. FeatureRegistry (FeatureRegistry.tsx / featuresData.ts)
-*   **Component Location**: `src/components/settings/FeatureRegistry.tsx`
-*   **Data File Location**: `src/components/settings/featuresData.ts`
-*   **Usage / Import Locations**:
-    *   `src/app/(main)/settings/page.tsx`:
-        *   Line 14: `import FeatureRegistry from '@/components/settings/FeatureRegistry';`
-        *   Line 544: `<FeatureRegistry />` (rendered under settings tab content)
+
+- **Component Location**: `src/components/settings/FeatureRegistry.tsx`
+- **Data File Location**: `src/components/settings/featuresData.ts`
+- **Usage / Import Locations**:
+  - `src/app/(main)/settings/page.tsx`:
+    - Line 14: `import FeatureRegistry from '@/components/settings/FeatureRegistry';`
+    - Line 544: `<FeatureRegistry />` (rendered under settings tab content)
 
 ---
 
@@ -64,136 +69,151 @@ The codebase currently contains several fake components and in-memory data files
 We analyzed the `prisma/schema.prisma` file and verified the state of the database models in relation to the desired features:
 
 ### 2.1. Reactions Model
-*   **Existing Models**:
-    *   The `Like` model in `prisma/schema.prisma` represents reactions for posts and comments. It features:
-        ```prisma
-        model Like {
-          id        String   @id @default(cuid())
-          userId    String
-          user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-          postId    String?
-          post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
-          commentId String?
-          comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
-          type      String   @default("LIKE") // Maps to ReactionType: LIKE, LOVE, HAHA, WOW, SAD, ANGRY
-          createdAt DateTime @default(now())
 
-          @@unique([userId, postId])
-          @@unique([userId, commentId])
-          ...
-        }
-        ```
-    *   The `MessageReaction` model (lines 350–360) stores reactions for direct messages (DMs):
-        ```prisma
-        model MessageReaction {
-          id        String   @id @default(cuid())
-          messageId String
-          message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
-          userId    String
-          emoji     String
-          createdAt DateTime @default(now())
+- **Existing Models**:
+  - The `Like` model in `prisma/schema.prisma` represents reactions for posts and comments. It features:
+    ```prisma
+    model Like {
+      id        String   @id @default(cuid())
+      userId    String
+      user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+      postId    String?
+      post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+      commentId String?
+      comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+      type      String   @default("LIKE") // Maps to ReactionType: LIKE, LOVE, HAHA, WOW, SAD, ANGRY
+      createdAt DateTime @default(now())
 
-          @@unique([messageId, userId, emoji])
-        }
-        ```
-*   **Verdict**: The database structure for reactions is **completely pre-defined**. We can leverage the `type` field on the `Like` table to store reaction strings (e.g., `LOVE`, `HAHA`) without adding new database tables.
+      @@unique([userId, postId])
+      @@unique([userId, commentId])
+      ...
+    }
+    ```
+  - The `MessageReaction` model (lines 350–360) stores reactions for direct messages (DMs):
+    ```prisma
+    model MessageReaction {
+      id        String   @id @default(cuid())
+      messageId String
+      message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+      userId    String
+      emoji     String
+      createdAt DateTime @default(now())
+
+      @@unique([messageId, userId, emoji])
+    }
+    ```
+- **Verdict**: The database structure for reactions is **completely pre-defined**. We can leverage the `type` field on the `Like` table to store reaction strings (e.g., `LOVE`, `HAHA`) without adding new database tables.
 
 ### 2.2. Voice Messages Model
-*   **Existing Models**:
-    *   There is no dedicated `VoiceMessage` model in the schema.
-    *   However, the `Message` model has a flexible structure that naturally accommodates audio voice messages:
-        ```prisma
-        model Message {
-          id             String       @id @default(cuid())
-          conversationId String
-          conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-          senderId       String
-          sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
-          content        String?
-          mediaUrl       String?      // Can store the path to the recorded audio file
-          type           String       @default("TEXT") // Can be updated to "VOICE" or "AUDIO"
-          isRead         Boolean      @default(false)
-          isDeleted      Boolean      @default(false)
-          ...
-        }
-        ```
-*   **Verdict**: No new table is required. Voice messages can be modeled by writing a record to the `Message` table with `type: "VOICE"` (or `mediaType: "audio"` on the frontend) and storing the audio upload path in the `mediaUrl` field.
+
+- **Existing Models**:
+  - There is no dedicated `VoiceMessage` model in the schema.
+  - However, the `Message` model has a flexible structure that naturally accommodates audio voice messages:
+    ```prisma
+    model Message {
+      id             String       @id @default(cuid())
+      conversationId String
+      conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+      senderId       String
+      sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+      content        String?
+      mediaUrl       String?      // Can store the path to the recorded audio file
+      type           String       @default("TEXT") // Can be updated to "VOICE" or "AUDIO"
+      isRead         Boolean      @default(false)
+      isDeleted      Boolean      @default(false)
+      ...
+    }
+    ```
+- **Verdict**: No new table is required. Voice messages can be modeled by writing a record to the `Message` table with `type: "VOICE"` (or `mediaType: "audio"` on the frontend) and storing the audio upload path in the `mediaUrl` field.
 
 ### 2.3. Content Moderation & Reporting Models
-*   **Existing Models**:
-    *   A full `Report` model is already defined in `prisma/schema.prisma` (lines 768–794):
-        ```prisma
-        model Report {
-          id          String    @id @default(cuid())
-          reporterId  String
-          reporter    User      @relation("ReportSource", fields: [reporterId], references: [id], onDelete: Cascade)
-          targetId    String
-          targetType  String    // e.g., "POST", "COMMENT", "COMMUNITY", "USER"
-          reason      String    // SPAM | HARASSMENT | HATE_SPEECH | NUDITY | VIOLENCE | etc.
-          description String?
-          status      String    @default("PENDING") // PENDING | REVIEWED | RESOLVED | DISMISSED
-          resolvedAt  DateTime?
-          resolvedBy  String?
-          resolution  String?
-          createdAt   DateTime  @default(now())
-          updatedAt   DateTime  @updatedAt
 
-          post        Post?      @relation("ReportedPost",      fields: [postId], references: [id])
-          postId      String?
-          comment     Comment?   @relation("ReportedComment",   fields: [commentId], references: [id])
-          commentId   String?
-          community   Community? @relation("ReportedCommunity", fields: [communityId], references: [id])
-          communityId String?
-          ...
-        }
-        ```
-    *   The `User` model also supports administrative status flags:
-        *   `User.isAdmin` (Boolean, defaults to `false`)
-        *   `User.isBanned` (Boolean, defaults to `false`)
-        *   `User.bannedAt` (DateTime)
-        *   `User.bannedReason` (String)
-*   **Verdict**: The database structure for content moderation and reporting is **already complete**. No new tables or schema changes are needed. We simply need to build the API endpoints and the frontend flow to utilize these fields.
+- **Existing Models**:
+  - A full `Report` model is already defined in `prisma/schema.prisma` (lines 768–794):
+    ```prisma
+    model Report {
+      id          String    @id @default(cuid())
+      reporterId  String
+      reporter    User      @relation("ReportSource", fields: [reporterId], references: [id], onDelete: Cascade)
+      targetId    String
+      targetType  String    // e.g., "POST", "COMMENT", "COMMUNITY", "USER"
+      reason      String    // SPAM | HARASSMENT | HATE_SPEECH | NUDITY | VIOLENCE | etc.
+      description String?
+      status      String    @default("PENDING") // PENDING | REVIEWED | RESOLVED | DISMISSED
+      resolvedAt  DateTime?
+      resolvedBy  String?
+      resolution  String?
+      createdAt   DateTime  @default(now())
+      updatedAt   DateTime  @updatedAt
+
+      post        Post?      @relation("ReportedPost",      fields: [postId], references: [id])
+      postId      String?
+      comment     Comment?   @relation("ReportedComment",   fields: [commentId], references: [id])
+      commentId   String?
+      community   Community? @relation("ReportedCommunity", fields: [communityId], references: [id])
+      communityId String?
+      ...
+    }
+    ```
+  - The `User` model also supports administrative status flags:
+    - `User.isAdmin` (Boolean, defaults to `false`)
+    - `User.isBanned` (Boolean, defaults to `false`)
+    - `User.bannedAt` (DateTime)
+    - `User.bannedReason` (String)
+- **Verdict**: The database structure for content moderation and reporting is **already complete**. No new tables or schema changes are needed. We simply need to build the API endpoints and the frontend flow to utilize these fields.
 
 ---
 
 ## 3. Core Feature Implementation Proposals
 
 ### 3.1. REAL "Reactions" Feature
+
 The goal is to replace the current client-side-only reaction flow (which updates a local Zustand store) with database persistence.
 
 #### A. API Route Setup: `POST /api/posts/[id]/react/route.ts`
+
 This API handler will toggle or update reactions on a post. It executes in a database transaction to keep the post's cached `likesCount` consistent.
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
-import { ReactionType } from '@/types';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
+import { ReactionType } from "@/types";
 
-const VALID_REACTIONS: ReactionType[] = ['LIKE', 'LOVE', 'HAHA', 'WOW', 'SAD', 'ANGRY'];
+const VALID_REACTIONS: ReactionType[] = [
+  "LIKE",
+  "LOVE",
+  "HAHA",
+  "WOW",
+  "SAD",
+  "ANGRY",
+];
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const postId = params.id;
   const userId = getRequestUserId(req);
 
   if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
     const { type } = await req.json();
 
     if (!type || !VALID_REACTIONS.includes(type)) {
-      return NextResponse.json({ error: 'Invalid reaction type' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid reaction type" },
+        { status: 400 },
+      );
     }
 
     // Check if post exists
     const post = await prisma.post.findUnique({ where: { id: postId } });
     if (!post) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
     // Check if reaction already exists
@@ -261,84 +281,95 @@ export async function POST(
 
     return NextResponse.json({ data: responseData });
   } catch (error) {
-    console.error('Failed to react:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Failed to react:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 ```
 
 #### B. Frontend Integration
+
 1.  **Zustand Store (`src/store/feedStore.ts`)**: Add a method to load posts from the database via `/api/posts` instead of local mock arrays.
 2.  **Hook Update (`src/hooks/usePosts.ts`)**: Refactor `reactToPost` to perform a real network request:
     ```typescript
-    const reactToPost = useCallback(async (postId: string, reaction: ReactionType) => {
-      // Optimistically update frontend store
-      const originalPost = posts.find(p => p.id === postId);
-      if (!originalPost) return;
+    const reactToPost = useCallback(
+      async (postId: string, reaction: ReactionType) => {
+        // Optimistically update frontend store
+        const originalPost = posts.find((p) => p.id === postId);
+        if (!originalPost) return;
 
-      const wasReacted = originalPost.userReaction === reaction;
-      updatePost(postId, {
-        userReaction: wasReacted ? undefined : reaction,
-        likesCount: wasReacted ? originalPost.likesCount - 1 : originalPost.likesCount + 1,
-      });
-
-      // Call API
-      try {
-        const res = await fetch(`/api/posts/${postId}/react`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-user-id': CURRENT_USER.id, // Auth header fallback
-          },
-          body: JSON.stringify({ type: reaction }),
-        });
-
-        if (!res.ok) throw new Error('API failed');
-
-        const { data } = await res.json();
-        // Sync post data returned from the server
+        const wasReacted = originalPost.userReaction === reaction;
         updatePost(postId, {
-          likesCount: data.likesCount,
-          userReaction: data.userReaction,
+          userReaction: wasReacted ? undefined : reaction,
+          likesCount: wasReacted
+            ? originalPost.likesCount - 1
+            : originalPost.likesCount + 1,
         });
-      } catch (err) {
-        // Rollback optimistic update
-        updatePost(postId, {
-          userReaction: originalPost.userReaction,
-          likesCount: originalPost.likesCount,
-        });
-        toast.error('Failed to register reaction');
-      }
-    }, [posts, updatePost]);
+
+        // Call API
+        try {
+          const res = await fetch(`/api/posts/${postId}/react`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-user-id": CURRENT_USER.id, // Auth header fallback
+            },
+            body: JSON.stringify({ type: reaction }),
+          });
+
+          if (!res.ok) throw new Error("API failed");
+
+          const { data } = await res.json();
+          // Sync post data returned from the server
+          updatePost(postId, {
+            likesCount: data.likesCount,
+            userReaction: data.userReaction,
+          });
+        } catch (err) {
+          // Rollback optimistic update
+          updatePost(postId, {
+            userReaction: originalPost.userReaction,
+            likesCount: originalPost.likesCount,
+          });
+          toast.error("Failed to register reaction");
+        }
+      },
+      [posts, updatePost],
+    );
     ```
 
 ---
 
 ### 3.2. REAL "Voice Messages" Feature
+
 Enables capturing microphone audio in chats, uploading it to the server, and rendering an interactive playback UI.
 
 #### A. Audio Upload API: `POST /api/upload/route.ts`
+
 Handles uploading the recorded `.webm` or `.mp3` blob to the local filesystem under the `public/` directory.
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { NextRequest, NextResponse } from "next/server";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
 
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const file = formData.get('file') as File;
+    const file = formData.get("file") as File;
 
     if (!file) {
-      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
     // Save to public directory
-    const uploadDir = join(process.cwd(), 'public', 'uploads', 'audio');
+    const uploadDir = join(process.cwd(), "public", "uploads", "audio");
     await mkdir(uploadDir, { recursive: true });
 
     const filename = `voice-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.webm`;
@@ -349,22 +380,25 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: fileUrl });
   } catch (error) {
-    console.error('Audio upload error:', error);
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+    console.error("Audio upload error:", error);
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }
 ```
 
 #### B. Messaging API Endpoint: `POST /api/messages/route.ts`
+
 When the client successfully uploads the audio, it sends a request to save the message with `type: "VOICE"` (or `mediaType: "audio"`) and the file URL:
+
 ```typescript
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
 export async function POST(req: NextRequest) {
   const userId = getRequestUserId(req);
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!userId)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
     const { conversationId, mediaUrl, content } = await req.json();
@@ -373,9 +407,9 @@ export async function POST(req: NextRequest) {
       data: {
         conversationId,
         senderId: userId,
-        content: content || '',
+        content: content || "",
         mediaUrl,
-        type: mediaUrl ? 'VOICE' : 'TEXT',
+        type: mediaUrl ? "VOICE" : "TEXT",
       },
       include: {
         sender: true,
@@ -390,12 +424,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ data: newMessage }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
 ```
 
 #### C. Frontend Recording UI (`src/components/messaging/ChatWindow.tsx`)
+
 Create a recording state that records chunks from the microphone when clicking/holding a microphone button:
 
 ```typescript
@@ -408,7 +443,7 @@ const timerRef = useRef<NodeJS.Timeout | null>(null);
 const startRecording = async () => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+    const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
     const chunks: Blob[] = [];
 
     recorder.ondataavailable = (e) => {
@@ -416,7 +451,7 @@ const startRecording = async () => {
     };
 
     recorder.onstop = async () => {
-      const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+      const audioBlob = new Blob(chunks, { type: "audio/webm" });
       // Stop stream tracks
       stream.getTracks().forEach((track) => track.stop());
 
@@ -430,10 +465,10 @@ const startRecording = async () => {
     setRecordingDuration(0);
 
     timerRef.current = setInterval(() => {
-      setRecordingDuration(prev => prev + 1);
+      setRecordingDuration((prev) => prev + 1);
     }, 1000);
   } catch (err) {
-    toast.error('Microphone access denied');
+    toast.error("Microphone access denied");
   }
 };
 
@@ -444,7 +479,7 @@ const stopRecording = (shouldSend = true) => {
   if (!shouldSend) {
     // Cancel recording: discard chunks
     mediaRecorder.onstop = () => {
-      mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      mediaRecorder.stream.getTracks().forEach((track) => track.stop());
     };
   }
 
@@ -455,37 +490,41 @@ const stopRecording = (shouldSend = true) => {
 
 const uploadVoiceMessage = async (blob: Blob) => {
   const formData = new FormData();
-  formData.append('file', blob, 'voice.webm');
+  formData.append("file", blob, "voice.webm");
 
   try {
     // 1. Upload audio file
-    const uploadRes = await fetch('/api/upload', {
-      method: 'POST',
+    const uploadRes = await fetch("/api/upload", {
+      method: "POST",
       body: formData,
     });
-    if (!uploadRes.ok) throw new Error('Upload failed');
+    if (!uploadRes.ok) throw new Error("Upload failed");
     const { url } = await uploadRes.json();
 
     // 2. Post message metadata
-    const msgRes = await fetch('/api/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-user-id': CURRENT_USER.id },
+    const msgRes = await fetch("/api/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-user-id": CURRENT_USER.id,
+      },
       body: JSON.stringify({ conversationId, mediaUrl: url }),
     });
 
-    if (!msgRes.ok) throw new Error('Message posting failed');
+    if (!msgRes.ok) throw new Error("Message posting failed");
     const { data } = await msgRes.json();
 
     // 3. Emit via socket and update local messages
     addMessage(data);
-    if (socket) socket.emit('send-message', { conversationId, message: data });
+    if (socket) socket.emit("send-message", { conversationId, message: data });
   } catch {
-    toast.error('Failed to send voice message');
+    toast.error("Failed to send voice message");
   }
 };
 ```
 
 #### D. Voice Playback Component (`src/components/messaging/MessageBubble.tsx`)
+
 Render a custom playback container with controls styled via Tailwind:
 
 ```typescript
@@ -566,25 +605,31 @@ function VoicePlayer({ audioUrl }: { audioUrl: string }) {
 ---
 
 ### 3.3. REAL "Content Moderation/Reporting" Feature
+
 Provides a report submission overlay for users and a review dashboard queue for admins.
 
 #### A. Submit Report API: `POST /api/reports/route.ts`
+
 Allows any logged-in user to report a post, comment, or community.
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
 export async function POST(req: NextRequest) {
   const userId = getRequestUserId(req);
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!userId)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
     const { targetId, targetType, reason, description } = await req.json();
 
     if (!targetId || !targetType || !reason) {
-      return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required parameters" },
+        { status: 400 },
+      );
     }
 
     const report = await prisma.report.create({
@@ -595,27 +640,31 @@ export async function POST(req: NextRequest) {
         reason,
         description,
         // Map to explicit schema relationships
-        postId: targetType === 'POST' ? targetId : null,
-        commentId: targetType === 'COMMENT' ? targetId : null,
-        communityId: targetType === 'COMMUNITY' ? targetId : null,
+        postId: targetType === "POST" ? targetId : null,
+        commentId: targetType === "COMMENT" ? targetId : null,
+        communityId: targetType === "COMMUNITY" ? targetId : null,
       },
     });
 
     return NextResponse.json({ data: report }, { status: 201 });
   } catch (error) {
-    console.error('Reporting error:', error);
-    return NextResponse.json({ error: 'Failed to submit report' }, { status: 500 });
+    console.error("Reporting error:", error);
+    return NextResponse.json(
+      { error: "Failed to submit report" },
+      { status: 500 },
+    );
   }
 }
 ```
 
 #### B. Moderation Queue API: `GET & PATCH /api/admin/reports/route.ts`
+
 Enables administrators to view pending flags and resolve them (which updates report status and takes actions like removing posts or banning creators).
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUser } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUser } from "@/lib/currentUser";
 
 // Helper to check admin access
 async function verifyAdmin(req: NextRequest) {
@@ -626,12 +675,12 @@ async function verifyAdmin(req: NextRequest) {
 // GET: Fetch reports list (Admin only)
 export async function GET(req: NextRequest) {
   if (!(await verifyAdmin(req))) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   try {
     const reports = await prisma.report.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: {
         reporter: {
           select: { id: true, username: true, displayName: true },
@@ -647,7 +696,10 @@ export async function GET(req: NextRequest) {
     });
     return NextResponse.json({ data: reports });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch reports' }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch reports" },
+      { status: 500 },
+    );
   }
 }
 
@@ -655,14 +707,15 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const admin = await getRequestUser(req);
   if (!admin || !admin.isAdmin) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   try {
     const { reportId, status, action, resolution } = await req.json();
 
     const report = await prisma.report.findUnique({ where: { id: reportId } });
-    if (!report) return NextResponse.json({ error: 'Report not found' }, { status: 404 });
+    if (!report)
+      return NextResponse.json({ error: "Report not found" }, { status: 404 });
 
     await prisma.$transaction(async (tx) => {
       // 1. Update report resolution status
@@ -677,13 +730,13 @@ export async function PATCH(req: NextRequest) {
       });
 
       // 2. If content removal is requested, perform action
-      if (status === 'RESOLVED' && action === 'REMOVE_CONTENT') {
-        if (report.targetType === 'POST') {
+      if (status === "RESOLVED" && action === "REMOVE_CONTENT") {
+        if (report.targetType === "POST") {
           await tx.post.update({
             where: { id: report.targetId },
             data: { isDeleted: true, deletedAt: new Date() },
           });
-        } else if (report.targetType === 'COMMENT') {
+        } else if (report.targetType === "COMMENT") {
           await tx.comment.update({
             where: { id: report.targetId },
             data: { isDeleted: true, deletedAt: new Date() },
@@ -692,13 +745,17 @@ export async function PATCH(req: NextRequest) {
       }
 
       // 3. If user ban is requested, ban content owner
-      if (status === 'RESOLVED' && action === 'BAN_USER') {
-        let userIdToBan = '';
-        if (report.targetType === 'POST') {
-          const p = await tx.post.findUnique({ where: { id: report.targetId } });
+      if (status === "RESOLVED" && action === "BAN_USER") {
+        let userIdToBan = "";
+        if (report.targetType === "POST") {
+          const p = await tx.post.findUnique({
+            where: { id: report.targetId },
+          });
           if (p) userIdToBan = p.authorId;
-        } else if (report.targetType === 'COMMENT') {
-          const c = await tx.comment.findUnique({ where: { id: report.targetId } });
+        } else if (report.targetType === "COMMENT") {
+          const c = await tx.comment.findUnique({
+            where: { id: report.targetId },
+          });
           if (c) userIdToBan = c.authorId;
         }
 
@@ -708,7 +765,7 @@ export async function PATCH(req: NextRequest) {
             data: {
               isBanned: true,
               bannedAt: new Date(),
-              bannedReason: resolution || 'Violated community guidelines',
+              bannedReason: resolution || "Violated community guidelines",
             },
           });
         }
@@ -717,14 +774,16 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Moderation action failed:', error);
-    return NextResponse.json({ error: 'Action failed' }, { status: 500 });
+    console.error("Moderation action failed:", error);
+    return NextResponse.json({ error: "Action failed" }, { status: 500 });
   }
 }
 ```
 
 #### C. Moderation Dashboard Queue UI (`src/app/(admin)/moderation/page.tsx`)
+
 Create a dashboard to manage reports using clean grid cards:
+
 ```typescript
 'use client';
 
@@ -787,7 +846,7 @@ export default function ModerationQueue() {
                 <p className="text-sm font-semibold mt-1">Reported {report.targetType} ({report.reason})</p>
                 <p className="text-xs text-muted-foreground">By @{report.reporter.username} · {new Date(report.createdAt).toLocaleString()}</p>
                 {report.description && <p className="text-sm text-muted-foreground bg-muted p-2.5 rounded-lg mt-2 italic">"{report.description}"</p>}
-                
+
                 {/* Content previews */}
                 {report.postId && report.post && (
                   <div className="border-l-4 border-primary pl-3 text-sm text-foreground/80 mt-2 bg-muted/20 py-1">
@@ -795,7 +854,7 @@ export default function ModerationQueue() {
                   </div>
                 )}
               </div>
-              
+
               <div className="flex gap-2">
                 <button onClick={() => handleAction(report.id, 'DISMISSED', 'NONE')} className="px-3 py-1.5 text-xs border rounded-lg hover:bg-muted font-semibold">
                   Dismiss

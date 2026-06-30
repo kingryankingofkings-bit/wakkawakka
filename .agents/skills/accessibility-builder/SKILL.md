@@ -6,13 +6,16 @@ description: Use when building or auditing accessible websites, implementing WCA
 # Accessibility Builder
 
 ## Goal
+
 Build websites that work for everyone, including users with visual, motor, auditory, and cognitive disabilities.
 
 ## Do Not Use When
+
 - The task has no UI component (pure API/backend work)
 - Accessibility audit is what's needed (use `accessibility-audit-reviewer`)
 
 ## Required Inputs To Inspect
+
 - Target WCAG level (A, AA, AAA)
 - Component designs and interactions
 - Color contrast requirements
@@ -42,19 +45,22 @@ Build websites that work for everyone, including users with visual, motor, audit
   Open Menu
 </button>
 <nav aria-label="Main">
-  <ul><li><a href="/">Home</a></li></ul>
+  <ul>
+    <li><a href="/">Home</a></li>
+  </ul>
 </nav>
 <main id="content" tabindex="-1">
   <h1>Page Title</h1>
-  <img src="photo.jpg" alt="Golden retriever playing fetch">
+  <img src="photo.jpg" alt="Golden retriever playing fetch" />
 </main>
 
 <!-- Bad: Inaccessible -->
 <div class="btn" onclick="...">Click</div>
-<img src="photo.jpg">
+<img src="photo.jpg" />
 ```
 
 ## Quality Checks
+
 - [ ] All images have alt text
 - [ ] All interactive elements are keyboard accessible
 - [ ] Focus order is logical
@@ -64,12 +70,14 @@ Build websites that work for everyone, including users with visual, motor, audit
 - [ ] Screen reader announces dynamic content
 
 ## Safety Rules
+
 - Never remove focus indicators
 - Never use color alone to convey information
 - Never rely solely on ARIA — use semantic HTML first
 - Test with actual keyboard navigation, not just mouse
 
 ## Coordinates With
+
 - `component-system-builder` — accessible components
 - `design-system-enforcer` — contrast requirements
 - `forms-validation-builder` — accessible forms

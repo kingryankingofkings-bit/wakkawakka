@@ -1,27 +1,35 @@
-'use client';
+"use client";
 
-import { VerificationTier } from '@/types';
-import { cn } from '@/lib/utils';
+import { VerificationTier } from "@/types";
+import { cn } from "@/lib/utils";
 
 interface VerificationBadgeProps {
   tier: VerificationTier;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   className?: string;
 }
 
-export function VerificationBadge({ tier, size = 'md', className }: VerificationBadgeProps) {
-  if (tier === 'NONE') return null;
+export function VerificationBadge({
+  tier,
+  size = "md",
+  className,
+}: VerificationBadgeProps) {
+  if (tier === "NONE") return null;
 
   const sizeClasses: Record<string, string> = {
-    sm: 'w-4 h-4',
-    md: 'w-5 h-5',
-    lg: 'w-6 h-6',
+    sm: "w-4 h-4",
+    md: "w-5 h-5",
+    lg: "w-6 h-6",
   };
 
-  if (tier === 'BLUE') {
+  if (tier === "BLUE") {
     return (
       <span
-        className={cn('inline-flex items-center justify-center shrink-0', sizeClasses[size], className)}
+        className={cn(
+          "inline-flex items-center justify-center shrink-0",
+          sizeClasses[size],
+          className,
+        )}
         title="Verified"
         aria-label="Verified"
       >
@@ -36,10 +44,14 @@ export function VerificationBadge({ tier, size = 'md', className }: Verification
     );
   }
 
-  if (tier === 'GOLD') {
+  if (tier === "GOLD") {
     return (
       <span
-        className={cn('inline-flex items-center justify-center shrink-0', sizeClasses[size], className)}
+        className={cn(
+          "inline-flex items-center justify-center shrink-0",
+          sizeClasses[size],
+          className,
+        )}
         title="Gold Verified"
         aria-label="Gold Verified"
       >
@@ -54,10 +66,14 @@ export function VerificationBadge({ tier, size = 'md', className }: Verification
     );
   }
 
-  if (tier === 'GOVERNMENT') {
+  if (tier === "GOVERNMENT") {
     return (
       <span
-        className={cn('inline-flex items-center justify-center shrink-0', sizeClasses[size], className)}
+        className={cn(
+          "inline-flex items-center justify-center shrink-0",
+          sizeClasses[size],
+          className,
+        )}
         title="Government / Official Account"
         aria-label="Official Government Account"
       >

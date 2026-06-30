@@ -6,13 +6,16 @@ description: Use when resolving npm/package dependency conflicts, version mismat
 # Dependency Conflict Resolver
 
 ## Goal
+
 Resolve package dependency issues with minimal disruption to the project.
 
 ## Do Not Use When
+
 - Dependencies install cleanly
 - The issue is not related to packages
 
 ## Required Inputs To Inspect
+
 - package.json and lockfile
 - Error message from install
 - Node version
@@ -50,17 +53,20 @@ npm update package-name
 ```
 
 ## Quality Checks
+
 - [ ] Install completes without errors
 - [ ] Build succeeds
 - [ ] Tests pass
 - [ ] No duplicate packages
 
 ## Safety Rules
+
 - Commit before major dependency changes
 - Update one major dependency at a time
 - Read changelogs before major version updates
 - Pin critical dependencies
 
 ## Coordinates With
+
 - `build-error-fixer` — for build issues caused by deps
 - `maintenance-update-planner` — for planned updates

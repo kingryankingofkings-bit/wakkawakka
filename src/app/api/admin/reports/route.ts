@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
 async function verifyAdmin(req: NextRequest) {
   const activeUserId = getRequestUserId(req);
@@ -15,7 +15,7 @@ async function verifyAdmin(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     if (!(await verifyAdmin(req))) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const reports = await prisma.report.findMany({
@@ -52,28 +52,34 @@ export async function GET(req: NextRequest) {
         },
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
 
     return NextResponse.json({ data: reports });
   } catch (error) {
-    console.error('Error fetching admin reports:', error);
-    return NextResponse.json({ error: 'Failed to fetch reports' }, { status: 500 });
+    console.error("Error fetching admin reports:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch reports" },
+      { status: 500 },
+    );
   }
 }
 
 export async function PATCH(req: NextRequest) {
   try {
     if (!(await verifyAdmin(req))) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
     const { reportId, status, action } = body;
 
     if (!reportId || !status) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
     }
 
     const result = await prisma.$transaction(async (tx) => {
@@ -86,31 +92,31 @@ export async function PATCH(req: NextRequest) {
       });
 
       if (!report) {
-        throw new Error('Report not found');
+        throw new Error("Report not found");
       }
 
       let resolutionText = `Status updated to ${status}`;
 
-      if (status === 'RESOLVED') {
-        if (action === 'REMOVE_CONTENT') {
-          if (report.targetType === 'POST' && report.postId) {
+      if (status === "RESOLVED") {
+        if (action === "REMOVE_CONTENT") {
+          if (report.targetType === "POST" && report.postId) {
             await tx.post.update({
               where: { id: report.postId },
               data: { isDeleted: true, deletedAt: new Date() },
             });
-            resolutionText = 'Content removed (Post flagged as deleted)';
-          } else if (report.targetType === 'COMMENT' && report.commentId) {
+            resolutionText = "Content removed (Post flagged as deleted)";
+          } else if (report.targetType === "COMMENT" && report.commentId) {
             await tx.comment.update({
               where: { id: report.commentId },
               data: { isDeleted: true, deletedAt: new Date() },
             });
-            resolutionText = 'Content removed (Comment flagged as deleted)';
+            resolutionText = "Content removed (Comment flagged as deleted)";
           }
-        } else if (action === 'BAN_USER') {
+        } else if (action === "BAN_USER") {
           let targetUserId: string | null = null;
-          if (report.targetType === 'POST' && report.post) {
+          if (report.targetType === "POST" && report.post) {
             targetUserId = report.post.authorId;
-          } else if (report.targetType === 'COMMENT' && report.comment) {
+          } else if (report.targetType === "COMMENT" && report.comment) {
             targetUserId = report.comment.authorId;
           }
 
@@ -126,8 +132,8 @@ export async function PATCH(req: NextRequest) {
             resolutionText = `User ${targetUserId} banned`;
           }
         }
-      } else if (status === 'DISMISSED') {
-        resolutionText = 'Report dismissed';
+      } else if (status === "DISMISSED") {
+        resolutionText = "Report dismissed";
       }
 
       return await tx.report.update({
@@ -142,10 +148,13 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({ data: result });
   } catch (error: any) {
-    console.error('Error updating report:', error);
-    if (error.message === 'Report not found') {
-      return NextResponse.json({ error: 'Report not found' }, { status: 404 });
+    console.error("Error updating report:", error);
+    if (error.message === "Report not found") {
+      return NextResponse.json({ error: "Report not found" }, { status: 404 });
     }
-    return NextResponse.json({ error: 'Failed to update report' }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update report" },
+      { status: 500 },
+    );
   }
 }

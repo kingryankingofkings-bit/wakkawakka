@@ -6,13 +6,16 @@ description: Use when setting up continuous integration and deployment pipelines
 # CI/CD Pipeline Builder
 
 ## Goal
+
 Implement automated CI/CD pipelines that test, build, and deploy on code changes.
 
 ## Do Not Use When
+
 - CI/CD is already configured
 - Manual deployment is preferred
 
 ## Required Inputs To Inspect
+
 - Git platform (GitHub, GitLab, Bitbucket)
 - Deployment platform
 - Test commands
@@ -46,8 +49,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
       - run: npm ci
       - run: npm run lint
       - run: npm run test
@@ -66,11 +69,13 @@ jobs:
 ```
 
 ## Quality Checks
+
 - [ ] Pipeline runs on PR
 - [ ] Failed tests block deployment
 - [ ] Deployment is automated
 - [ ] Rollback is possible
 
 ## Coordinates With
+
 - `test-suite-builder` — for test configuration
 - `hosting-platform-deployer` — for deploy steps

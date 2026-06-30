@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
@@ -27,7 +27,10 @@ export async function POST(req: NextRequest) {
     });
 
     if (!cart || cart.items.length === 0) {
-      return NextResponse.json({ error: 'Your cart is empty' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Your cart is empty" },
+        { status: 400 },
+      );
     }
 
     // Run the checkout transaction
@@ -40,12 +43,16 @@ export async function POST(req: NextRequest) {
         });
 
         if (!product || product.isDeleted || !product.isActive) {
-          throw new Error(`Product "${item.product.name}" is no longer available.`);
+          throw new Error(
+            `Product "${item.product.name}" is no longer available.`,
+          );
         }
 
         if (product.stockCount !== null) {
           if (product.stockCount < item.quantity) {
-            throw new Error(`Insufficient stock for "${product.name}". Only ${product.stockCount} left.`);
+            throw new Error(
+              `Insufficient stock for "${product.name}". Only ${product.stockCount} left.`,
+            );
           }
         }
         total += item.quantity * product.price;
@@ -59,9 +66,9 @@ export async function POST(req: NextRequest) {
           quantity: cart.items.reduce((sum, item) => sum + item.quantity, 0),
           unitPrice: 0,
           total,
-          status: 'CONFIRMED',
-          shippingAddress: shippingAddress || 'Digital Delivery',
-          notes: notes || '',
+          status: "CONFIRMED",
+          shippingAddress: shippingAddress || "Digital Delivery",
+          notes: notes || "",
         },
       });
 
@@ -84,7 +91,10 @@ export async function POST(req: NextRequest) {
             },
           });
 
-          if (updatedProduct.stockCount !== null && updatedProduct.stockCount <= 0) {
+          if (
+            updatedProduct.stockCount !== null &&
+            updatedProduct.stockCount <= 0
+          ) {
             await tx.product.update({
               where: { id: item.productId },
               data: {
@@ -106,6 +116,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ orderId: result.id, total: result.total });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Checkout failed' }, { status: 400 });
+    return NextResponse.json(
+      { error: err.message || "Checkout failed" },
+      { status: 400 },
+    );
   }
 }

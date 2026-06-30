@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId, orderedPair } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId, orderedPair } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 const userSelect = {
   id: true,
@@ -17,28 +17,40 @@ const userSelect = {
 // GET /api/friends — list the current user's friends
 export async function GET(req: NextRequest) {
   const userId = getRequestUserId(req);
-  if (!userId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  if (!userId)
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   try {
     const friendships = await prisma.friendship.findMany({
       where: { OR: [{ userAId: userId }, { userBId: userId }] },
       include: { userA: { select: userSelect }, userB: { select: userSelect } },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
-    const friends = friendships.map((f: any) => (f.userAId === userId ? f.userB : f.userA));
-    return NextResponse.json({ data: friends, meta: { total: friends.length } });
+    const friends = friendships.map((f: any) =>
+      f.userAId === userId ? f.userB : f.userA,
+    );
+    return NextResponse.json({
+      data: friends,
+      meta: { total: friends.length },
+    });
   } catch (err) {
-    return NextResponse.json({ data: [], meta: { total: 0 }, detail: String(err) });
+    return NextResponse.json({
+      data: [],
+      meta: { total: 0 },
+      detail: String(err),
+    });
   }
 }
 
 // DELETE /api/friends?friendId=xxx — remove a friend
 export async function DELETE(req: NextRequest) {
   const userId = getRequestUserId(req);
-  const friendId = req.nextUrl.searchParams.get('friendId');
-  if (!userId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-  if (!friendId) return NextResponse.json({ error: 'friendId required' }, { status: 400 });
+  const friendId = req.nextUrl.searchParams.get("friendId");
+  if (!userId)
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  if (!friendId)
+    return NextResponse.json({ error: "friendId required" }, { status: 400 });
 
   const [userAId, userBId] = orderedPair(userId, friendId);
   try {
@@ -54,6 +66,9 @@ export async function DELETE(req: NextRequest) {
     });
     return NextResponse.json({ success: true });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to remove friend', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to remove friend", detail: String(err) },
+      { status: 500 },
+    );
   }
 }

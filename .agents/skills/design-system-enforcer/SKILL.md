@@ -6,14 +6,17 @@ description: Use when establishing or enforcing design consistency across a webs
 # Design System Enforcer
 
 ## Goal
+
 Establish and enforce visual consistency through token-based design systems with configurable themes.
 
 ## Do Not Use When
+
 - Using an external design system (Material, Chakra, etc.) exclusively
 - The project is a quick prototype without design requirements
 - Styles are already consistent and tokenized
 
 ## Required Inputs To Inspect
+
 - Brand guidelines (colors, fonts, logo)
 - Existing component styles
 - Tailwind config or CSS variables
@@ -42,29 +45,30 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#eff6ff',
-          500: '#3b82f6',
-          900: '#1e3a5f',
+          50: "#eff6ff",
+          500: "#3b82f6",
+          900: "#1e3a5f",
         },
         // ...
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ["Inter", "system-ui", "sans-serif"],
       },
       spacing: {
         // Uses Tailwind defaults (0.5rem = 4px base)
       },
       borderRadius: {
-        sm: '0.25rem',
-        DEFAULT: '0.375rem',
-        lg: '0.5rem',
+        sm: "0.25rem",
+        DEFAULT: "0.375rem",
+        lg: "0.5rem",
       },
     },
   },
-}
+};
 ```
 
 ## Quality Checks
+
 - [ ] All colors meet WCAG AA contrast ratios
 - [ ] Typography scale is harmonious (ratio-based)
 - [ ] Spacing is consistent (base unit multiples)
@@ -72,11 +76,13 @@ export default {
 - [ ] No hardcoded values in components
 
 ## Safety Rules
+
 - Never use hex/rgb values directly in components
 - Always use semantic token names (not literal colors)
 - Test contrast ratios before finalizing colors
 
 ## Coordinates With
+
 - `component-system-builder` — component styling
 - `responsive-layout-builder` — responsive spacing
 - `accessibility-builder` — contrast requirements

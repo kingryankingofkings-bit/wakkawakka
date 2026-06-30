@@ -6,13 +6,16 @@ description: Use when fixing build failures, compilation errors, bundler issues,
 # Build Error Fixer
 
 ## Goal
+
 Diagnose and fix build failures quickly to restore the build pipeline.
 
 ## Do Not Use When
+
 - Build succeeds
 - The error is runtime (not build-time)
 
 ## Required Inputs To Inspect
+
 - Full build error output
 - Build tool (Vite, Webpack, Next.js, etc.)
 - TypeScript configuration
@@ -32,20 +35,22 @@ Diagnose and fix build failures quickly to restore the build pipeline.
 
 ## Common Build Errors
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| Cannot find module | Missing import or package | Install package or fix path |
-| Type not assignable | Type mismatch | Fix type or add assertion |
-| Property does not exist | Wrong type or typo | Fix type definition |
-| Syntax error | Invalid JS/TS | Check for typos |
-| Out of memory | Large bundle | Increase memory or split chunks |
+| Error                   | Cause                     | Fix                             |
+| ----------------------- | ------------------------- | ------------------------------- |
+| Cannot find module      | Missing import or package | Install package or fix path     |
+| Type not assignable     | Type mismatch             | Fix type or add assertion       |
+| Property does not exist | Wrong type or typo        | Fix type definition             |
+| Syntax error            | Invalid JS/TS             | Check for typos                 |
+| Out of memory           | Large bundle              | Increase memory or split chunks |
 
 ## Quality Checks
+
 - [ ] `npm run build` succeeds
 - [ ] `npm run dev` starts
 - [ ] No TypeScript errors
 - [ ] Linting passes
 
 ## Coordinates With
+
 - `dependency-conflict-resolver` — for package issues
 - `typescript-type-debugger` — for type errors

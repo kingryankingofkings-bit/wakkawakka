@@ -6,14 +6,17 @@ description: Use when designing or implementing state management for frontend ap
 # Frontend State Management
 
 ## Goal
+
 Design clear, predictable state management that distinguishes server state from client state and minimizes re-renders.
 
 ## Do Not Use When
+
 - The app has no shared state (completely static)
 - State is already well-managed
 - The issue is purely data fetching (not state structure)
 
 ## Required Inputs To Inspect
+
 - Component tree and data flow
 - State that needs to be shared vs local
 - Server data requirements
@@ -44,6 +47,7 @@ Is it fetched from API?
 ```
 
 ## Quality Checks
+
 - [ ] Server state uses a data-fetching library
 - [ ] No prop drilling beyond 2 levels
 - [ ] State updates don't cause unnecessary re-renders
@@ -51,11 +55,13 @@ Is it fetched from API?
 - [ ] State shape is normalized
 
 ## Safety Rules
+
 - Don't put form state in global state
 - Don't mutate state directly (immer or spread)
 - Keep state minimal — derive, don't duplicate
 
 ## Coordinates With
+
 - `frontend-scaffold-builder` — for library setup
 - `forms-validation-builder` — for form state
 - `bug-reproduction-debugger` — for state bugs

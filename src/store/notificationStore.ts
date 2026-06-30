@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import type { Notification } from '@/types';
-import { MOCK_NOTIFICATIONS } from '@/lib/mockData';
+import { create } from "zustand";
+import type { Notification } from "@/types";
+import { MOCK_NOTIFICATIONS } from "@/lib/mockData";
 
 interface NotificationState {
   notifications: Notification[];
@@ -22,7 +22,7 @@ function computeUnreadCount(notifications: Notification[]): number {
 }
 
 function computeDmUnreadCount(notifications: Notification[]): number {
-  return notifications.filter((n) => !n.isRead && n.type === 'MESSAGE').length;
+  return notifications.filter((n) => !n.isRead && n.type === "MESSAGE").length;
 }
 
 export const useNotificationStore = create<NotificationStore>((set) => ({
@@ -45,7 +45,7 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
   markAsRead: (id) =>
     set((state) => {
       const notifications = state.notifications.map((n) =>
-        n.id === id ? { ...n, isRead: true } : n
+        n.id === id ? { ...n, isRead: true } : n,
       );
       return {
         notifications,
@@ -56,7 +56,10 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
 
   markAllAsRead: () =>
     set((state) => {
-      const notifications = state.notifications.map((n) => ({ ...n, isRead: true }));
+      const notifications = state.notifications.map((n) => ({
+        ...n,
+        isRead: true,
+      }));
       return { notifications, unreadCount: 0, dmUnreadCount: 0 };
     }),
 

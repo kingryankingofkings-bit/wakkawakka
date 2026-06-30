@@ -6,13 +6,16 @@ description: Use when implementing background job processing, task queues, sched
 # Background Jobs and Queues
 
 ## Goal
+
 Implement reliable background job processing with proper retry logic, monitoring, and error handling.
 
 ## Do Not Use When
+
 - All operations are synchronous and fast (< 200ms)
 - Using a serverless platform with built-in async (Vercel, etc.)
 
 ## Required Inputs To Inspect
+
 - Jobs to run (email sending, image processing, reports)
 - Frequency (one-time, recurring, event-driven)
 - Execution time estimates
@@ -32,14 +35,15 @@ Implement reliable background job processing with proper retry logic, monitoring
 
 ## Job Types
 
-| Type | Example | Trigger |
-|------|---------|---------|
-| Immediate | Send welcome email | User registration |
-| Delayed | Send reminder | 24 hours after signup |
-| Recurring | Daily report | Cron: `0 9 * * *` |
-| Batch | Process CSV import | Admin upload |
+| Type      | Example            | Trigger               |
+| --------- | ------------------ | --------------------- |
+| Immediate | Send welcome email | User registration     |
+| Delayed   | Send reminder      | 24 hours after signup |
+| Recurring | Daily report       | Cron: `0 9 * * *`     |
+| Batch     | Process CSV import | Admin upload          |
 
 ## Quality Checks
+
 - [ ] Jobs have idempotency keys
 - [ ] Retry with exponential backoff
 - [ ] Failed jobs go to dead letter queue
@@ -47,12 +51,14 @@ Implement reliable background job processing with proper retry logic, monitoring
 - [ ] No job loss on worker restart
 
 ## Safety Rules
+
 - Make jobs idempotent (safe to run multiple times)
 - Set reasonable timeouts
 - Limit concurrent workers
 - Alert on high failure rates
 
 ## Coordinates With
+
 - `email-notification-builder` — for email jobs
 - `file-upload-media-handler` — for processing jobs
 - `monitoring-logging-setup` — for job monitoring

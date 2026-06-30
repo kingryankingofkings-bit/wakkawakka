@@ -1,7 +1,9 @@
 ## 2026-06-30T11:47:05Z
+
 Please resume work at C:\Users\Kingr\OneDrive\Documents\wakkawakka-local.
 Your working directory is C:\Users\Kingr\OneDrive\Documents\wakkawakka-local\.agents\worker_verification_1.
 Your task:
+
 1. Read the task list in tasks.md in your working directory.
 2. Verify that all features from Batches 1 to 5 and all 13 feature gaps are successfully implemented, integrated, and database-backed in the SQLite dev.db database. Check if there are real models in prisma/schema.prisma and tables/data in dev.db.
 3. Run all type-checks (npm run type-check), linters (npm run lint), builds (npm run build), and E2E tests (node tests/e2e_runner.js).

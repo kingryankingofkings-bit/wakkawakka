@@ -1,17 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // POST /api/messages/conversations/[id]/members
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   const { id: conversationId } = params;
@@ -25,24 +25,33 @@ export async function POST(
     });
 
     if (!conversation) {
-      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Conversation not found" },
+        { status: 404 },
+      );
     }
 
     if (!conversation.isGroup) {
-      return NextResponse.json({ error: 'Not a group conversation' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Not a group conversation" },
+        { status: 400 },
+      );
     }
 
     // Check if acting user is a member of the group
     const isMember = conversation.members.some((m) => m.userId === userId);
     if (!isMember) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+      return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
     const body = await req.json();
     const { userIds } = body;
 
     if (!userIds || !Array.isArray(userIds)) {
-      return NextResponse.json({ error: 'userIds array required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "userIds array required" },
+        { status: 400 },
+      );
     }
 
     // Filter out users already in the conversation
@@ -83,8 +92,8 @@ export async function POST(
     });
   } catch (err) {
     return NextResponse.json(
-      { error: 'Failed to add members', detail: String(err) },
-      { status: 500 }
+      { error: "Failed to add members", detail: String(err) },
+      { status: 500 },
     );
   }
 }

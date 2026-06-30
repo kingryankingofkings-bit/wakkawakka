@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Heart,
   MessageCircle,
@@ -12,11 +12,11 @@ import {
   Play,
   X,
   Send,
-} from 'lucide-react';
-import { cn, formatCount } from '@/lib/utils';
-import { MOCK_POSTS, MOCK_USERS } from '@/lib/mockData';
-import { Post, User } from '@/types';
-import { apiFetch } from '@/lib/apiClient';
+} from "lucide-react";
+import { cn, formatCount } from "@/lib/utils";
+import { MOCK_POSTS, MOCK_USERS } from "@/lib/mockData";
+import { Post, User } from "@/types";
+import { apiFetch } from "@/lib/apiClient";
 
 /* ─── Mock reel data ─────────────────────────────────── */
 interface Reel {
@@ -33,23 +33,48 @@ interface Reel {
 }
 
 const GRADIENTS = [
-  'from-purple-900 via-violet-800 to-indigo-900',
-  'from-rose-900 via-pink-800 to-red-900',
-  'from-emerald-900 via-teal-800 to-cyan-900',
-  'from-amber-900 via-orange-800 to-yellow-900',
-  'from-blue-900 via-indigo-800 to-purple-900',
-  'from-slate-900 via-gray-800 to-zinc-900',
-  'from-fuchsia-900 via-purple-800 to-pink-900',
-  'from-sky-900 via-blue-800 to-indigo-900',
+  "from-purple-900 via-violet-800 to-indigo-900",
+  "from-rose-900 via-pink-800 to-red-900",
+  "from-emerald-900 via-teal-800 to-cyan-900",
+  "from-amber-900 via-orange-800 to-yellow-900",
+  "from-blue-900 via-indigo-800 to-purple-900",
+  "from-slate-900 via-gray-800 to-zinc-900",
+  "from-fuchsia-900 via-purple-800 to-pink-900",
+  "from-sky-900 via-blue-800 to-indigo-900",
 ];
 
 /* ─── Comment drawer ─────────────────────────────────── */
 const SAMPLE_COMMENTS = [
-  { id: 'c1', user: MOCK_USERS[0], text: 'This is absolutely incredible! 🔥', likes: 342 },
-  { id: 'c2', user: MOCK_USERS[1], text: 'How did you do that transition?? teach me please', likes: 128 },
-  { id: 'c3', user: MOCK_USERS[2], text: 'Sending this to my entire contact list 😂', likes: 89 },
-  { id: 'c4', user: MOCK_USERS[3], text: 'Been watching this on repeat for 20 mins', likes: 567 },
-  { id: 'c5', user: MOCK_USERS[4], text: 'Algorithm brought me here and I have zero regrets', likes: 234 },
+  {
+    id: "c1",
+    user: MOCK_USERS[0],
+    text: "This is absolutely incredible! 🔥",
+    likes: 342,
+  },
+  {
+    id: "c2",
+    user: MOCK_USERS[1],
+    text: "How did you do that transition?? teach me please",
+    likes: 128,
+  },
+  {
+    id: "c3",
+    user: MOCK_USERS[2],
+    text: "Sending this to my entire contact list 😂",
+    likes: 89,
+  },
+  {
+    id: "c4",
+    user: MOCK_USERS[3],
+    text: "Been watching this on repeat for 20 mins",
+    likes: 567,
+  },
+  {
+    id: "c5",
+    user: MOCK_USERS[4],
+    text: "Algorithm brought me here and I have zero regrets",
+    likes: 234,
+  },
 ];
 
 interface CommentDrawerProps {
@@ -59,7 +84,7 @@ interface CommentDrawerProps {
 }
 
 function CommentDrawer({ open, onClose, commentsCount }: CommentDrawerProps) {
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
 
   return (
     <AnimatePresence>
@@ -74,17 +99,20 @@ function CommentDrawer({ open, onClose, commentsCount }: CommentDrawerProps) {
           />
           <motion.div
             className="absolute bottom-0 left-0 right-0 z-30 bg-zinc-900 rounded-t-2xl flex flex-col"
-            style={{ height: '70%' }}
-            initial={{ y: '100%' }}
+            style={{ height: "70%" }}
+            initial={{ y: "100%" }}
             animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
               <span className="font-semibold text-white">
                 {formatCount(commentsCount)} Comments
               </span>
-              <button onClick={onClose} className="text-white/60 hover:text-white">
+              <button
+                onClick={onClose}
+                className="text-white/60 hover:text-white"
+              >
                 <X size={20} />
               </button>
             </div>
@@ -93,18 +121,25 @@ function CommentDrawer({ open, onClose, commentsCount }: CommentDrawerProps) {
               {SAMPLE_COMMENTS.map((c) => (
                 <div key={c.id} className="flex gap-3">
                   <img
-                    src={c.user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.user.id}`}
+                    src={
+                      c.user.avatar ||
+                      `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.user.id}`
+                    }
                     alt={c.user.displayName}
                     className="w-9 h-9 rounded-full shrink-0 object-cover"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-white">{c.user.displayName}</span>
+                      <span className="text-sm font-semibold text-white">
+                        {c.user.displayName}
+                      </span>
                       <span className="text-xs text-white/40">2h</span>
                     </div>
                     <p className="text-sm text-white/80 mt-0.5">{c.text}</p>
                     <div className="flex items-center gap-4 mt-1.5">
-                      <button className="text-xs text-white/40 hover:text-white">Reply</button>
+                      <button className="text-xs text-white/40 hover:text-white">
+                        Reply
+                      </button>
                       <div className="flex items-center gap-1 text-xs text-white/40">
                         <Heart size={12} />
                         <span>{formatCount(c.likes)}</span>
@@ -130,7 +165,7 @@ function CommentDrawer({ open, onClose, commentsCount }: CommentDrawerProps) {
                 />
                 {comment.trim() && (
                   <button
-                    onClick={() => setComment('')}
+                    onClick={() => setComment("")}
                     className="text-primary shrink-0"
                   >
                     <Send size={16} />
@@ -156,15 +191,22 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
   const [likesCount, setLikesCount] = useState(reel.likesCount);
   const [muted, setMuted] = useState(true);
   const [commentOpen, setCommentOpen] = useState(false);
-  const [floatingHearts, setFloatingHearts] = useState<{ id: number; x: number }[]>([]);
-  const [heartPops, setHeartPops] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [floatingHearts, setFloatingHearts] = useState<
+    { id: number; x: number }[]
+  >([]);
+  const [heartPops, setHeartPops] = useState<
+    { id: number; x: number; y: number }[]
+  >([]);
   const [showMuteOverlay, setShowMuteOverlay] = useState(false);
   const [progress, setProgress] = useState(0);
   const heartIdRef = useRef(0);
 
   // Simulate progress bar
   useEffect(() => {
-    if (!isActive) { setProgress(0); return; }
+    if (!isActive) {
+      setProgress(0);
+      return;
+    }
     setProgress(0);
     const start = Date.now();
     const duration = 15000; // 15 second simulated reel
@@ -179,7 +221,7 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
 
   const handleLike = () => {
     setLiked((prev) => {
-      setLikesCount((c) => prev ? c - 1 : c + 1);
+      setLikesCount((c) => (prev ? c - 1 : c + 1));
       return !prev;
     });
     // Spawn floating hearts
@@ -242,10 +284,16 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
         />
       ) : (
         /* Background gradient + play icon */
-        <div className={cn('absolute inset-0 bg-gradient-to-br', reel.gradient)}>
+        <div
+          className={cn("absolute inset-0 bg-gradient-to-br", reel.gradient)}
+        >
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.div
-              animate={isActive ? { scale: [1, 1.05, 1], opacity: [0.15, 0.25, 0.15] } : {}}
+              animate={
+                isActive
+                  ? { scale: [1, 1.05, 1], opacity: [0.15, 0.25, 0.15] }
+                  : {}
+              }
               transition={{ repeat: Infinity, duration: 3 }}
               className="text-white/20"
             >
@@ -266,7 +314,7 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
             initial={{ opacity: 1, y: 0, scale: 0.5 }}
             animate={{ opacity: 0, y: -160, scale: 1.4 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.1, ease: 'easeOut' }}
+            transition={{ duration: 1.1, ease: "easeOut" }}
           >
             <Heart size={36} fill="#ef4444" className="text-red-500" />
           </motion.div>
@@ -281,11 +329,15 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: [0.5, 1.3, 1], opacity: [0, 1, 0] }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="absolute z-20 pointer-events-none -translate-x-1/2 -translate-y-1/2"
             style={{ left: hp.x, top: hp.y }}
           >
-            <Heart size={80} fill="#ef4444" className="text-red-500 drop-shadow-2xl" />
+            <Heart
+              size={80}
+              fill="#ef4444"
+              className="text-red-500 drop-shadow-2xl"
+            />
           </motion.div>
         ))}
       </AnimatePresence>
@@ -314,16 +366,26 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
       {/* Bottom overlay: author info + music ticker */}
       <div className="absolute bottom-0 left-0 right-0 z-10 pb-6 px-4 pointer-events-none">
         {/* Author */}
-        <div className="flex items-center gap-3 mb-3 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="flex items-center gap-3 mb-3 pointer-events-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
           <img
-            src={reel.author.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${reel.author.id}`}
+            src={
+              reel.author.avatar ||
+              `https://api.dicebear.com/7.x/avataaars/svg?seed=${reel.author.id}`
+            }
             alt={reel.author.displayName}
             className="w-10 h-10 rounded-full border-2 border-white object-cover"
           />
           <div>
-            <span className="text-white font-semibold text-sm">@{reel.author.username}</span>
+            <span className="text-white font-semibold text-sm">
+              @{reel.author.username}
+            </span>
             {reel.author.isVerified && (
-              <span className="ml-1 text-xs bg-blue-500 text-white px-1 rounded">✓</span>
+              <span className="ml-1 text-xs bg-blue-500 text-white px-1 rounded">
+                ✓
+              </span>
             )}
           </div>
           <button className="ml-2 px-3 py-0.5 border border-white rounded-full text-white text-xs font-medium hover:bg-white/10 transition-colors">
@@ -332,16 +394,22 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
         </div>
 
         {/* Caption */}
-        <p className="text-white text-sm mb-3 line-clamp-2 pointer-events-none">{reel.caption}</p>
+        <p className="text-white text-sm mb-3 line-clamp-2 pointer-events-none">
+          {reel.caption}
+        </p>
 
         {/* Music ticker */}
         <div className="flex items-center gap-2 pointer-events-none overflow-hidden">
-          <Music2 size={14} className="text-white shrink-0 animate-spin" style={{ animationDuration: '4s' }} />
+          <Music2
+            size={14}
+            className="text-white shrink-0 animate-spin"
+            style={{ animationDuration: "4s" }}
+          />
           <div className="overflow-hidden flex-1">
             <motion.div
               className="flex whitespace-nowrap text-white/80 text-xs"
               animate={{ x: [0, -300] }}
-              transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
+              transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
             >
               {repeated.repeat(4)}
             </motion.div>
@@ -350,27 +418,40 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
       </div>
 
       {/* Right side actions */}
-      <div className="absolute right-3 bottom-24 z-10 flex flex-col items-center gap-6" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="absolute right-3 bottom-24 z-10 flex flex-col items-center gap-6"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Like */}
-        <button onClick={handleLike} className="flex flex-col items-center gap-1">
+        <button
+          onClick={handleLike}
+          className="flex flex-col items-center gap-1"
+        >
           <motion.div
             whileTap={{ scale: 1.4 }}
             className={cn(
-              'w-11 h-11 rounded-full flex items-center justify-center',
-              liked ? 'text-red-500' : 'text-white'
+              "w-11 h-11 rounded-full flex items-center justify-center",
+              liked ? "text-red-500" : "text-white",
             )}
           >
-            <Heart size={28} fill={liked ? 'currentColor' : 'none'} />
+            <Heart size={28} fill={liked ? "currentColor" : "none"} />
           </motion.div>
-          <span className="text-white text-xs font-medium">{formatCount(likesCount)}</span>
+          <span className="text-white text-xs font-medium">
+            {formatCount(likesCount)}
+          </span>
         </button>
 
         {/* Comment */}
-        <button onClick={() => setCommentOpen(true)} className="flex flex-col items-center gap-1">
+        <button
+          onClick={() => setCommentOpen(true)}
+          className="flex flex-col items-center gap-1"
+        >
           <div className="w-11 h-11 rounded-full flex items-center justify-center text-white">
             <MessageCircle size={28} />
           </div>
-          <span className="text-white text-xs font-medium">{formatCount(reel.commentsCount)}</span>
+          <span className="text-white text-xs font-medium">
+            {formatCount(reel.commentsCount)}
+          </span>
         </button>
 
         {/* Share */}
@@ -378,7 +459,9 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
           <div className="w-11 h-11 rounded-full flex items-center justify-center text-white">
             <Share2 size={26} />
           </div>
-          <span className="text-white text-xs font-medium">{formatCount(reel.sharesCount)}</span>
+          <span className="text-white text-xs font-medium">
+            {formatCount(reel.sharesCount)}
+          </span>
         </button>
 
         {/* Sound */}
@@ -392,7 +475,7 @@ function ReelCard({ reel, isActive }: ReelCardProps) {
         {/* Spinning music disc */}
         <motion.div
           animate={{ rotate: isActive ? 360 : 0 }}
-          transition={{ repeat: Infinity, duration: 4, ease: 'linear' }}
+          transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
           className="w-11 h-11 rounded-full border-2 border-white overflow-hidden"
         >
           <img
@@ -416,7 +499,7 @@ export default function ReelsPage() {
   useEffect(() => {
     async function loadReels() {
       try {
-        const response = await apiFetch('/api/posts?type=REEL');
+        const response = await apiFetch("/api/posts?type=REEL");
         if (response.ok) {
           const json = await response.json();
           if (json.data) {
@@ -425,9 +508,9 @@ export default function ReelsPage() {
               let videoUrl = null;
               if (mediaUrls.length > 0) {
                 const item = mediaUrls[0];
-                if (typeof item === 'object' && item !== null && item.url) {
+                if (typeof item === "object" && item !== null && item.url) {
                   videoUrl = item.url;
-                } else if (typeof item === 'string') {
+                } else if (typeof item === "string") {
                   try {
                     const parsed = JSON.parse(item);
                     videoUrl = parsed.url || item;
@@ -446,7 +529,7 @@ export default function ReelsPage() {
                 sharesCount: p.sharesCount,
                 musicTrack: p.musicTrack
                   ? { title: p.musicTrack.title, artist: p.musicTrack.artist }
-                  : { title: 'Original Sound', artist: p.author.displayName },
+                  : { title: "Original Sound", artist: p.author.displayName },
                 gradient: GRADIENTS[i % GRADIENTS.length],
                 userLiked: !!p.userReaction,
                 videoUrl,
@@ -456,19 +539,25 @@ export default function ReelsPage() {
           }
         }
       } catch (err) {
-        console.error('Failed to load reels:', err);
+        console.error("Failed to load reels:", err);
       }
     }
     loadReels();
   }, []);
 
-  const goTo = useCallback((idx: number) => {
-    const clamped = Math.max(0, Math.min(reels.length - 1, idx));
-    setCurrentIndex(clamped);
-    if (containerRef.current) {
-      containerRef.current.scrollTo({ top: clamped * window.innerHeight, behavior: 'smooth' });
-    }
-  }, [reels.length]);
+  const goTo = useCallback(
+    (idx: number) => {
+      const clamped = Math.max(0, Math.min(reels.length - 1, idx));
+      setCurrentIndex(clamped);
+      if (containerRef.current) {
+        containerRef.current.scrollTo({
+          top: clamped * window.innerHeight,
+          behavior: "smooth",
+        });
+      }
+    },
+    [reels.length],
+  );
 
   // Wheel navigation
   useEffect(() => {
@@ -480,20 +569,22 @@ export default function ReelsPage() {
       isScrolling.current = true;
       if (e.deltaY > 0) goTo(currentIndex + 1);
       else if (e.deltaY < 0) goTo(currentIndex - 1);
-      setTimeout(() => { isScrolling.current = false; }, 600);
+      setTimeout(() => {
+        isScrolling.current = false;
+      }, 600);
     };
-    el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => el.removeEventListener('wheel', handleWheel);
+    el.addEventListener("wheel", handleWheel, { passive: false });
+    return () => el.removeEventListener("wheel", handleWheel);
   }, [currentIndex, goTo]);
 
   // Keyboard navigation
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowDown') goTo(currentIndex + 1);
-      else if (e.key === 'ArrowUp') goTo(currentIndex - 1);
+      if (e.key === "ArrowDown") goTo(currentIndex + 1);
+      else if (e.key === "ArrowUp") goTo(currentIndex - 1);
     };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
   }, [currentIndex, goTo]);
 
   // Touch navigation
@@ -501,7 +592,9 @@ export default function ReelsPage() {
     const el = containerRef.current;
     if (!el) return;
     let startY = 0;
-    const onTouchStart = (e: TouchEvent) => { startY = e.touches[0].clientY; };
+    const onTouchStart = (e: TouchEvent) => {
+      startY = e.touches[0].clientY;
+    };
     const onTouchEnd = (e: TouchEvent) => {
       const diff = startY - e.changedTouches[0].clientY;
       if (Math.abs(diff) > 50) {
@@ -509,11 +602,11 @@ export default function ReelsPage() {
         else goTo(currentIndex - 1);
       }
     };
-    el.addEventListener('touchstart', onTouchStart);
-    el.addEventListener('touchend', onTouchEnd);
+    el.addEventListener("touchstart", onTouchStart);
+    el.addEventListener("touchend", onTouchEnd);
     return () => {
-      el.removeEventListener('touchstart', onTouchStart);
-      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchend", onTouchEnd);
     };
   }, [currentIndex, goTo]);
 
@@ -536,10 +629,10 @@ export default function ReelsPage() {
     <div
       ref={containerRef}
       className="h-screen overflow-hidden relative"
-      style={{ scrollSnapType: 'y mandatory' }}
+      style={{ scrollSnapType: "y mandatory" }}
     >
       {reels.map((reel, i) => (
-        <div key={reel.id} style={{ scrollSnapAlign: 'start' }}>
+        <div key={reel.id} style={{ scrollSnapAlign: "start" }}>
           <ReelCard reel={reel} isActive={i === currentIndex} />
         </div>
       ))}
@@ -551,8 +644,8 @@ export default function ReelsPage() {
             key={i}
             onClick={() => goTo(i)}
             className={cn(
-              'w-1 rounded-full transition-all duration-300',
-              i === currentIndex ? 'h-6 bg-white' : 'h-1.5 bg-white/40'
+              "w-1 rounded-full transition-all duration-300",
+              i === currentIndex ? "h-6 bg-white" : "h-1.5 bg-white/40",
             )}
           />
         ))}

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { create } from 'zustand';
-import { Post } from '@/types';
-import { MOCK_POSTS } from '@/lib/mockData';
+import { create } from "zustand";
+import { Post } from "@/types";
+import { MOCK_POSTS } from "@/lib/mockData";
 
-export type FeedType = 'forYou' | 'following' | 'trending';
+export type FeedType = "forYou" | "following" | "trending";
 
 interface FeedState {
   posts: Post[];
@@ -28,7 +28,7 @@ type FeedStore = FeedState & FeedActions;
 export const useFeedStore = create<FeedStore>((set) => ({
   // Initial state
   posts: MOCK_POSTS,
-  feedType: 'forYou',
+  feedType: "forYou",
   isLoading: false,
   hasMore: true,
 

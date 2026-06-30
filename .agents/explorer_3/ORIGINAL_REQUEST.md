@@ -1,6 +1,8 @@
 ## 2026-06-30T09:58:54Z
+
 You are teamwork_preview_explorer. Your working directory is C:\Users\Kingr\OneDrive\Documents\wakkawakka-local\.agents\explorer_3.
 Your task is to:
+
 1. Parse `implementation_tracker.md` to identify all features mapped to Batch 3 ("Content Creation, Feeds & Discovery" or Categories 1, 2, 9, and any associated innovations/improvements). Count how many there are.
 2. Scan the current codebase (specifically `src/app/(main)/feed`, `src/app/(main)/explore`, `src/app/(main)/reels`, `src/components/feed/`, and `prisma/schema.prisma` models for Posts, Comments, Stories, and Reels) to see what already exists and what is missing.
 3. Propose a set of REAL, functional, integrated features to implement for Batch 3:

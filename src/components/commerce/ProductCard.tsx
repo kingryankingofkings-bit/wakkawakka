@@ -1,19 +1,32 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Heart, ShoppingCart, Star, ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
-import Image from 'next/image';
-import { cn, formatCurrency, truncate } from '@/lib/utils';
-import type { Product } from '@/types';
-import { useCartStore } from '@/store/cartStore';
-import { Modal } from '@/components/ui/Modal';
+import { useState } from "react";
+import {
+  Heart,
+  ShoppingCart,
+  Star,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2,
+} from "lucide-react";
+import Image from "next/image";
+import { cn, formatCurrency, truncate } from "@/lib/utils";
+import type { Product } from "@/types";
+import { useCartStore } from "@/store/cartStore";
+import { Modal } from "@/components/ui/Modal";
 
 interface ProductCardProps {
   product: Product;
   className?: string;
 }
 
-function StarRating({ rating, reviewCount }: { rating: number; reviewCount?: number }) {
+function StarRating({
+  rating,
+  reviewCount,
+}: {
+  rating: number;
+  reviewCount?: number;
+}) {
   return (
     <div className="flex items-center gap-1">
       <div className="flex items-center">
@@ -34,7 +47,9 @@ function StarRating({ rating, reviewCount }: { rating: number; reviewCount?: num
         })}
       </div>
       {reviewCount !== undefined && (
-        <span className="text-xs text-muted-foreground ml-1">({reviewCount})</span>
+        <span className="text-xs text-muted-foreground ml-1">
+          ({reviewCount})
+        </span>
       )}
     </div>
   );
@@ -48,7 +63,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const addItem = useCartStore((s) => s.addItem);
   const openCart = useCartStore((s) => s.openCart);
 
-  const images = product.images.length > 0 ? product.images : ['https://picsum.photos/seed/placeholder/400/400'];
+  const images =
+    product.images.length > 0
+      ? product.images
+      : ["https://picsum.photos/seed/placeholder/400/400"];
 
   function handlePrev(e: React.MouseEvent) {
     e.preventDefault();
@@ -82,8 +100,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
       <div
         onClick={() => setShowDetailModal(true)}
         className={cn(
-          'group relative bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-col cursor-pointer',
-          className
+          "group relative bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-col cursor-pointer",
+          className,
         )}
       >
         {/* Image carousel */}
@@ -120,10 +138,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
                 {images.map((_, i) => (
                   <button
                     key={i}
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentImage(i); }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setCurrentImage(i);
+                    }}
                     className={cn(
-                      'w-1.5 h-1.5 rounded-full transition-all',
-                      i === currentImage ? 'bg-white w-3' : 'bg-white/60'
+                      "w-1.5 h-1.5 rounded-full transition-all",
+                      i === currentImage ? "bg-white w-3" : "bg-white/60",
                     )}
                     aria-label={`Image ${i + 1}`}
                   />
@@ -136,14 +158,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
           <button
             onClick={handleSave}
             className={cn(
-              'absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm',
+              "absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm",
               isSaved
-                ? 'bg-red-500 text-white'
-                : 'bg-white/90 backdrop-blur-sm text-muted-foreground hover:text-red-500 hover:bg-white'
+                ? "bg-red-500 text-white"
+                : "bg-white/90 backdrop-blur-sm text-muted-foreground hover:text-red-500 hover:bg-white",
             )}
-            aria-label={isSaved ? 'Remove from wishlist' : 'Add to wishlist'}
+            aria-label={isSaved ? "Remove from wishlist" : "Add to wishlist"}
           >
-            <Heart className={cn('w-4 h-4', isSaved && 'fill-current')} />
+            <Heart className={cn("w-4 h-4", isSaved && "fill-current")} />
           </button>
 
           {/* Category badge */}
@@ -194,7 +216,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
           {/* Rating */}
           {product.rating !== undefined && (
-            <StarRating rating={product.rating} reviewCount={product.reviewCount} />
+            <StarRating
+              rating={product.rating}
+              reviewCount={product.reviewCount}
+            />
           )}
 
           {/* Price + Add to cart */}
@@ -206,10 +231,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
               onClick={handleAddToCart}
               disabled={addedToCart}
               className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all',
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all",
                 addedToCart
-                  ? 'bg-green-500 text-white'
-                  : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  ? "bg-green-500 text-white"
+                  : "bg-primary text-primary-foreground hover:bg-primary/90",
               )}
             >
               {addedToCart ? (
@@ -229,10 +254,18 @@ export function ProductCard({ product, className }: ProductCardProps) {
       </div>
 
       {/* Product Detail Modal */}
-      <Modal isOpen={showDetailModal} onClose={() => setShowDetailModal(false)} title="Product Details">
+      <Modal
+        isOpen={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+        title="Product Details"
+      >
         <div className="p-5 space-y-4">
           <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-muted">
-            <img src={images[currentImage]} alt={product.name} className="h-full w-full object-cover" />
+            <img
+              src={images[currentImage]}
+              alt={product.name}
+              className="h-full w-full object-cover"
+            />
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -240,32 +273,67 @@ export function ProductCard({ product, className }: ProductCardProps) {
                 {product.category}
               </span>
               <span className="text-xs text-muted-foreground font-medium border border-border px-2 py-0.5 rounded-full">
-                Condition: {product.condition || 'NEW'}
+                Condition: {product.condition || "NEW"}
               </span>
             </div>
-            <h3 className="font-bold text-lg text-foreground">{product.name}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">{product.description}</p>
-            
+            <h3 className="font-bold text-lg text-foreground">
+              {product.name}
+            </h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {product.description}
+            </p>
+
             <div className="flex items-center gap-3 pt-2 pb-2 border-y border-border">
-              <img src={product.seller.avatar || 'https://picsum.photos/seed/avatar/100/100'} alt={product.seller.displayName} className="h-10 w-10 rounded-full object-cover" />
+              <img
+                src={
+                  product.seller.avatar ||
+                  "https://picsum.photos/seed/avatar/100/100"
+                }
+                alt={product.seller.displayName}
+                className="h-10 w-10 rounded-full object-cover"
+              />
               <div>
-                <p className="text-sm font-semibold text-foreground">{product.seller.displayName}</p>
-                {product.seller.location && <p className="text-xs text-muted-foreground">{product.seller.location}</p>}
+                <p className="text-sm font-semibold text-foreground">
+                  {product.seller.displayName}
+                </p>
+                {product.seller.location && (
+                  <p className="text-xs text-muted-foreground">
+                    {product.seller.location}
+                  </p>
+                )}
               </div>
             </div>
 
             <div className="flex items-center justify-between pt-2">
               <div>
-                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Price</p>
-                <p className="text-2xl font-extrabold text-foreground">{formatCurrency(product.price)}</p>
+                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
+                  Price
+                </p>
+                <p className="text-2xl font-extrabold text-foreground">
+                  {formatCurrency(product.price)}
+                </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider text-right">Availability</p>
-                <p className={cn("text-sm font-bold text-right", (product.stockCount !== undefined && product.stockCount !== null && product.stockCount <= 0) || !product.inStock ? "text-destructive" : "text-success")}>
-                  {product.stockCount !== null && product.stockCount !== undefined
-                    ? (product.stockCount > 0 ? `${product.stockCount} in stock` : 'Out of Stock')
-                    : 'In Stock'
-                  }
+                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider text-right">
+                  Availability
+                </p>
+                <p
+                  className={cn(
+                    "text-sm font-bold text-right",
+                    (product.stockCount !== undefined &&
+                      product.stockCount !== null &&
+                      product.stockCount <= 0) ||
+                      !product.inStock
+                      ? "text-destructive"
+                      : "text-success",
+                  )}
+                >
+                  {product.stockCount !== null &&
+                  product.stockCount !== undefined
+                    ? product.stockCount > 0
+                      ? `${product.stockCount} in stock`
+                      : "Out of Stock"
+                    : "In Stock"}
                 </p>
               </div>
             </div>
@@ -276,7 +344,12 @@ export function ProductCard({ product, className }: ProductCardProps) {
                   handleAddToCart(e);
                   setShowDetailModal(false);
                 }}
-                disabled={(product.stockCount !== undefined && product.stockCount !== null && product.stockCount <= 0) || !product.inStock}
+                disabled={
+                  (product.stockCount !== undefined &&
+                    product.stockCount !== null &&
+                    product.stockCount <= 0) ||
+                  !product.inStock
+                }
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
               >
                 <ShoppingCart className="w-5 h-5" />

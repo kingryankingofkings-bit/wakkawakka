@@ -1,8 +1,19 @@
-import { Sidebar } from '@/components/layout/Sidebar';
-import { MobileNav } from '@/components/layout/MobileNav';
-import { RightPanel } from '@/components/layout/RightPanel';
+"use client";
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+import { usePathname } from "next/navigation";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { MobileNav } from "@/components/layout/MobileNav";
+import { RightPanel } from "@/components/layout/RightPanel";
+import { cn } from "@/lib/utils";
+
+export default function MainLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  const isFullWidthWorkspace = pathname ? (pathname.startsWith("/servers") || pathname.startsWith("/reddit")) : false;
+
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop sidebar */}
@@ -11,19 +22,33 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       {/* Main content area */}
-      <div className="md:pl-64 flex min-h-screen">
-        <main className="flex-1 max-w-2xl w-full mx-auto px-0 sm:px-4 py-0 pb-16 md:pb-0">
+      <div
+        className={cn(
+          "md:pl-64 flex min-h-screen",
+          isFullWidthWorkspace && "md:pl-64",
+        )}
+      >
+        <main
+          className={cn(
+            "flex-1 w-full py-0 pb-16 md:pb-0",
+            isFullWidthWorkspace
+              ? "max-w-none px-0"
+              : "max-w-2xl mx-auto px-0 sm:px-4",
+          )}
+        >
           {children}
         </main>
 
         {/* Right panel - visible on xl+ */}
-        <div className="hidden xl:block">
-          <RightPanel />
-        </div>
+        {!isFullWidthWorkspace && (
+          <div className="hidden xl:block">
+            <RightPanel />
+          </div>
+        )}
       </div>
 
       {/* Mobile bottom nav */}
-      <MobileNav />
+      {!isFullWidthWorkspace && <MobileNav />}
     </div>
   );
 }

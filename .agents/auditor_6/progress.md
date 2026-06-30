@@ -3,6 +3,7 @@
 Last visited: 2026-06-30T11:45:18Z
 
 ## Status
+
 - [x] Investigate src/components/feed/PostCard.tsx
 - [x] Investigate api/scheduling/generate route
 - [x] Investigate scheduling/page.tsx & sidebar navigation

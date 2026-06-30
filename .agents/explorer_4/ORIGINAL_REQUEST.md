@@ -1,6 +1,8 @@
 ## 2026-06-30T10:20:44Z
+
 You are teamwork_preview_explorer. Your working directory is C:\Users\Kingr\OneDrive\Documents\wakkawakka-local\.agents\explorer_4.
 Your task is to:
+
 1. Parse `implementation_tracker.md` to identify all features mapped to Batch 4 ("Direct Messaging & Communication" or Category 4, and any associated innovations/improvements). Count how many there are.
 2. Scan the current codebase (specifically `src/app/(main)/messages`, `src/components/messaging/`, `src/app/api/socket`, and `prisma/schema.prisma` models for Message, Conversation, ConversationParticipant, etc.) to see what already exists and what is missing.
 3. Propose a set of REAL, functional, integrated features to implement for Batch 4:

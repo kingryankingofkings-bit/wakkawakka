@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Calendar as CalendarIcon, 
-  ChevronLeft, 
-  ChevronRight, 
-  Sparkles, 
-  Clock, 
-  Send, 
-  Info 
-} from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { Spinner } from '@/components/ui/Spinner';
-import { apiFetch } from '@/lib/apiClient';
-import toast from 'react-hot-toast';
-import { cn } from '@/lib/utils';
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  Calendar as CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  Clock,
+  Send,
+  Info,
+} from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { Spinner } from "@/components/ui/Spinner";
+import { apiFetch } from "@/lib/apiClient";
+import toast from "react-hot-toast";
+import { cn } from "@/lib/utils";
 
 interface ScheduledPost {
   id: string;
@@ -30,8 +30,15 @@ interface ScheduledPost {
   };
 }
 
-const TONES = ['Professional', 'Casual', 'Witty', 'Academic', 'Bold', 'Helpful'];
-const PLATFORMS = ['X/Twitter', 'Instagram', 'LinkedIn'];
+const TONES = [
+  "Professional",
+  "Casual",
+  "Witty",
+  "Academic",
+  "Bold",
+  "Helpful",
+];
+const PLATFORMS = ["X/Twitter", "Instagram", "LinkedIn"];
 
 export default function SchedulingPage() {
   // Calendar State
@@ -41,29 +48,29 @@ export default function SchedulingPage() {
   const [isLoadingPosts, setIsLoadingPosts] = useState(false);
 
   // Brand Voice Profile Form State
-  const [brandName, setBrandName] = useState('');
-  const [websiteUrl, setWebsiteUrl] = useState('');
-  const [audience, setAudience] = useState('');
-  const [tone, setTone] = useState('Professional');
+  const [brandName, setBrandName] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [audience, setAudience] = useState("");
+  const [tone, setTone] = useState("Professional");
 
   // AI Post Generator State
-  const [prompt, setPrompt] = useState('');
-  const [platform, setPlatform] = useState('LinkedIn');
-  const [genTone, setGenTone] = useState('Professional');
-  const [generatedCopy, setGeneratedCopy] = useState('');
+  const [prompt, setPrompt] = useState("");
+  const [platform, setPlatform] = useState("LinkedIn");
+  const [genTone, setGenTone] = useState("Professional");
+  const [generatedCopy, setGeneratedCopy] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Queue Poster State
-  const [scheduleTime, setScheduleTime] = useState('');
+  const [scheduleTime, setScheduleTime] = useState("");
   const [isScheduling, setIsScheduling] = useState(false);
 
   // Load Brand Voice Profile from localStorage on mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setBrandName(localStorage.getItem('apaya_brandName') || '');
-      setWebsiteUrl(localStorage.getItem('apaya_websiteUrl') || '');
-      setAudience(localStorage.getItem('apaya_audience') || '');
-      setTone(localStorage.getItem('apaya_tone') || 'Professional');
+    if (typeof window !== "undefined") {
+      setBrandName(localStorage.getItem("apaya_brandName") || "");
+      setWebsiteUrl(localStorage.getItem("apaya_websiteUrl") || "");
+      setAudience(localStorage.getItem("apaya_audience") || "");
+      setTone(localStorage.getItem("apaya_tone") || "Professional");
     }
   }, []);
 
@@ -71,15 +78,15 @@ export default function SchedulingPage() {
   const fetchScheduledPosts = async () => {
     setIsLoadingPosts(true);
     try {
-      const res = await apiFetch('/api/posts?scheduled=1');
+      const res = await apiFetch("/api/posts?scheduled=1");
       if (res.ok) {
         const json = await res.json();
         setScheduledPosts(json.data || []);
       } else {
-        toast.error('Failed to load scheduled posts');
+        toast.error("Failed to load scheduled posts");
       }
     } catch (err) {
-      console.error('Error fetching scheduled posts:', err);
+      console.error("Error fetching scheduled posts:", err);
     } finally {
       setIsLoadingPosts(false);
     }
@@ -92,43 +99,45 @@ export default function SchedulingPage() {
   // Initialize scheduleTime when selectedDate changes
   useEffect(() => {
     const yyyy = selectedDate.getFullYear();
-    const mm = String(selectedDate.getMonth() + 1).padStart(2, '0');
-    const dd = String(selectedDate.getDate()).padStart(2, '0');
-    
+    const mm = String(selectedDate.getMonth() + 1).padStart(2, "0");
+    const dd = String(selectedDate.getDate()).padStart(2, "0");
+
     // Maintain current hours and minutes or fallback to 12:00
     const now = new Date();
-    const hh = String(now.getHours()).padStart(2, '0');
-    const min = String(now.getMinutes()).padStart(2, '0');
-    
+    const hh = String(now.getHours()).padStart(2, "0");
+    const min = String(now.getMinutes()).padStart(2, "0");
+
     setScheduleTime(`${yyyy}-${mm}-${dd}T${hh}:${min}`);
   }, [selectedDate]);
 
   // Save Brand Profile to localStorage
   const saveBrandProfile = (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('apaya_brandName', brandName);
-    localStorage.setItem('apaya_websiteUrl', websiteUrl);
-    localStorage.setItem('apaya_audience', audience);
-    localStorage.setItem('apaya_tone', tone);
-    toast.success('Brand profile saved to local storage!');
+    localStorage.setItem("apaya_brandName", brandName);
+    localStorage.setItem("apaya_websiteUrl", websiteUrl);
+    localStorage.setItem("apaya_audience", audience);
+    localStorage.setItem("apaya_tone", tone);
+    toast.success("Brand profile saved to local storage!");
   };
 
   // Generate AI copy
   const handleGenerateAI = async () => {
     if (!brandName.trim()) {
-      toast.error('Please configure your Brand Name in the Brand Profile first.');
+      toast.error(
+        "Please configure your Brand Name in the Brand Profile first.",
+      );
       return;
     }
     if (!prompt.trim()) {
-      toast.error('Please enter a topic prompt for the AI Generator.');
+      toast.error("Please enter a topic prompt for the AI Generator.");
       return;
     }
 
     setIsGenerating(true);
     try {
-      const response = await fetch('/api/scheduling/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/scheduling/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           brandName,
           websiteUrl,
@@ -139,13 +148,13 @@ export default function SchedulingPage() {
         }),
       });
 
-      if (!response.ok) throw new Error('AI Content generation failed');
+      if (!response.ok) throw new Error("AI Content generation failed");
       const data = await response.json();
       setGeneratedCopy(data.content);
-      toast.success('AI Post copy generated successfully!');
+      toast.success("AI Post copy generated successfully!");
     } catch (err) {
       console.error(err);
-      toast.error('Failed to generate content with AI.');
+      toast.error("Failed to generate content with AI.");
     } finally {
       setIsGenerating(false);
     }
@@ -155,33 +164,33 @@ export default function SchedulingPage() {
   const handleSchedulePost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!generatedCopy.trim()) {
-      toast.error('Post content cannot be empty. Generate or type copy first.');
+      toast.error("Post content cannot be empty. Generate or type copy first.");
       return;
     }
     if (!scheduleTime) {
-      toast.error('Please select a valid future date & time.');
+      toast.error("Please select a valid future date & time.");
       return;
     }
 
     setIsScheduling(true);
     try {
-      const response = await apiFetch('/api/posts', {
-        method: 'POST',
+      const response = await apiFetch("/api/posts", {
+        method: "POST",
         body: JSON.stringify({
           content: generatedCopy,
           scheduledAt: new Date(scheduleTime).toISOString(),
-          type: 'TEXT',
-          visibility: 'PUBLIC',
+          type: "TEXT",
+          visibility: "PUBLIC",
         }),
       });
 
-      if (!response.ok) throw new Error('Post scheduling failed');
-      toast.success('Post successfully scheduled!');
-      setGeneratedCopy('');
+      if (!response.ok) throw new Error("Post scheduling failed");
+      toast.success("Post successfully scheduled!");
+      setGeneratedCopy("");
       fetchScheduledPosts();
     } catch (err) {
       console.error(err);
-      toast.error('Failed to schedule post.');
+      toast.error("Failed to schedule post.");
     } finally {
       setIsScheduling(false);
     }
@@ -189,9 +198,11 @@ export default function SchedulingPage() {
 
   // Helper comparison
   const isSameDay = (d1: Date, d2: Date) => {
-    return d1.getFullYear() === d2.getFullYear() &&
-           d1.getMonth() === d2.getMonth() &&
-           d1.getDate() === d2.getDate();
+    return (
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate()
+    );
   };
 
   // Calendar calculations
@@ -205,7 +216,7 @@ export default function SchedulingPage() {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const daysInPrevMonth = new Date(year, month, 0).getDate();
 
-    const totalSlots = (startDayOfWeek + daysInMonth <= 35) ? 35 : 42;
+    const totalSlots = startDayOfWeek + daysInMonth <= 35 ? 35 : 42;
 
     const days: { date: Date; isCurrentMonth: boolean }[] = [];
 
@@ -237,11 +248,16 @@ export default function SchedulingPage() {
     return days;
   }, [currentMonth]);
 
-  const monthName = currentMonth.toLocaleDateString('default', { month: 'long', year: 'numeric' });
+  const monthName = currentMonth.toLocaleDateString("default", {
+    month: "long",
+    year: "numeric",
+  });
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    const step = direction === 'prev' ? -1 : 1;
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + step, 1));
+  const navigateMonth = (direction: "prev" | "next") => {
+    const step = direction === "prev" ? -1 : 1;
+    setCurrentMonth(
+      new Date(currentMonth.getFullYear(), currentMonth.getMonth() + step, 1),
+    );
   };
 
   return (
@@ -254,7 +270,8 @@ export default function SchedulingPage() {
             Apaya Content Scheduling & Automation
           </h1>
           <p className="text-muted-foreground text-sm mt-1.5">
-            Define your Brand Voice, auto-generate high-engaging social posts using AI, and schedule them to your calendar.
+            Define your Brand Voice, auto-generate high-engaging social posts
+            using AI, and schedule them to your calendar.
           </p>
         </div>
       </div>
@@ -267,13 +284,13 @@ export default function SchedulingPage() {
               <h2 className="text-xl font-bold text-foreground">{monthName}</h2>
               <div className="flex items-center gap-1.5">
                 <button
-                  onClick={() => navigateMonth('prev')}
+                  onClick={() => navigateMonth("prev")}
                   className="p-2 rounded-xl hover:bg-muted border border-border transition-colors"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
                 <button
-                  onClick={() => navigateMonth('next')}
+                  onClick={() => navigateMonth("next")}
                   className="p-2 rounded-xl hover:bg-muted border border-border transition-colors"
                 >
                   <ChevronRight className="h-5 w-5" />
@@ -297,9 +314,9 @@ export default function SchedulingPage() {
               {calendarDays.map((day, idx) => {
                 const isSelected = isSameDay(day.date, selectedDate);
                 const isToday = isSameDay(day.date, new Date());
-                
+
                 // Find posts scheduled for this day
-                const dayPosts = scheduledPosts.filter(p => {
+                const dayPosts = scheduledPosts.filter((p) => {
                   if (!p.scheduledAt) return false;
                   return isSameDay(new Date(p.scheduledAt), day.date);
                 });
@@ -310,27 +327,35 @@ export default function SchedulingPage() {
                     onClick={() => setSelectedDate(day.date)}
                     className={cn(
                       "min-h-[85px] p-2 flex flex-col items-start justify-between rounded-xl border transition-all text-left group relative",
-                      day.isCurrentMonth 
-                        ? "bg-card border-border hover:border-primary/50" 
+                      day.isCurrentMonth
+                        ? "bg-card border-border hover:border-primary/50"
                         : "bg-muted/30 border-border/50 text-muted-foreground/50",
-                      isSelected 
-                        ? "ring-2 ring-primary border-primary bg-primary/5" 
+                      isSelected
+                        ? "ring-2 ring-primary border-primary bg-primary/5"
                         : "",
-                      isToday && !isSelected ? "border-primary/40 font-bold" : ""
+                      isToday && !isSelected
+                        ? "border-primary/40 font-bold"
+                        : "",
                     )}
                   >
-                    <span className={cn(
-                      "text-xs px-1.5 py-0.5 rounded-md font-medium",
-                      isToday && !isSelected ? "bg-primary/10 text-primary" : "",
-                      isSelected ? "bg-primary text-primary-foreground font-semibold" : "text-foreground"
-                    )}>
+                    <span
+                      className={cn(
+                        "text-xs px-1.5 py-0.5 rounded-md font-medium",
+                        isToday && !isSelected
+                          ? "bg-primary/10 text-primary"
+                          : "",
+                        isSelected
+                          ? "bg-primary text-primary-foreground font-semibold"
+                          : "text-foreground",
+                      )}
+                    >
                       {day.date.getDate()}
                     </span>
 
                     {/* Small scheduled posts indicators */}
                     <div className="w-full mt-2 space-y-1">
                       {dayPosts.slice(0, 2).map((post, pIdx) => (
-                        <div 
+                        <div
                           key={post.id}
                           className="text-[9px] font-medium leading-none px-1 py-0.5 rounded bg-primary/10 text-primary truncate w-full"
                           title={post.content}
@@ -353,34 +378,48 @@ export default function SchedulingPage() {
           {/* Scheduled Posts Details for Selected Day */}
           <Card padding="md" className="shadow-sm">
             <h3 className="font-bold text-sm text-foreground mb-4">
-              Scheduled Posts for {selectedDate.toLocaleDateString(undefined, { dateStyle: 'medium' })}
+              Scheduled Posts for{" "}
+              {selectedDate.toLocaleDateString(undefined, {
+                dateStyle: "medium",
+              })}
             </h3>
-            
+
             {isLoadingPosts ? (
               <div className="flex justify-center py-6">
                 <Spinner size="sm" />
               </div>
             ) : (
               (() => {
-                const dayPosts = scheduledPosts.filter(p => p.scheduledAt && isSameDay(new Date(p.scheduledAt), selectedDate));
+                const dayPosts = scheduledPosts.filter(
+                  (p) =>
+                    p.scheduledAt &&
+                    isSameDay(new Date(p.scheduledAt), selectedDate),
+                );
                 if (dayPosts.length === 0) {
                   return (
                     <p className="text-xs text-muted-foreground py-2 italic">
-                      No posts scheduled for this date. Click the &quot;Schedule Post&quot; card on the right to add one.
+                      No posts scheduled for this date. Click the &quot;Schedule
+                      Post&quot; card on the right to add one.
                     </p>
                   );
                 }
                 return (
                   <div className="space-y-3">
                     {dayPosts.map((post) => (
-                      <div key={post.id} className="p-3 bg-muted/40 rounded-xl border border-border/60 flex flex-col gap-2">
+                      <div
+                        key={post.id}
+                        className="p-3 bg-muted/40 rounded-xl border border-border/60 flex flex-col gap-2"
+                      >
                         <div className="flex items-center justify-between text-xs">
                           <span className="font-semibold text-primary">
-                            @{post.author.username || 'user'}
+                            @{post.author.username || "user"}
                           </span>
                           <span className="text-muted-foreground flex items-center gap-1">
                             <Clock className="h-3 w-3" />
-                            {new Date(post.scheduledAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+                            {new Date(post.scheduledAt).toLocaleTimeString(
+                              undefined,
+                              { hour: "2-digit", minute: "2-digit" },
+                            )}
                           </span>
                         </div>
                         <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
@@ -400,7 +439,9 @@ export default function SchedulingPage() {
           {/* Brand Voice Profile Form */}
           <Card padding="lg" className="shadow-sm">
             <div className="flex items-center gap-2 border-b border-border pb-3 mb-4">
-              <h2 className="text-lg font-bold text-foreground">Brand Voice Profile</h2>
+              <h2 className="text-lg font-bold text-foreground">
+                Brand Voice Profile
+              </h2>
             </div>
             <form onSubmit={saveBrandProfile} className="space-y-4">
               <Input
@@ -431,8 +472,10 @@ export default function SchedulingPage() {
                   onChange={(e) => setTone(e.target.value)}
                   className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
-                  {TONES.map(t => (
-                    <option key={t} value={t}>{t}</option>
+                  {TONES.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -443,10 +486,15 @@ export default function SchedulingPage() {
           </Card>
 
           {/* AI Post Generator */}
-          <Card padding="lg" className="shadow-sm border-amber-500/20 bg-gradient-to-b from-amber-500/[0.02] via-card to-card">
+          <Card
+            padding="lg"
+            className="shadow-sm border-amber-500/20 bg-gradient-to-b from-amber-500/[0.02] via-card to-card"
+          >
             <div className="flex items-center gap-2 border-b border-border pb-3 mb-4">
               <Sparkles className="h-5 w-5 text-amber-500" />
-              <h2 className="text-lg font-bold text-foreground">AI Post Generator</h2>
+              <h2 className="text-lg font-bold text-foreground">
+                AI Post Generator
+              </h2>
             </div>
             <div className="space-y-4">
               <div className="space-y-1.5">
@@ -472,8 +520,10 @@ export default function SchedulingPage() {
                     onChange={(e) => setPlatform(e.target.value)}
                     className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
-                    {PLATFORMS.map(p => (
-                      <option key={p} value={p}>{p}</option>
+                    {PLATFORMS.map((p) => (
+                      <option key={p} value={p}>
+                        {p}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -486,14 +536,16 @@ export default function SchedulingPage() {
                     onChange={(e) => setGenTone(e.target.value)}
                     className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
-                    {TONES.map(t => (
-                      <option key={t} value={t}>{t}</option>
+                    {TONES.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
                     ))}
                   </select>
                 </div>
               </div>
 
-              <Button 
+              <Button
                 onClick={handleGenerateAI}
                 disabled={isGenerating}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
@@ -517,7 +569,9 @@ export default function SchedulingPage() {
           <Card padding="lg" className="shadow-sm">
             <div className="flex items-center gap-2 border-b border-border pb-3 mb-4">
               <Clock className="h-5 w-5 text-primary" />
-              <h2 className="text-lg font-bold text-foreground">Schedule Post</h2>
+              <h2 className="text-lg font-bold text-foreground">
+                Schedule Post
+              </h2>
             </div>
             <form onSubmit={handleSchedulePost} className="space-y-4">
               <div className="space-y-1.5">

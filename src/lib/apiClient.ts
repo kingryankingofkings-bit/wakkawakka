@@ -1,19 +1,22 @@
-'use client';
+"use client";
 
-import { useAuthStore } from '@/store/authStore';
-import { CURRENT_USER } from '@/lib/mockData';
+import { useAuthStore } from "@/store/authStore";
+import { CURRENT_USER } from "@/lib/mockData";
 
 /**
  * fetch wrapper that automatically attaches the current user id as `x-user-id`
  * so API routes can resolve the acting user. Falls back to the mock current
  * user when no one is signed in (keeps the app usable in demo mode).
  */
-export async function apiFetch(input: string, init: RequestInit = {}): Promise<Response> {
+export async function apiFetch(
+  input: string,
+  init: RequestInit = {},
+): Promise<Response> {
   const user = useAuthStore.getState().user ?? CURRENT_USER;
   const headers = new Headers(init.headers);
-  if (user?.id) headers.set('x-user-id', user.id);
-  if (init.body && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json');
+  if (user?.id) headers.set("x-user-id", user.id);
+  if (init.body && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
   }
   return fetch(input, { ...init, headers });
 }

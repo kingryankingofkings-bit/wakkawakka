@@ -1,24 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // GET /api/ads - Lists advertiser's campaigns
 export async function GET(req: NextRequest) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
     const campaigns = await prisma.ad.findMany({
       where: { creatorId: userId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
     return NextResponse.json({ data: campaigns });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to fetch campaigns', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch campaigns", detail: String(err) },
+      { status: 500 },
+    );
   }
 }
 
@@ -26,7 +29,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
@@ -46,8 +49,8 @@ export async function POST(req: NextRequest) {
 
     if (!title || !copy || !targetUrl || budget == null || bidAmount == null) {
       return NextResponse.json(
-        { error: 'title, copy, targetUrl, budget and bidAmount are required' },
-        { status: 400 }
+        { error: "title, copy, targetUrl, budget and bidAmount are required" },
+        { status: 400 },
       );
     }
 
@@ -70,6 +73,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ data: campaign }, { status: 201 });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to create campaign', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create campaign", detail: String(err) },
+      { status: 500 },
+    );
   }
 }

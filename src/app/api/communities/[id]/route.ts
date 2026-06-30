@@ -1,18 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // GET /api/communities/[id] - fetch community detail by id or slug
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
   try {
     const community = await prisma.community.findFirst({
       where: {
-        OR: [
-          { id: params.id },
-          { slug: params.id },
-        ],
+        OR: [{ id: params.id }, { slug: params.id }],
       },
       include: {
         creator: {
@@ -27,7 +27,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     });
 
     if (!community) {
-      return NextResponse.json({ error: 'Community not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Community not found" },
+        { status: 404 },
+      );
     }
 
     const userId = getRequestUserId(req);
@@ -39,7 +42,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         where: { communityId_userId: { communityId: community.id, userId } },
       });
       isMember = !!member;
-      isModerator = community.creatorId === userId || (member && ['ADMIN', 'MODERATOR'].includes(member.role)) || false;
+      isModerator =
+        community.creatorId === userId ||
+        (member && ["ADMIN", "MODERATOR"].includes(member.role)) ||
+        false;
     }
 
     return NextResponse.json({
@@ -50,28 +56,52 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       },
     });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to fetch community', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch community", detail: String(err) },
+      { status: 500 },
+    );
   }
 }
 
 // PATCH /api/communities/[id] - edit description, rules, visibility, avatarUrl, coverImage
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
   const userId = getRequestUserId(req);
-  if (!userId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  if (!userId)
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   try {
-    const community = await prisma.community.findUnique({ where: { id: params.id } });
-    if (!community) return NextResponse.json({ error: 'Community not found' }, { status: 404 });
+    const community = await prisma.community.findUnique({
+      where: { id: params.id },
+    });
+    if (!community)
+      return NextResponse.json(
+        { error: "Community not found" },
+        { status: 404 },
+      );
 
     const member = await prisma.communityMember.findUnique({
       where: { communityId_userId: { communityId: params.id, userId } },
     });
 
-    const isPrivileged = community.creatorId === userId || (member && ['ADMIN', 'MODERATOR'].includes(member.role));
-    if (!isPrivileged) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const isPrivileged =
+      community.creatorId === userId ||
+      (member && ["ADMIN", "MODERATOR"].includes(member.role));
+    if (!isPrivileged)
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const body = await req.json();
-    const { description, rules, visibility, avatarUrl, coverImage, name, category } = body;
+    const {
+      description,
+      rules,
+      visibility,
+      avatarUrl,
+      coverImage,
+      name,
+      category,
+    } = body;
 
     const updated = await prisma.community.update({
       where: { id: params.id },
@@ -88,6 +118,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     return NextResponse.json({ data: updated });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to update community', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update community", detail: String(err) },
+      { status: 500 },
+    );
   }
 }

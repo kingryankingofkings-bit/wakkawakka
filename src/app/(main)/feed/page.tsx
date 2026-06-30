@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { Suspense } from 'react';
-import { useState, useEffect } from 'react';
-import { RefreshCw, ChevronUp, Sliders } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { StoriesRow } from '@/components/feed/StoriesRow';
-import { PostCard } from '@/components/feed/PostCard';
-import { SponsoredAd } from '@/components/ads/SponsoredAd';
-import { CreatePostCard } from '@/components/feed/CreatePostCard';
-import { CreatePostModal } from '@/components/feed/CreatePostModal';
-import { Modal } from '@/components/ui/Modal';
-import { useFeedStore } from '@/store/feedStore';
-import { cn } from '@/lib/utils';
-import { useSearchParams } from 'next/navigation';
-import { apiFetch } from '@/lib/apiClient';
+import { Suspense } from "react";
+import { useState, useEffect } from "react";
+import { RefreshCw, ChevronUp, Sliders } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { StoriesRow } from "@/components/feed/StoriesRow";
+import { PostCard } from "@/components/feed/PostCard";
+import { SponsoredAd } from "@/components/ads/SponsoredAd";
+import { CreatePostCard } from "@/components/feed/CreatePostCard";
+import { CreatePostModal } from "@/components/feed/CreatePostModal";
+import { Modal } from "@/components/ui/Modal";
+import { useFeedStore } from "@/store/feedStore";
+import { cn } from "@/lib/utils";
+import { useSearchParams } from "next/navigation";
+import { apiFetch } from "@/lib/apiClient";
 
 const FEED_TABS = [
-  { id: 'forYou', label: 'For You' },
-  { id: 'following', label: 'Following' },
-  { id: 'trending', label: 'Trending' },
+  { id: "forYou", label: "For You" },
+  { id: "following", label: "Following" },
+  { id: "trending", label: "Trending" },
 ] as const;
 
 export default function FeedPage() {
@@ -38,7 +38,7 @@ function FeedPageInner() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (searchParams.get('create') === '1') {
+    if (searchParams.get("create") === "1") {
       setShowCreateModal(true);
     }
   }, [searchParams]);
@@ -47,11 +47,11 @@ function FeedPageInner() {
   useEffect(() => {
     let active = true;
     async function loadPosts() {
-      let url = '/api/posts';
-      if (feedType === 'following') {
-        url += '?feed=following';
-      } else if (feedType === 'trending') {
-        url += '?feed=trending';
+      let url = "/api/posts";
+      if (feedType === "following") {
+        url += "?feed=following";
+      } else if (feedType === "trending") {
+        url += "?feed=trending";
       }
       try {
         const response = await apiFetch(url);
@@ -62,7 +62,7 @@ function FeedPageInner() {
           }
         }
       } catch (err) {
-        console.error('Failed to load posts:', err);
+        console.error("Failed to load posts:", err);
       }
     }
     loadPosts();
@@ -77,11 +77,11 @@ function FeedPageInner() {
     return () => clearTimeout(t);
   }, []);
 
-  const filteredPosts = posts.filter(post => {
+  const filteredPosts = posts.filter((post) => {
     if (!post.labels) return true;
     try {
       const parsedLabels: string[] = JSON.parse(post.labels);
-      return !parsedLabels.some(l => hideLabels.includes(l));
+      return !parsedLabels.some((l) => hideLabels.includes(l));
     } catch {
       return true;
     }
@@ -93,13 +93,15 @@ function FeedPageInner() {
       <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="flex items-center justify-between px-4">
           <div className="flex flex-1">
-            {FEED_TABS.map(tab => (
+            {FEED_TABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setFeedType(tab.id)}
                 className={cn(
-                  'flex-1 py-3.5 text-sm font-semibold transition-colors relative',
-                  feedType === tab.id ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+                  "flex-1 py-3.5 text-sm font-semibold transition-colors relative",
+                  feedType === tab.id
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {tab.label}
@@ -117,16 +119,26 @@ function FeedPageInner() {
 
       {/* Moderation Labels Filter Row */}
       <div className="bg-muted/40 px-4 py-2 border-b border-border flex items-center gap-3 overflow-x-auto scrollbar-hide text-xs shrink-0">
-        <span className="font-semibold text-muted-foreground whitespace-nowrap">Filter Content:</span>
-        {['NSFW', 'Clickbait', 'Misinformation'].map(label => {
+        <span className="font-semibold text-muted-foreground whitespace-nowrap">
+          Filter Content:
+        </span>
+        {["NSFW", "Clickbait", "Misinformation"].map((label) => {
           const isActive = hideLabels.includes(label);
           return (
             <button
               key={label}
-              onClick={() => setHideLabels(prev => prev.includes(label) ? prev.filter(l => l !== label) : [...prev, label])}
+              onClick={() =>
+                setHideLabels((prev) =>
+                  prev.includes(label)
+                    ? prev.filter((l) => l !== label)
+                    : [...prev, label],
+                )
+              }
               className={cn(
                 "px-2.5 py-1 rounded-xl border text-[10px] font-bold active:scale-95 transition-all whitespace-nowrap",
-                isActive ? "bg-red-500 text-white border-red-500 shadow-sm" : "bg-card text-muted-foreground border-border hover:bg-muted"
+                isActive
+                  ? "bg-red-500 text-white border-red-500 shadow-sm"
+                  : "bg-card text-muted-foreground border-border hover:bg-muted",
               )}
             >
               Hide {label}
@@ -148,8 +160,7 @@ function FeedPageInner() {
               onClick={() => setShowNewPosts(false)}
               className="flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm font-medium shadow-lg hover:bg-primary/90 transition-colors"
             >
-              <ChevronUp className="h-4 w-4" />
-              3 new posts
+              <ChevronUp className="h-4 w-4" />3 new posts
             </button>
           </motion.div>
         )}
@@ -177,9 +188,7 @@ function FeedPageInner() {
               >
                 <PostCard post={post} />
               </motion.div>
-              {(i + 1) % 5 === 0 && (
-                <SponsoredAd />
-              )}
+              {(i + 1) % 5 === 0 && <SponsoredAd />}
             </div>
           ))}
         </AnimatePresence>
@@ -194,10 +203,10 @@ function FeedPageInner() {
       </div>
 
       {/* Create post modal */}
-      <CreatePostModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} />
-
-
+      <CreatePostModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+      />
     </div>
   );
 }
-

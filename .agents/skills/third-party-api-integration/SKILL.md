@@ -6,13 +6,16 @@ description: Use when integrating external APIs, webhooks, SDKs, or third-party 
 # Third-Party API Integration
 
 ## Goal
+
 Integrate external APIs with proper error handling, retries, rate limiting, and security.
 
 ## Do Not Use When
+
 - No external APIs needed
 - Integration is already complete
 
 ## Required Inputs To Inspect
+
 - API documentation and endpoints
 - Authentication method (API key, OAuth, JWT)
 - Rate limits
@@ -45,19 +48,20 @@ class ApiClient {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
-        throw new ApiError(response.status, error.message || 'Request failed');
+        throw new ApiError(response.status, error.message || "Request failed");
       }
 
       return response.json();
     } catch (error) {
       if (error instanceof ApiError) throw error;
-      throw new ApiError(0, 'Network error');
+      throw new ApiError(0, "Network error");
     }
   }
 }
 ```
 
 ## Quality Checks
+
 - [ ] All errors handled gracefully
 - [ ] Retries for transient failures
 - [ ] Rate limits respected
@@ -66,12 +70,14 @@ class ApiClient {
 - [ ] No secrets in client-side code
 
 ## Safety Rules
+
 - Never expose API keys client-side
 - Always verify webhook signatures
 - Sanitize all API inputs
 - Handle API downtime gracefully
 
 ## Coordinates With
+
 - `backend-api-architect` — for internal API design
 - `security-audit-reviewer` — for security review
 - `current-docs-researcher` — for up-to-date API docs

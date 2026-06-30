@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { useAuthStore } from './authStore';
-import type { Product } from '@/types';
+import { create } from "zustand";
+import { useAuthStore } from "./authStore";
+import type { Product } from "@/types";
 
 export interface CartItem {
   id?: string;
@@ -31,8 +31,8 @@ type CartStore = CartState & CartActions;
 const getHeaders = () => {
   const userId = useAuthStore.getState().user?.id;
   return {
-    'Content-Type': 'application/json',
-    ...(userId ? { 'x-user-id': userId } : {}),
+    "Content-Type": "application/json",
+    ...(userId ? { "x-user-id": userId } : {}),
   };
 };
 
@@ -56,7 +56,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
           // Parse images from DB format if it is string
           const parsedItems = data.items.map((item: any) => {
             let images = item.product.images;
-            if (typeof images === 'string') {
+            if (typeof images === "string") {
               try {
                 images = JSON.parse(images);
               } catch {
@@ -75,7 +75,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
         }
       }
     } catch (err) {
-      console.error('Error fetching cart:', err);
+      console.error("Error fetching cart:", err);
     } finally {
       set({ isLoading: false });
     }
@@ -88,15 +88,19 @@ export const useCartStore = create<CartStore>((set, get) => ({
       if (existing) {
         set({
           items: get().items.map((i) =>
-            i.product.id === product.id ? { ...i, quantity: i.quantity + quantity } : i
+            i.product.id === product.id
+              ? { ...i, quantity: i.quantity + quantity }
+              : i,
           ),
         });
       } else {
-        set({ items: [...get().items, { productId: product.id, product, quantity }] });
+        set({
+          items: [...get().items, { productId: product.id, product, quantity }],
+        });
       }
 
-      const res = await fetch('/api/cart', {
-        method: 'POST',
+      const res = await fetch("/api/cart", {
+        method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({ productId: product.id, quantity }),
       });
@@ -104,7 +108,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
         await get().fetchCart();
       }
     } catch (err) {
-      console.error('Failed to add item:', err);
+      console.error("Failed to add item:", err);
     }
   },
 
@@ -114,14 +118,14 @@ export const useCartStore = create<CartStore>((set, get) => ({
       set({ items: get().items.filter((i) => i.product.id !== productId) });
 
       const res = await fetch(`/api/cart?productId=${productId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: getHeaders(),
       });
       if (res.ok) {
         await get().fetchCart();
       }
     } catch (err) {
-      console.error('Failed to remove item:', err);
+      console.error("Failed to remove item:", err);
     }
   },
 
@@ -133,13 +137,13 @@ export const useCartStore = create<CartStore>((set, get) => ({
       } else {
         set({
           items: get().items.map((i) =>
-            i.product.id === productId ? { ...i, quantity } : i
+            i.product.id === productId ? { ...i, quantity } : i,
           ),
         });
       }
 
-      const res = await fetch('/api/cart', {
-        method: 'PUT',
+      const res = await fetch("/api/cart", {
+        method: "PUT",
         headers: getHeaders(),
         body: JSON.stringify({ productId, quantity }),
       });
@@ -147,7 +151,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
         await get().fetchCart();
       }
     } catch (err) {
-      console.error('Failed to update quantity:', err);
+      console.error("Failed to update quantity:", err);
     }
   },
 
@@ -156,15 +160,15 @@ export const useCartStore = create<CartStore>((set, get) => ({
       // Optimistic update
       set({ items: [] });
 
-      const res = await fetch('/api/cart?action=clear', {
-        method: 'DELETE',
+      const res = await fetch("/api/cart?action=clear", {
+        method: "DELETE",
         headers: getHeaders(),
       });
       if (res.ok) {
         await get().fetchCart();
       }
     } catch (err) {
-      console.error('Failed to clear cart:', err);
+      console.error("Failed to clear cart:", err);
     }
   },
 
@@ -174,7 +178,10 @@ export const useCartStore = create<CartStore>((set, get) => ({
 }));
 
 export const selectCartTotal = (state: CartStore) =>
-  state.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  state.items.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0,
+  );
 
 export const selectCartCount = (state: CartStore) =>
   state.items.reduce((sum, item) => sum + item.quantity, 0);

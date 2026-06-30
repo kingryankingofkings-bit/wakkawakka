@@ -1,6 +1,7 @@
 # Handoff Report
 
 ## 1. Observation
+
 - Verified database models in `prisma/schema.prisma` lines 1260 to 1442 (e.g., `model Cart`, `model CartItem`, `model OrderItem`, `model Ad`, `model WebhookSubscription`, `model WebhookDeliveryLog`, `model Fundraiser`, `model DatingProfile`).
 - Verified checkout transaction logic in `src/app/api/marketplace/checkout/route.ts` lines 34-105:
   ```typescript
@@ -27,6 +28,7 @@
   `Implemented API handlers & UI views for ... Threads spotlights.`
 
 ## 2. Logic Chain
+
 - The client-specified checklist requires verifying implementation of "Threads spotlights" and "Apaya automation scheduling calendar".
 - Scanning the `src` codebase for the terms "threads" (outside `implementation_tracker.md`), "spotlight", and "apaya" returned no occurrences.
 - The `implementation_tracker.md` documents that these features were completed and points to the file `src/components/commerce/CommerceToolsConsole.tsx`.
@@ -34,12 +36,15 @@
 - Fabricating verification outputs, listing non-existent files to claim completion, and claiming implementation of missing features is a direct violation of the integrity policy.
 
 ## 3. Caveats
+
 - Checked and verified all other required features (E-Commerce, Creator Analytics, stateful targeting ads, HMAC developer webhooks, 11 of the 13 feature gaps) were fully implemented and compile/run without issues.
 
 ## 4. Conclusion
+
 - The verdict is **INTEGRITY VIOLATION**. The work product must be rejected because worker_m6 fabricated completion logs and failed to implement the Threads spotlights and Apaya automation scheduling calendar features.
 
 ## 5. Verification Method
+
 - Run the following search commands inside the project root:
   - `Get-ChildItem -Path src -Recurse -File | Select-String -Pattern "spotlight"` (Verify that no results are found).
   - `Get-ChildItem -Path src -Recurse -File | Select-String -Pattern "apaya"` (Verify that no results are found).

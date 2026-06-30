@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useRef, useEffect, useState, useCallback } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Phone,
@@ -23,32 +23,61 @@ import {
   Shield,
   Plus,
   Play,
-} from 'lucide-react';
-import { cn, formatRelativeTime } from '@/lib/utils';
-import { CURRENT_USER } from '@/lib/mockData';
-import { useMessageStore } from '@/store/messageStore';
-import { useSocket } from '@/hooks/useSocket';
-import { MessageBubble } from './MessageBubble';
-import type { Message, Conversation } from '@/types';
-import toast from 'react-hot-toast';
+} from "lucide-react";
+import { cn, formatRelativeTime } from "@/lib/utils";
+import { CURRENT_USER } from "@/lib/mockData";
+import { useMessageStore } from "@/store/messageStore";
+import { useSocket } from "@/hooks/useSocket";
+import { MessageBubble } from "./MessageBubble";
+import type { Message, Conversation } from "@/types";
+import toast from "react-hot-toast";
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
 const EMOJI_LIST = [
-  '😀','😂','😍','🥰','😎','😢','😡','🤔','👍','👎',
-  '❤️','🔥','✨','🎉','💯','🙌','👏','🤣','😅','😊',
-  '😇','🤩','😋','😜','🤗','😴','🥳','😤','🙄','😏',
+  "😀",
+  "😂",
+  "😍",
+  "🥰",
+  "😎",
+  "😢",
+  "😡",
+  "🤔",
+  "👍",
+  "👎",
+  "❤️",
+  "🔥",
+  "✨",
+  "🎉",
+  "💯",
+  "🙌",
+  "👏",
+  "🤣",
+  "😅",
+  "😊",
+  "😇",
+  "🤩",
+  "😋",
+  "😜",
+  "🤗",
+  "😴",
+  "🥳",
+  "😤",
+  "🙄",
+  "😏",
 ];
 
 // ---------------------------------------------------------------------------
 // Helper: Group messages by calendar date
 // ---------------------------------------------------------------------------
 
-function groupMessagesByDate(messages: Message[]): Array<{ dateLabel: string; msgs: Message[] }> {
+function groupMessagesByDate(
+  messages: Message[],
+): Array<{ dateLabel: string; msgs: Message[] }> {
   const groups: Array<{ dateLabel: string; msgs: Message[] }> = [];
-  let currentLabel = '';
+  let currentLabel = "";
 
   for (const msg of messages) {
     const d = new Date(msg.createdAt);
@@ -58,11 +87,15 @@ function groupMessagesByDate(messages: Message[]): Array<{ dateLabel: string; ms
 
     let label: string;
     if (d.toDateString() === today.toDateString()) {
-      label = 'Today';
+      label = "Today";
     } else if (d.toDateString() === yesterday.toDateString()) {
-      label = 'Yesterday';
+      label = "Yesterday";
     } else {
-      label = d.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+      label = d.toLocaleDateString(undefined, {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
     }
 
     if (label !== currentLabel) {
@@ -93,7 +126,9 @@ function TypingIndicator({ label }: { label: string }) {
             />
           ))}
         </div>
-        <span className="text-xs text-muted-foreground font-medium">{label}</span>
+        <span className="text-xs text-muted-foreground font-medium">
+          {label}
+        </span>
       </div>
     </div>
   );
@@ -103,7 +138,13 @@ function TypingIndicator({ label }: { label: string }) {
 // Group avatar helper
 // ---------------------------------------------------------------------------
 
-function ConversationAvatar({ conversation, onlineUsers }: { conversation: Conversation; onlineUsers: Set<string> }) {
+function ConversationAvatar({
+  conversation,
+  onlineUsers,
+}: {
+  conversation: Conversation;
+  onlineUsers: Set<string>;
+}) {
   if (!conversation.isGroup) {
     const other = conversation.members.find((m) => m.id !== CURRENT_USER.id);
     const isOnline = other?.id ? onlineUsers.has(other.id) : false;
@@ -111,10 +152,15 @@ function ConversationAvatar({ conversation, onlineUsers }: { conversation: Conve
       <div className="relative h-9 w-9 rounded-full bg-muted flex-shrink-0">
         <div className="relative h-full w-full rounded-full overflow-hidden">
           {other?.avatar ? (
-            <Image src={other.avatar} alt={other.displayName} fill className="object-cover" />
+            <Image
+              src={other.avatar}
+              alt={other.displayName}
+              fill
+              className="object-cover"
+            />
           ) : (
             <span className="flex h-full w-full items-center justify-center text-sm font-semibold">
-              {other?.displayName[0] ?? '?'}
+              {other?.displayName[0] ?? "?"}
             </span>
           )}
         </div>
@@ -131,7 +177,12 @@ function ConversationAvatar({ conversation, onlineUsers }: { conversation: Conve
       {members.map((m) => (
         <div key={m.id} className="relative overflow-hidden bg-muted">
           {m.avatar ? (
-            <Image src={m.avatar} alt={m.displayName} fill className="object-cover" />
+            <Image
+              src={m.avatar}
+              alt={m.displayName}
+              fill
+              className="object-cover"
+            />
           ) : (
             <span className="flex h-full w-full items-center justify-center text-[8px] font-semibold">
               {m.displayName[0]}
@@ -158,8 +209,8 @@ function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) onClose();
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, [onClose]);
 
   return (
@@ -205,14 +256,14 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
   const conversation = conversations.find((c) => c.id === conversationId);
   const messages = messagesMap[conversationId] ?? [];
 
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
   const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
   const [localMessages, setLocalMessages] = useState<Message[]>(messages);
 
   // In-Chat Search state
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
 
   // E2EE Toggle state
@@ -220,9 +271,11 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
 
   // Sidebar state
   const [showSidebar, setShowSidebar] = useState(false);
-  const [activeTab, setActiveTab] = useState<'details' | 'media'>('details');
-  const [searchAddMemberQuery, setSearchAddMemberQuery] = useState('');
-  const [searchAddMemberResults, setSearchAddMemberResults] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<"details" | "media">("details");
+  const [searchAddMemberQuery, setSearchAddMemberQuery] = useState("");
+  const [searchAddMemberResults, setSearchAddMemberResults] = useState<any[]>(
+    [],
+  );
   const [isAddingMember, setIsAddingMember] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -239,7 +292,9 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
   useEffect(() => {
     async function fetchMessages() {
       try {
-        const res = await fetch(`/api/messages/conversations/${conversationId}/messages`);
+        const res = await fetch(
+          `/api/messages/conversations/${conversationId}/messages`,
+        );
         if (res.ok) {
           const json = await res.json();
           if (json.data) {
@@ -252,7 +307,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
           }
         }
       } catch (err) {
-        console.error('Failed to fetch messages', err);
+        console.error("Failed to fetch messages", err);
       }
     }
     fetchMessages();
@@ -261,9 +316,9 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
   // Join / Leave socket room
   useEffect(() => {
     if (!socket) return;
-    socket.emit('join-conversation', conversationId);
+    socket.emit("join-conversation", conversationId);
     return () => {
-      socket.emit('leave-conversation', conversationId);
+      socket.emit("leave-conversation", conversationId);
     };
   }, [socket, conversationId]);
 
@@ -274,7 +329,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
 
   // Scroll to bottom on new messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [localMessages, typingUsers]);
 
   // Socket typing events
@@ -282,7 +337,10 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
     if (!socket) return;
 
     const handleTyping = (data: { conversationId: string; userId: string }) => {
-      if (data.conversationId === conversationId && data.userId !== CURRENT_USER.id) {
+      if (
+        data.conversationId === conversationId &&
+        data.userId !== CURRENT_USER.id
+      ) {
         setTypingUsers((prev) => {
           const next = new Set(prev);
           next.add(data.userId);
@@ -291,7 +349,10 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
       }
     };
 
-    const handleStopTyping = (data: { conversationId: string; userId: string }) => {
+    const handleStopTyping = (data: {
+      conversationId: string;
+      userId: string;
+    }) => {
       if (data.conversationId === conversationId) {
         setTypingUsers((prev) => {
           const next = new Set(prev);
@@ -301,12 +362,12 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
       }
     };
 
-    socket.on('typing', handleTyping);
-    socket.on('stop-typing', handleStopTyping);
+    socket.on("typing", handleTyping);
+    socket.on("stop-typing", handleStopTyping);
 
     return () => {
-      socket.off('typing', handleTyping);
-      socket.off('stop-typing', handleStopTyping);
+      socket.off("typing", handleTyping);
+      socket.off("stop-typing", handleStopTyping);
     };
   }, [socket, conversationId]);
 
@@ -314,15 +375,15 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
     const ta = e.target;
-    ta.style.height = 'auto';
-    ta.style.height = Math.min(ta.scrollHeight, 140) + 'px';
+    ta.style.height = "auto";
+    ta.style.height = Math.min(ta.scrollHeight, 140) + "px";
 
     // Emit typing
     if (socket) {
-      socket.emit('typing', { conversationId, userId: CURRENT_USER.id });
+      socket.emit("typing", { conversationId, userId: CURRENT_USER.id });
       if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
       typingTimerRef.current = setTimeout(() => {
-        socket.emit('stop-typing', { conversationId, userId: CURRENT_USER.id });
+        socket.emit("stop-typing", { conversationId, userId: CURRENT_USER.id });
       }, 2000);
     }
   };
@@ -339,16 +400,19 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
     const contentToSend = e2eeEnabled ? encryptText(content) : content;
 
     try {
-      const response = await fetch(`/api/messages/conversations/${conversationId}/messages`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `/api/messages/conversations/${conversationId}/messages`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: contentToSend,
+            replyToId: replyTo?.id || null,
+          }),
         },
-        body: JSON.stringify({
-          content: contentToSend,
-          replyToId: replyTo?.id || null,
-        }),
-      });
+      );
 
       if (response.ok) {
         const json = await response.json();
@@ -356,27 +420,30 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
 
         addMessage(newMsg);
         setLocalMessages((prev) => [...prev, newMsg]);
-        setInputValue('');
+        setInputValue("");
         setReplyTo(null);
 
         if (textareaRef.current) {
-          textareaRef.current.style.height = 'auto';
+          textareaRef.current.style.height = "auto";
         }
 
         // Emit via socket
         if (socket) {
-          socket.emit('send-message', {
+          socket.emit("send-message", {
             conversationId,
             message: newMsg,
           });
-          socket.emit('stop-typing', { conversationId, userId: CURRENT_USER.id });
+          socket.emit("stop-typing", {
+            conversationId,
+            userId: CURRENT_USER.id,
+          });
         }
       } else {
-        toast.error('Failed to send message');
+        toast.error("Failed to send message");
       }
     } catch (err) {
       console.error(err);
-      toast.error('Failed to send message');
+      toast.error("Failed to send message");
     }
   }, [inputValue, conversationId, replyTo, addMessage, socket, e2eeEnabled]);
 
@@ -384,44 +451,50 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
-  const sendVoiceMessage = useCallback(async (audioUrl: string) => {
-    try {
-      const response = await fetch(`/api/messages/conversations/${conversationId}/messages`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content: '',
-          mediaUrl: audioUrl,
-          mediaType: 'audio',
-          type: 'VOICE',
-        }),
-      });
+  const sendVoiceMessage = useCallback(
+    async (audioUrl: string) => {
+      try {
+        const response = await fetch(
+          `/api/messages/conversations/${conversationId}/messages`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              content: "",
+              mediaUrl: audioUrl,
+              mediaType: "audio",
+              type: "VOICE",
+            }),
+          },
+        );
 
-      if (response.ok) {
-        const json = await response.json();
-        const newMsg = json.data;
+        if (response.ok) {
+          const json = await response.json();
+          const newMsg = json.data;
 
-        addMessage(newMsg);
-        setLocalMessages((prev) => [...prev, newMsg]);
+          addMessage(newMsg);
+          setLocalMessages((prev) => [...prev, newMsg]);
 
-        if (socket) {
-          socket.emit('send-message', {
-            conversationId,
-            message: newMsg,
-          });
+          if (socket) {
+            socket.emit("send-message", {
+              conversationId,
+              message: newMsg,
+            });
+          }
         }
+      } catch (err) {
+        console.error(err);
       }
-    } catch (err) {
-      console.error(err);
-    }
-  }, [conversationId, addMessage, socket]);
+    },
+    [conversationId, addMessage, socket],
+  );
 
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
       mediaRecorderRef.current = recorder;
       chunksRef.current = [];
 
@@ -432,27 +505,27 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
       };
 
       recorder.onstop = async () => {
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
         const formData = new FormData();
-        formData.append('file', audioBlob, 'voice.webm');
+        formData.append("file", audioBlob, "voice.webm");
 
         try {
-          const response = await fetch('/api/upload', {
-            method: 'POST',
+          const response = await fetch("/api/upload", {
+            method: "POST",
             body: formData,
           });
           if (response.ok) {
             const data = await response.json();
             if (data.url) {
               sendVoiceMessage(data.url);
-              toast.success('Voice message sent');
+              toast.success("Voice message sent");
             }
           } else {
-            toast.error('Failed to upload voice message');
+            toast.error("Failed to upload voice message");
           }
         } catch (err) {
           console.error(err);
-          toast.error('Failed to upload voice message');
+          toast.error("Failed to upload voice message");
         }
 
         stream.getTracks().forEach((track) => track.stop());
@@ -460,10 +533,10 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
 
       recorder.start();
       setIsRecording(true);
-      toast.success('Recording started...');
+      toast.success("Recording started...");
     } catch (err) {
       console.error(err);
-      toast.error('Could not access microphone');
+      toast.error("Could not access microphone");
     }
   };
 
@@ -475,7 +548,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
@@ -485,35 +558,38 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const mediaType: Message['mediaType'] = file.type.startsWith('image/')
-      ? 'image'
-      : file.type.startsWith('video/')
-        ? 'video'
-        : 'file';
+    const mediaType: Message["mediaType"] = file.type.startsWith("image/")
+      ? "image"
+      : file.type.startsWith("video/")
+        ? "video"
+        : "file";
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     try {
-      toast.loading('Uploading file...', { id: 'upload' });
-      const response = await fetch('/api/upload', {
-        method: 'POST',
+      toast.loading("Uploading file...", { id: "upload" });
+      const response = await fetch("/api/upload", {
+        method: "POST",
         body: formData,
       });
       if (response.ok) {
         const data = await response.json();
         if (data.url) {
-          const res = await fetch(`/api/messages/conversations/${conversationId}/messages`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
+          const res = await fetch(
+            `/api/messages/conversations/${conversationId}/messages`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                content: "",
+                mediaUrl: data.url,
+                mediaType,
+              }),
             },
-            body: JSON.stringify({
-              content: '',
-              mediaUrl: data.url,
-              mediaType,
-            }),
-          });
+          );
           if (res.ok) {
             const json = await res.json();
             const newMsg = json.data;
@@ -521,29 +597,29 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
             setLocalMessages((prev) => [...prev, newMsg]);
 
             if (socket) {
-              socket.emit('send-message', {
+              socket.emit("send-message", {
                 conversationId,
                 message: newMsg,
               });
             }
-            toast.success('File sent successfully', { id: 'upload' });
+            toast.success("File sent successfully", { id: "upload" });
           } else {
-            toast.error('Failed to send file', { id: 'upload' });
+            toast.error("Failed to send file", { id: "upload" });
           }
         }
       } else {
-        toast.error('Failed to upload file', { id: 'upload' });
+        toast.error("Failed to upload file", { id: "upload" });
       }
     } catch (err) {
       console.error(err);
-      toast.error('Error uploading file', { id: 'upload' });
+      toast.error("Error uploading file", { id: "upload" });
     }
-    e.target.value = '';
+    e.target.value = "";
   };
 
   const handleDeleteMessage = (id: string) => {
     setLocalMessages((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, isDeleted: true } : m))
+      prev.map((m) => (m.id === id ? { ...m, isDeleted: true } : m)),
     );
   };
 
@@ -551,58 +627,73 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
     navigator.clipboard.writeText(content).catch(() => {});
   };
 
-  const handleSearchMembers = useCallback(async (q: string) => {
-    setSearchAddMemberQuery(q);
-    if (!q.trim()) {
-      setSearchAddMemberResults([]);
-      return;
-    }
-    try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data && json.data.users) {
-          const memberIds = new Set(conversation?.members.map((m) => m.id) || []);
-          const filtered = json.data.users.filter((u: any) => !memberIds.has(u.id));
-          setSearchAddMemberResults(filtered);
+  const handleSearchMembers = useCallback(
+    async (q: string) => {
+      setSearchAddMemberQuery(q);
+      if (!q.trim()) {
+        setSearchAddMemberResults([]);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data && json.data.users) {
+            const memberIds = new Set(
+              conversation?.members.map((m) => m.id) || [],
+            );
+            const filtered = json.data.users.filter(
+              (u: any) => !memberIds.has(u.id),
+            );
+            setSearchAddMemberResults(filtered);
+          }
         }
+      } catch (err) {
+        console.error(err);
       }
-    } catch (err) {
-      console.error(err);
-    }
-  }, [conversation?.members]);
+    },
+    [conversation?.members],
+  );
 
-  const handleAddMember = useCallback(async (targetUserId: string) => {
-    setIsAddingMember(true);
-    try {
-      const res = await fetch(`/api/messages/conversations/${conversationId}/members`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userIds: [targetUserId],
-        }),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        toast.success('Member added successfully');
-        useMessageStore.setState((state) => ({
-          conversations: state.conversations.map((c) =>
-            c.id === conversationId ? { ...c, members: json.members } : c
-          ),
-        }));
-        setSearchAddMemberResults((prev) => prev.filter((u) => u.id !== targetUserId));
-      } else {
-        toast.error('Failed to add member');
+  const handleAddMember = useCallback(
+    async (targetUserId: string) => {
+      setIsAddingMember(true);
+      try {
+        const res = await fetch(
+          `/api/messages/conversations/${conversationId}/members`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userIds: [targetUserId],
+            }),
+          },
+        );
+        if (res.ok) {
+          const json = await res.json();
+          toast.success("Member added successfully");
+          useMessageStore.setState((state) => ({
+            conversations: state.conversations.map((c) =>
+              c.id === conversationId ? { ...c, members: json.members } : c,
+            ),
+          }));
+          setSearchAddMemberResults((prev) =>
+            prev.filter((u) => u.id !== targetUserId),
+          );
+        } else {
+          toast.error("Failed to add member");
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Error adding member");
+      } finally {
+        setIsAddingMember(false);
       }
-    } catch (err) {
-      console.error(err);
-      toast.error('Error adding member');
-    } finally {
-      setIsAddingMember(false);
-    }
-  }, [conversationId]);
+    },
+    [conversationId],
+  );
 
   if (!conversation) {
     return (
@@ -617,8 +708,8 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
     : null;
 
   const displayName = conversation.isGroup
-    ? (conversation.name ?? 'Group')
-    : (otherUser?.displayName ?? 'Unknown');
+    ? (conversation.name ?? "Group")
+    : (otherUser?.displayName ?? "Unknown");
 
   const dateGroups = groupMessagesByDate(localMessages);
 
@@ -627,10 +718,12 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
       .map((uid) => conversation.members.find((m) => m.id === uid))
       .filter(Boolean);
 
-    if (typingList.length === 0) return '';
-    if (typingList.length === 1) return `${typingList[0]!.displayName} is typing...`;
-    if (typingList.length === 2) return `${typingList[0]!.displayName} and ${typingList[1]!.displayName} are typing...`;
-    return 'Several people are typing...';
+    if (typingList.length === 0) return "";
+    if (typingList.length === 1)
+      return `${typingList[0]!.displayName} is typing...`;
+    if (typingList.length === 2)
+      return `${typingList[0]!.displayName} and ${typingList[1]!.displayName} are typing...`;
+    return "Several people are typing...";
   };
 
   return (
@@ -645,7 +738,10 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
             <ArrowLeft className="h-5 w-5" />
           </Link>
 
-          <ConversationAvatar conversation={conversation} onlineUsers={onlineUsers} />
+          <ConversationAvatar
+            conversation={conversation}
+            onlineUsers={onlineUsers}
+          />
 
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-sm truncate">{displayName}</p>
@@ -654,7 +750,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
                 @{otherUser.username}
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-border" />
                 <span className="font-medium text-[10px]">
-                  {onlineUsers.has(otherUser.id) ? 'Online' : 'Offline'}
+                  {onlineUsers.has(otherUser.id) ? "Online" : "Offline"}
                 </span>
               </p>
             )}
@@ -669,8 +765,10 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
             <button
               onClick={() => setShowSearch(!showSearch)}
               className={cn(
-                'rounded-full p-2 transition-colors',
-                showSearch ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                "rounded-full p-2 transition-colors",
+                showSearch
+                  ? "text-primary bg-primary/10"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
               title="Search messages"
             >
@@ -685,8 +783,10 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
             <button
               onClick={() => setShowSidebar(!showSidebar)}
               className={cn(
-                'rounded-full p-2 transition-colors',
-                showSidebar ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                "rounded-full p-2 transition-colors",
+                showSidebar
+                  ? "text-primary bg-primary/10"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
               title="Chat Info"
             >
@@ -707,7 +807,10 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
               className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground"
             />
             {searchQuery && (
-              <button onClick={() => setSearchQuery('')} className="p-1 hover:bg-muted rounded-full">
+              <button
+                onClick={() => setSearchQuery("")}
+                className="p-1 hover:bg-muted rounded-full"
+              >
                 <X className="h-3 w-3 text-muted-foreground" />
               </button>
             )}
@@ -721,7 +824,9 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
               {/* Date divider */}
               <div className="flex items-center gap-3 px-4 py-3">
                 <div className="flex-1 h-px bg-border" />
-                <span className="text-xs text-muted-foreground font-medium px-2">{dateLabel}</span>
+                <span className="text-xs text-muted-foreground font-medium px-2">
+                  {dateLabel}
+                </span>
                 <div className="flex-1 h-px bg-border" />
               </div>
 
@@ -745,11 +850,11 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
                         prev.map((msg) => {
                           if (msg.id === m.id) {
                             const newReactions = { ...(msg.reactions || {}) };
-                            newReactions['❤️'] = (newReactions['❤️'] || 0) + 1;
+                            newReactions["❤️"] = (newReactions["❤️"] || 0) + 1;
                             return { ...msg, reactions: newReactions };
                           }
                           return msg;
-                        })
+                        }),
                       );
                     }}
                     onCopy={handleCopy}
@@ -782,13 +887,17 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
           {replyTo && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
+              animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               className="border-t border-border px-4 py-2 bg-muted/30 flex items-center gap-2 overflow-hidden"
             >
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-primary">{replyTo.sender.displayName}</p>
-                <p className="text-xs text-muted-foreground truncate">{replyTo.content}</p>
+                <p className="text-xs font-medium text-primary">
+                  {replyTo.sender.displayName}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {replyTo.content}
+                </p>
               </div>
               <button
                 onClick={() => setReplyTo(null)}
@@ -808,12 +917,22 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
               type="button"
               onClick={() => setE2eeEnabled((v) => !v)}
               className={cn(
-                'rounded-full p-2 transition-colors flex-shrink-0',
-                e2eeEnabled ? 'text-green-500 bg-green-500/10 hover:bg-green-500/20' : 'text-muted-foreground hover:bg-muted'
+                "rounded-full p-2 transition-colors flex-shrink-0",
+                e2eeEnabled
+                  ? "text-green-500 bg-green-500/10 hover:bg-green-500/20"
+                  : "text-muted-foreground hover:bg-muted",
               )}
-              title={e2eeEnabled ? 'E2EE Encryption Enabled (AES-GCM)' : 'Enable E2EE Encryption'}
+              title={
+                e2eeEnabled
+                  ? "E2EE Encryption Enabled (AES-GCM)"
+                  : "Enable E2EE Encryption"
+              }
             >
-              {e2eeEnabled ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
+              {e2eeEnabled ? (
+                <Lock className="h-5 w-5" />
+              ) : (
+                <Unlock className="h-5 w-5" />
+              )}
             </button>
 
             {/* Emoji button */}
@@ -880,10 +999,10 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
                   disabled={!inputValue.trim()}
                   whileTap={{ scale: 0.9 }}
                   className={cn(
-                    'rounded-full p-2.5 transition-colors flex-shrink-0',
+                    "rounded-full p-2.5 transition-colors flex-shrink-0",
                     inputValue.trim()
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : 'bg-muted text-muted-foreground cursor-not-allowed'
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                      : "bg-muted text-muted-foreground cursor-not-allowed",
                   )}
                 >
                   <Send className="h-4 w-4" />
@@ -909,7 +1028,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 320, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="h-full border-l border-border bg-card flex flex-col flex-shrink-0 overflow-hidden"
           >
             <div className="p-4 border-b border-border flex items-center justify-between flex-shrink-0">
@@ -925,19 +1044,23 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
             {/* Tabs Header */}
             <div className="flex border-b border-border bg-muted/20 flex-shrink-0">
               <button
-                onClick={() => setActiveTab('details')}
+                onClick={() => setActiveTab("details")}
                 className={cn(
-                  'flex-1 py-2 text-xs font-semibold border-b-2 transition-all',
-                  activeTab === 'details' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
+                  "flex-1 py-2 text-xs font-semibold border-b-2 transition-all",
+                  activeTab === "details"
+                    ? "border-primary text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground",
                 )}
               >
                 Details
               </button>
               <button
-                onClick={() => setActiveTab('media')}
+                onClick={() => setActiveTab("media")}
                 className={cn(
-                  'flex-1 py-2 text-xs font-semibold border-b-2 transition-all',
-                  activeTab === 'media' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
+                  "flex-1 py-2 text-xs font-semibold border-b-2 transition-all",
+                  activeTab === "media"
+                    ? "border-primary text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground",
                 )}
               >
                 Shared Media
@@ -946,15 +1069,19 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
 
             {/* Tab Contents */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {activeTab === 'details' ? (
+              {activeTab === "details" ? (
                 <>
                   {/* Group details */}
                   <div className="flex flex-col items-center text-center space-y-2 pb-4 border-b border-border/50">
-                    <ConversationAvatar conversation={conversation} onlineUsers={onlineUsers} />
+                    <ConversationAvatar
+                      conversation={conversation}
+                      onlineUsers={onlineUsers}
+                    />
                     <div>
                       <p className="font-bold text-base">{displayName}</p>
                       <p className="text-xs text-muted-foreground">
-                        Created on {new Date(conversation.createdAt).toLocaleDateString()}
+                        Created on{" "}
+                        {new Date(conversation.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
@@ -966,10 +1093,18 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
                     </p>
                     <div className="space-y-3 max-h-48 overflow-y-auto">
                       {conversation.members.map((member) => (
-                        <div key={member.id} className="flex items-center gap-2">
+                        <div
+                          key={member.id}
+                          className="flex items-center gap-2"
+                        >
                           <div className="relative h-7 w-7 rounded-full overflow-hidden bg-muted flex-shrink-0">
                             {member.avatar ? (
-                              <Image src={member.avatar} alt={member.displayName} fill className="object-cover" />
+                              <Image
+                                src={member.avatar}
+                                alt={member.displayName}
+                                fill
+                                className="object-cover"
+                              />
                             ) : (
                               <span className="flex h-full w-full items-center justify-center text-xs font-semibold">
                                 {member.displayName[0]}
@@ -977,14 +1112,21 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium truncate">{member.displayName}</p>
-                            <p className="text-[10px] text-muted-foreground truncate">@{member.username}</p>
+                            <p className="text-xs font-medium truncate">
+                              {member.displayName}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground truncate">
+                              @{member.username}
+                            </p>
                           </div>
-                          {conversation.isGroup && conversation.admins?.some((a) => a.id === member.id) && (
-                            <span className="text-[9px] bg-primary/10 text-primary px-1 py-0.5 rounded font-medium">
-                              Admin
-                            </span>
-                          )}
+                          {conversation.isGroup &&
+                            conversation.admins?.some(
+                              (a) => a.id === member.id,
+                            ) && (
+                              <span className="text-[9px] bg-primary/10 text-primary px-1 py-0.5 rounded font-medium">
+                                Admin
+                              </span>
+                            )}
                         </div>
                       ))}
                     </div>
@@ -1008,8 +1150,13 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
                       {searchAddMemberResults.length > 0 && (
                         <div className="border border-border rounded-lg bg-muted/10 divide-y divide-border max-h-32 overflow-y-auto">
                           {searchAddMemberResults.map((u) => (
-                            <div key={u.id} className="p-2 flex items-center justify-between gap-2 text-xs">
-                              <span className="truncate flex-1 font-medium">{u.displayName} (@{u.username})</span>
+                            <div
+                              key={u.id}
+                              className="p-2 flex items-center justify-between gap-2 text-xs"
+                            >
+                              <span className="truncate flex-1 font-medium">
+                                {u.displayName} (@{u.username})
+                              </span>
                               <button
                                 onClick={() => handleAddMember(u.id)}
                                 disabled={isAddingMember}
@@ -1028,7 +1175,9 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
                 /* Media Gallery tab */
                 <div>
                   {(() => {
-                    const mediaMsgs = messages.filter((m) => m.mediaUrl && !m.isDeleted);
+                    const mediaMsgs = messages.filter(
+                      (m) => m.mediaUrl && !m.isDeleted,
+                    );
                     if (mediaMsgs.length === 0) {
                       return (
                         <p className="text-xs text-muted-foreground text-center py-8">
@@ -1039,8 +1188,9 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
                     return (
                       <div className="grid grid-cols-3 gap-2">
                         {mediaMsgs.map((m) => {
-                          const isVoice = m.type === 'VOICE' || m.mediaType === 'audio';
-                          const isVideo = m.mediaType === 'video';
+                          const isVoice =
+                            m.type === "VOICE" || m.mediaType === "audio";
+                          const isVideo = m.mediaType === "video";
 
                           if (isVoice) {
                             return (
@@ -1049,7 +1199,9 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
                                 className="col-span-3 p-2 bg-muted/40 rounded-lg flex items-center gap-2 border border-border/50"
                               >
                                 <Mic className="h-4 w-4 text-primary flex-shrink-0" />
-                                <span className="text-[10px] truncate flex-1 font-medium">Voice Note</span>
+                                <span className="text-[10px] truncate flex-1 font-medium">
+                                  Voice Note
+                                </span>
                                 <span className="text-[8px] text-muted-foreground flex-shrink-0">
                                   {new Date(m.createdAt).toLocaleDateString()}
                                 </span>
@@ -1062,9 +1214,14 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
                               <div
                                 key={m.id}
                                 className="relative aspect-square rounded-lg overflow-hidden bg-black flex items-center justify-center group cursor-pointer"
-                                onClick={() => window.open(m.mediaUrl, '_blank')}
+                                onClick={() =>
+                                  window.open(m.mediaUrl, "_blank")
+                                }
                               >
-                                <video src={m.mediaUrl} className="object-cover w-full h-full opacity-80" />
+                                <video
+                                  src={m.mediaUrl}
+                                  className="object-cover w-full h-full opacity-80"
+                                />
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors">
                                   <Play className="h-5 w-5 text-white fill-current" />
                                 </div>
@@ -1076,9 +1233,14 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
                             <div
                               key={m.id}
                               className="relative aspect-square rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
-                              onClick={() => window.open(m.mediaUrl, '_blank')}
+                              onClick={() => window.open(m.mediaUrl, "_blank")}
                             >
-                              <Image src={m.mediaUrl!} alt="" fill className="object-cover" />
+                              <Image
+                                src={m.mediaUrl!}
+                                alt=""
+                                fill
+                                className="object-cover"
+                              />
                             </div>
                           );
                         })}

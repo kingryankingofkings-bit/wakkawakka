@@ -63,12 +63,14 @@ Only commit and push to the `wakkawakka` repository (NOT the `moji` repository �
 ## Acceptance Criteria
 
 ### Completeness
+
 - [ ] All 1,082 features from Section 3 have been implemented or have a documented blocker/deferral reason
 - [ ] All 1,082 improvements from Section 4 are reflected in the corresponding feature implementations
 - [ ] All 100 innovations from Section 5 have been implemented or have a documented blocker/deferral reason
 - [ ] The implementation tracker accounts for every single item with no gaps
 
 ### Code Quality
+
 - [ ] `npm run type-check` passes with zero errors
 - [ ] `npm run lint` passes with zero errors (or only pre-existing warnings)
 - [ ] `npm run build` completes successfully
@@ -76,6 +78,7 @@ Only commit and push to the `wakkawakka` repository (NOT the `moji` repository �
 - [ ] Existing functionality is not regressed
 
 ### Architecture
+
 - [ ] Prisma schema changes are consistent and properly related
 - [ ] API routes follow existing REST conventions
 - [ ] Zustand stores follow existing patterns
@@ -83,17 +86,20 @@ Only commit and push to the `wakkawakka` repository (NOT the `moji` repository �
 - [ ] Real-time features use the existing Socket.IO infrastructure
 
 ### Security and Safety
+
 - [ ] Authentication and authorization are enforced on all protected routes and APIs
 - [ ] User input is validated with Zod schemas
 - [ ] Content moderation and safety features are functional
 - [ ] Privacy controls respect user settings
 
 ### User Experience
+
 - [ ] All new UI is responsive across desktop, tablet, and mobile
 - [ ] Accessibility basics are met (keyboard navigation, ARIA labels, contrast)
 - [ ] Navigation to all new features is discoverable from the main layout
 
 ### Repository
+
 - [ ] All commits go to the `wakkawakka` repository only
 - [ ] Commit messages clearly describe the changes
 - [ ] No commits to the `moji` repository under any circumstances
@@ -119,6 +125,7 @@ Integrity mode: development
 The previous implementation attempt FAILED because it created fake "feature registry" and "console" components that simply listed features with "Implemented" badges instead of actually building real, functional, integrated features. Those components (FeatureRegistry.tsx, ProfileCommunityConsole.tsx, ContentFeedConsole.tsx, MessagingFeaturesConsole.tsx, CommerceToolsConsole.tsx, and their batch data files) are GARBAGE and must be REPLACED with real working features integrated into the actual site UI/UX.
 
 Real implementation means:
+
 - A "Reactions" feature = actual reaction buttons on posts that persist to the database
 - A "Voice Messages" feature = an actual record button in chat that captures and sends audio
 - A "Content Moderation" feature = actual report flows, review queues, and automated filters
@@ -149,6 +156,7 @@ The final result should feel like these features were designed as part of the or
 ## REQUIRED SOURCE REVIEW BEFORE CODING
 
 Before writing or modifying code:
+
 1. Read the existing codebase structure, components, API routes, Prisma schema, stores, types, and hooks
 2. Read `social_media_feature_bible.md` to understand every feature that needs integration
 3. Identify what already exists vs what needs to be built
@@ -183,6 +191,7 @@ Create `integration_inventory.md` in the working directory. For each feature, re
 ## BATCH WORKFLOW
 
 Work in controlled batches. Each batch must contain a coherent set of features with shared dependencies. For every batch:
+
 1. List exact inventory items included
 2. Identify dependencies
 3. Implement only that batch
@@ -210,6 +219,7 @@ Do not move to next batch while current-batch blocking issues remain.
 ## WHAT "IMPLEMENTED" ACTUALLY MEANS
 
 A feature is implemented when:
+
 - The UI element exists in the correct page/component where users would naturally find it
 - It has real interactivity (click handlers, form submissions, state changes)
 - It persists data where appropriate (API calls, database writes)
@@ -219,6 +229,7 @@ A feature is implemented when:
 - It respects permissions/auth where needed
 
 A feature is NOT implemented if:
+
 - It only exists in a registry/catalog listing
 - It shows a badge saying "Implemented" without actual functionality
 - It's just a type definition with no UI or API
@@ -239,6 +250,7 @@ Provide: executive summary, total items identified/implemented/tested/blocked, b
 ## START NOW
 
 Begin by inspecting the repository and all catalog materials. Then produce:
+
 1. A concise codebase architecture summary
 2. A master integration inventory
 3. A dependency map
@@ -270,6 +282,7 @@ These real platform capabilities are NOT in the feature bible but MUST be implem
 ## Apaya Correction
 
 The Apaya research was WRONG. Apaya is an AI-powered social media management/automation platform. Real features:
+
 - AI Brand Voice Learning (analyzes website for tone/colors/logo)
 - AI Content Generation (captions, hashtags, branded graphics, carousels, videos)
 - Bulk content production (full month of posts at once)
@@ -288,4 +301,129 @@ This means Wakka needs a **Content Scheduling & Automation** section that covers
 
 Add these gaps and corrections to your remaining batch plans. Do NOT skip them.
 
+## Follow-up — 2026-06-30T13:40:39Z
 
+You are continuing the real feature integration of the Wakka social media platform. Batches 1-5 are complete and committed (commit 84ae593). Your job is to continue from Batch 6 onwards.
+
+Working directory: C:\Users\Kingr\OneDrive\Documents\wakkawakka-local
+
+## WHAT'S ALREADY DONE (Batches 1-5)
+
+- Batch 1: Database-backed reactions, voice messages, content moderation
+- Batch 2: Private profiles, follow requests, communities, events, RSVP
+- Batch 3: Ephemeral stories, feed ranking, nested comments, reels, hashtags, trending
+- Batch 4: DMs, real-time typing/presence, E2E encryption, chat management
+- Batch 5: Shopping cart/checkout, creator analytics, sponsored ads, webhooks, dating, fundraisers, gaming, scheduling, bounties, Instagram Notes, Bluesky Labelers, Threads Highlighter, BeReal BTS, TikTok Green Screen, WhatsApp Flows, Telegram Mini Apps, Discord Activities
+
+## WHAT'S REMAINING
+
+The feature bible at `social_media_feature_bible.md` has 1,082 features + 1,082 improvements + 100 innovations. The integration tracker at `integration_inventory.md` has ~620 entries mapped. You need to continue implementing the remaining features. Major areas still needed:
+
+### Batch 6: Live Streaming & Video Platform
+
+- Full live streaming infrastructure (Twitch/Kick/YouTube Live style)
+- Stream chat with emotes, raids, hosts
+- Bits/Cheers/Tips during streams
+- Channel points and predictions
+- Clips creation from live streams
+- VODs (Video on Demand) archive
+- Stream scheduling and go-live notifications
+- Categories/browse for live content
+- Co-streaming and multi-guest
+
+### Batch 7: Server/Channel Architecture (Discord-style)
+
+- Server creation with customizable settings
+- Text, voice, and forum channels
+- Role-based permissions system
+- Server discovery/browse
+- Thread channels within text channels
+- Stage channels for presentations
+- Server boosts and perks
+- Custom emojis and soundboard per server
+
+### Batch 8: Professional & Jobs (LinkedIn-style)
+
+- Professional profile fields (work history, education, skills, endorsements)
+- Job posting creation and search
+- Company/organization pages
+- Professional networking (InMail-style messaging)
+- Endorsements and recommendations
+- LinkedIn Learning-style content section
+- Professional events and webinars
+- Newsletter/article publishing
+
+### Batch 9: Forum & Voting (Reddit-style)
+
+- Subreddit-style topic communities with custom rules
+- Upvote/downvote system with karma
+- Post flairs and user flairs
+- Award/gift system
+- Wiki pages per community
+- Crossposting between communities
+- AMA (Ask Me Anything) format
+- Mod tools: automod rules, mod queue, mod mail
+
+### Batch 10: Camera & AR (Snapchat/BeReal-style)
+
+- Camera-first capture experience
+- AR lenses and face filters
+- Snap Map / location sharing
+- Disappearing content (view-once messages)
+- Dual camera simultaneous capture
+- Memory/archive vault
+- Streaks tracking between friends
+- Geofilters
+
+### Batch 11: Advanced Messaging (Telegram/WhatsApp)
+
+- Telegram-style bot framework (create, deploy, interact)
+- Supergroup management (up to 200K members)
+- Secret/disappearing chats
+- Sticker packs (create, share, install)
+- File sharing (large files)
+- Broadcast lists
+- Business profiles and catalogs in chat
+- Payments/money transfer in chat
+
+### Batch 12: Content Management & Scheduling (Publer/Apaya)
+
+- Multi-platform content scheduling dashboard
+- AI-powered content generation with brand voice
+- Visual content calendar with drag-and-drop
+- Bulk CSV upload for scheduled posts
+- RSS-to-social automation
+- Post recycling/evergreen queue
+- Analytics per scheduled post
+- Team approval workflows
+- Competitor tracking
+
+### Batch 13: Remaining Improvements & Innovations
+
+- The 100 innovations from the bible
+- Performance improvements across all features
+- Accessibility improvements
+- Mobile responsiveness polish
+- SEO optimization
+- Error handling standardization
+- Loading/empty/error states for all features
+
+## RULES
+
+1. Read the existing codebase before coding. Understand what exists.
+2. Each batch: analyze → code → verify (type-check, lint, build, E2E tests) → audit → next batch
+3. Use real Prisma database integration. No mocks, no fake registries.
+4. Features must be integrated into the actual site UI, not standalone pages that list features.
+5. Do NOT commit or push. The main agent handles git.
+6. Do NOT touch the moji repository.
+7. Use existing project patterns and conventions.
+8. No duplicate implementations.
+9. Report progress after each batch completes.
+
+## START
+
+Begin with Batch 6 (Live Streaming & Video Platform). Read the codebase, plan, then implement.
+
+## Follow-up — 2026-06-30T13:41:49Z
+
+DESIGN REQUIREMENT: AR lenses and face filters (Batch 10 - Camera & AR) must be a MOBILE-ONLY feature. On desktop/web, the AR lens UI should either be hidden entirely or show a "Available on mobile" message directing users to the mobile app. Do not render the camera/AR capture interface on desktop viewports. Use responsive detection (e.g., screen width breakpoints or user-agent detection) to gate this feature to mobile devices only.

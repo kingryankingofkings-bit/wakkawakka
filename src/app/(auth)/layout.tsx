@@ -1,14 +1,18 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
+import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: {
-    default: 'Sign In',
-    template: '%s | Wakka',
+    default: "Sign In",
+    template: "%s | Wakka",
   },
 };
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-background">
       {/* Left panel — branding / hero (desktop only) */}
@@ -34,19 +38,19 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </h1>
 
           <p className="text-lg text-white/75 leading-relaxed">
-            Join millions of creators sharing their stories, art, music, and passion on the
-            platform built for the next generation.
+            Join millions of creators sharing their stories, art, music, and
+            passion on the platform built for the next generation.
           </p>
 
           {/* Feature pills */}
           <div className="flex flex-wrap gap-2 justify-center pt-2">
             {[
-              '🎬 Reels',
-              '🔴 Live',
-              '🛍️ Shop',
-              '🎵 Music',
-              '🤝 Communities',
-              '📊 Analytics',
+              "🎬 Reels",
+              "🔴 Live",
+              "🛍️ Shop",
+              "🎵 Music",
+              "🤝 Communities",
+              "📊 Analytics",
             ].map((f) => (
               <span
                 key={f}
@@ -60,7 +64,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           {/* Social proof */}
           <div className="flex items-center gap-3 justify-center pt-4">
             <div className="flex -space-x-2">
-              {['alex', 'sam', 'maya', 'jordan'].map((seed) => (
+              {["alex", "sam", "maya", "jordan"].map((seed) => (
                 <img
                   key={seed}
                   src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`}
@@ -70,7 +74,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               ))}
             </div>
             <p className="text-sm text-white/80">
-              <span className="font-semibold text-white">2.4M+</span> creators already here
+              <span className="font-semibold text-white">2.4M+</span> creators
+              already here
             </p>
           </div>
         </div>
@@ -83,7 +88,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-black text-lg">
             W
           </div>
-          <span className="text-2xl font-black tracking-tight text-foreground">Wakka</span>
+          <span className="text-2xl font-black tracking-tight text-foreground">
+            Wakka
+          </span>
         </Link>
 
         <div className="w-full max-w-md">{children}</div>

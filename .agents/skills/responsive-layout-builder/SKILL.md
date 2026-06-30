@@ -6,14 +6,17 @@ description: Use when building responsive layouts, implementing mobile-first des
 # Responsive Layout Builder
 
 ## Goal
+
 Build layouts that adapt gracefully from mobile to desktop with consistent spacing and readable content at every breakpoint.
 
 ## Do Not Use When
+
 - The design is desktop-only (internal tools, dashboards)
 - Layout is already responsive and working
 - The task is purely visual design (colors, typography)
 
 ## Required Inputs To Inspect
+
 - Design mockups or wireframes for each breakpoint
 - Breakpoint strategy (mobile-first vs desktop-first)
 - Content priority order on small screens
@@ -38,6 +41,7 @@ Build layouts that adapt gracefully from mobile to desktop with consistent spaci
 Layouts implemented as framework-appropriate components with responsive classes.
 
 ## Quality Checks
+
 - [ ] Works at 320px (smallest phone) without horizontal scroll
 - [ ] Navigation is usable on touch devices
 - [ ] Images load appropriate sizes
@@ -46,11 +50,13 @@ Layouts implemented as framework-appropriate components with responsive classes.
 - [ ] No content is lost on small screens
 
 ## Safety Rules
+
 - Never use fixed widths for main content containers
 - Never disable zoom with `user-scalable=no`
 - Test on real devices, not just DevTools simulation
 
 ## Coordinates With
+
 - `frontend-scaffold-builder` — for Tailwind/breakpoint config
 - `component-system-builder` — for responsive components
 - `browser-compatibility-checker` — for cross-device testing

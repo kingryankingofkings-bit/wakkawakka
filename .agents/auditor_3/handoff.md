@@ -5,6 +5,7 @@ This handoff report summarizes the forensic integrity audit of the Batch 3 featu
 ## 1. Observation
 
 Direct code and database inspections were carried out for the following paths:
+
 - **Prisma Schema**: `prisma/schema.prisma`
   - Line 169: `scheduledAt     DateTime?` is defined on model `Post`.
   - Line 112: `searchHistories    SearchHistory[]` is defined on model `User`.
@@ -34,12 +35,17 @@ Direct code and database inspections were carried out for the following paths:
     ```typescript
     whereClause.OR = [
       { scheduledAt: null },
-      { scheduledAt: { lte: new Date() } }
+      { scheduledAt: { lte: new Date() } },
     ];
     ```
   - Lines 232–233: Sorts "For You" feed using the chronological decay formula:
     ```typescript
-    const scoreA = ((a.viewsCount * 0.1) + (a.likesCount * 1.5) + (a.commentsCount * 3.0) + (a.sharesCount * 5.0)) / Math.pow(ageInHoursA + 2, 1.5);
+    const scoreA =
+      (a.viewsCount * 0.1 +
+        a.likesCount * 1.5 +
+        a.commentsCount * 3.0 +
+        a.sharesCount * 5.0) /
+      Math.pow(ageInHoursA + 2, 1.5);
     ```
 - **Atomic Reactions API**: `src/app/api/posts/[id]/react/route.ts`
   - Lines 95–164: Performs updates to `likesCount` inside a transaction `prisma.$transaction(async (tx) => { ... })` using `{ increment: 1 }` or `{ decrement: 1 }`.
@@ -86,6 +92,7 @@ The Batch 3 features implemented by `worker_m4` are **CLEAN** of cheating indica
 ## 5. Verification Method
 
 To verify these results independently, execute the following commands in the project root:
+
 1. Run the build command to check Next.js build compilation:
    ```bash
    npm run build

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
-import Image from 'next/image';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   MapPin,
   LinkIcon,
@@ -18,12 +18,12 @@ import {
   Share2,
   Flag,
   Ban,
-} from 'lucide-react';
-import { User } from '@/types';
-import { cn, formatCount, getInitials } from '@/lib/utils';
-import { VerificationBadge } from '@/components/ui/VerificationBadge';
-import { BADGE_ICONS } from '@/lib/utils';
-import { ProfileSoundtrack } from '@/components/profile/ProfileSoundtrack';
+} from "lucide-react";
+import { User } from "@/types";
+import { cn, formatCount, getInitials } from "@/lib/utils";
+import { VerificationBadge } from "@/components/ui/VerificationBadge";
+import { BADGE_ICONS } from "@/lib/utils";
+import { ProfileSoundtrack } from "@/components/profile/ProfileSoundtrack";
 
 interface ProfileHeaderProps {
   user: User;
@@ -31,18 +31,22 @@ interface ProfileHeaderProps {
   onEditProfile?: () => void;
 }
 
-type FollowState = 'none' | 'pending' | 'following';
+type FollowState = "none" | "pending" | "following";
 
 const PROFILE_THEMES: Record<string, string> = {
-  none: '',
-  ocean: 'bg-gradient-to-br from-blue-900/40 to-teal-900/40',
-  sunset: 'bg-gradient-to-br from-orange-500/30 to-pink-500/30',
-  aurora: 'bg-gradient-to-br from-purple-600/30 via-pink-500/30 to-blue-500/30',
-  midnight: 'bg-black/60 backdrop-blur-3xl',
+  none: "",
+  ocean: "bg-gradient-to-br from-blue-900/40 to-teal-900/40",
+  sunset: "bg-gradient-to-br from-orange-500/30 to-pink-500/30",
+  aurora: "bg-gradient-to-br from-purple-600/30 via-pink-500/30 to-blue-500/30",
+  midnight: "bg-black/60 backdrop-blur-3xl",
 };
 
-export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHeaderProps) {
-  const [followState, setFollowState] = useState<FollowState>('none');
+export function ProfileHeader({
+  user,
+  isOwnProfile,
+  onEditProfile,
+}: ProfileHeaderProps) {
+  const [followState, setFollowState] = useState<FollowState>("none");
   const [menuOpen, setMenuOpen] = useState(false);
   const [followerCount, setFollowerCount] = useState(user.followersCount);
 
@@ -54,9 +58,9 @@ export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHead
         if (res.ok) {
           const json = await res.json();
           const status = json.data?.status;
-          if (status === 'ACCEPTED') setFollowState('following');
-          else if (status === 'PENDING') setFollowState('pending');
-          else setFollowState('none');
+          if (status === "ACCEPTED") setFollowState("following");
+          else if (status === "PENDING") setFollowState("pending");
+          else setFollowState("none");
         }
       } catch (err) {
         console.error(err);
@@ -87,54 +91,56 @@ export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHead
     setMenuOpen(false);
     try {
       const res = await fetch(`/api/users/${user.id}/block`, {
-        method: isBlocked ? 'DELETE' : 'POST',
+        method: isBlocked ? "DELETE" : "POST",
       });
       if (res.ok) {
         const json = await res.json();
         const blocked = !!json.data?.blocked;
         setIsBlocked(blocked);
-        toast.success(blocked ? `Blocked @${user.username}` : `Unblocked @${user.username}`);
+        toast.success(
+          blocked ? `Blocked @${user.username}` : `Unblocked @${user.username}`,
+        );
         if (blocked) {
-          setFollowState('none');
+          setFollowState("none");
         }
       } else {
-        toast.error('Failed to toggle block');
+        toast.error("Failed to toggle block");
       }
     } catch (err) {
       console.error(err);
-      toast.error('An error occurred');
+      toast.error("An error occurred");
     }
   }
 
   async function handleFollow() {
     try {
       const res = await fetch(`/api/users/${user.id}/follow`, {
-        method: 'POST',
+        method: "POST",
       });
       if (res.ok) {
         const json = await res.json();
         const status = json.data?.status;
-        if (status === 'ACCEPTED') {
-          setFollowState('following');
+        if (status === "ACCEPTED") {
+          setFollowState("following");
           setFollowerCount((c) => c + 1);
           toast.success(`You are now following ${user.displayName}`);
-        } else if (status === 'PENDING') {
-          setFollowState('pending');
+        } else if (status === "PENDING") {
+          setFollowState("pending");
           toast.success(`Follow request sent to ${user.displayName}`);
         } else {
-          setFollowState('none');
-          if (followState === 'following') {
+          setFollowState("none");
+          if (followState === "following") {
             setFollowerCount((c) => Math.max(0, c - 1));
           }
           toast.success(`Unfollowed ${user.displayName}`);
         }
       } else {
         const errJson = await res.json();
-        toast.error(errJson.error || 'Failed to toggle follow');
+        toast.error(errJson.error || "Failed to toggle follow");
       }
     } catch (err) {
       console.error(err);
-      toast.error('An error occurred');
+      toast.error("An error occurred");
     }
   }
 
@@ -144,9 +150,9 @@ export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHead
   }
 
   const badgeLabel = {
-    none: 'Follow',
-    pending: 'Pending',
-    following: 'Following',
+    none: "Follow",
+    pending: "Pending",
+    following: "Following",
   }[followState];
 
   const badgeIcon = {
@@ -155,10 +161,17 @@ export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHead
     following: <UserCheck className="w-4 h-4" />,
   }[followState];
 
-  const themeClasses = user.profileTheme ? PROFILE_THEMES[user.profileTheme] || '' : '';
+  const themeClasses = user.profileTheme
+    ? PROFILE_THEMES[user.profileTheme] || ""
+    : "";
 
   return (
-    <div className={cn("relative overflow-hidden rounded-b-3xl mb-4 shadow-sm", themeClasses)}>
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-b-3xl mb-4 shadow-sm",
+        themeClasses,
+      )}
+    >
       {/* Cover Image */}
       <div className="relative w-full h-[320px] bg-gradient-to-br from-primary/30 to-purple-500/30 overflow-hidden">
         {user.coverImage ? (
@@ -173,7 +186,7 @@ export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHead
           <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-purple-500/30 to-pink-500/20" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-        
+
         {/* Profile Soundtrack Widget */}
         {user.profileSoundtrack && user.profileSoundtrackVisible !== false && (
           <div className="absolute bottom-6 right-6 z-20">
@@ -189,7 +202,7 @@ export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHead
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
             className="relative z-10"
           >
             <div className="w-32 h-32 rounded-full ring-4 ring-background overflow-hidden bg-muted shadow-2xl relative">
@@ -225,12 +238,12 @@ export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHead
                 <button
                   onClick={handleFollow}
                   className={cn(
-                    'flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-sm',
-                    followState === 'none'
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : followState === 'following'
-                      ? 'bg-background/80 backdrop-blur-md border border-border hover:border-destructive hover:text-destructive'
-                      : 'bg-background/80 backdrop-blur-md border border-border text-muted-foreground'
+                    "flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-sm",
+                    followState === "none"
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                      : followState === "following"
+                        ? "bg-background/80 backdrop-blur-md border border-border hover:border-destructive hover:text-destructive"
+                        : "bg-background/80 backdrop-blur-md border border-border text-muted-foreground",
                   )}
                 >
                   {badgeIcon}
@@ -254,21 +267,35 @@ export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHead
                   </button>
                   {menuOpen && (
                     <>
-                      <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
+                      <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setMenuOpen(false)}
+                      />
                       <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: -4 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-popover border border-border shadow-xl z-20 overflow-hidden"
                       >
-                        <button onClick={handleBlock} className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium hover:bg-muted transition-colors">
-                          <Ban className="w-4 h-4 text-muted-foreground" /> {isBlocked ? 'Unblock' : 'Block'} @{user.username}
+                        <button
+                          onClick={handleBlock}
+                          className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium hover:bg-muted transition-colors"
+                        >
+                          <Ban className="w-4 h-4 text-muted-foreground" />{" "}
+                          {isBlocked ? "Unblock" : "Block"} @{user.username}
                         </button>
-                        <button onClick={() => setMenuOpen(false)} className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors">
+                        <button
+                          onClick={() => setMenuOpen(false)}
+                          className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                        >
                           <Flag className="w-4 h-4" /> Report
                         </button>
                         <div className="border-t border-border" />
-                        <button onClick={handleCopyLink} className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium hover:bg-muted transition-colors">
-                          <Share2 className="w-4 h-4 text-muted-foreground" /> Copy link
+                        <button
+                          onClick={handleCopyLink}
+                          className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium hover:bg-muted transition-colors"
+                        >
+                          <Share2 className="w-4 h-4 text-muted-foreground" />{" "}
+                          Copy link
                         </button>
                       </motion.div>
                     </>
@@ -282,15 +309,21 @@ export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHead
         {/* Name + verification */}
         <div className="mt-2 relative z-10">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-2xl font-black leading-tight tracking-tight">{user.displayName}</h1>
+            <h1 className="text-2xl font-black leading-tight tracking-tight">
+              {user.displayName}
+            </h1>
             <VerificationBadge tier={user.verificationTier} size="lg" />
           </div>
-          <p className="text-muted-foreground font-medium mt-0.5">@{user.username}</p>
+          <p className="text-muted-foreground font-medium mt-0.5">
+            @{user.username}
+          </p>
         </div>
 
         {/* Bio */}
         {user.bio && (
-          <p className="mt-4 text-[15px] leading-relaxed max-w-2xl text-foreground/90 relative z-10">{user.bio}</p>
+          <p className="mt-4 text-[15px] leading-relaxed max-w-2xl text-foreground/90 relative z-10">
+            {user.bio}
+          </p>
         )}
 
         {/* Meta row */}
@@ -302,32 +335,59 @@ export function ProfileHeader({ user, isOwnProfile, onEditProfile }: ProfileHead
             </span>
           )}
           {user.website && (
-            <a href={user.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-primary hover:underline">
+            <a
+              href={user.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-primary hover:underline"
+            >
               <LinkIcon className="w-4 h-4" />
-              {user.website.replace(/^https?:\/\//, '')}
+              {user.website.replace(/^https?:\/\//, "")}
             </a>
           )}
           <span className="flex items-center gap-1.5">
             <Calendar className="w-4 h-4" />
-            Joined {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            Joined{" "}
+            {new Date(user.createdAt).toLocaleDateString("en-US", {
+              month: "long",
+              year: "numeric",
+            })}
           </span>
         </div>
 
         {/* Stats row */}
         <div className="flex items-center gap-6 mt-5 relative z-10">
           <div className="flex items-center gap-1.5">
-            <span className="text-base font-black">{formatCount(user.postsCount)}</span>
-            <span className="text-sm font-medium text-muted-foreground">Posts</span>
+            <span className="text-base font-black">
+              {formatCount(user.postsCount)}
+            </span>
+            <span className="text-sm font-medium text-muted-foreground">
+              Posts
+            </span>
           </div>
           {(!user.hideFollowerCount || isOwnProfile) && (
-            <Link href={`/profile/${user.username}/followers`} className="flex items-center gap-1.5 hover:underline">
-              <span className="text-base font-black">{formatCount(followerCount)}</span>
-              <span className="text-sm font-medium text-muted-foreground">Followers</span>
+            <Link
+              href={`/profile/${user.username}/followers`}
+              className="flex items-center gap-1.5 hover:underline"
+            >
+              <span className="text-base font-black">
+                {formatCount(followerCount)}
+              </span>
+              <span className="text-sm font-medium text-muted-foreground">
+                Followers
+              </span>
             </Link>
           )}
-          <Link href={`/profile/${user.username}/following`} className="flex items-center gap-1.5 hover:underline">
-            <span className="text-base font-black">{formatCount(user.followingCount)}</span>
-            <span className="text-sm font-medium text-muted-foreground">Following</span>
+          <Link
+            href={`/profile/${user.username}/following`}
+            className="flex items-center gap-1.5 hover:underline"
+          >
+            <span className="text-base font-black">
+              {formatCount(user.followingCount)}
+            </span>
+            <span className="text-sm font-medium text-muted-foreground">
+              Following
+            </span>
           </Link>
         </div>
 

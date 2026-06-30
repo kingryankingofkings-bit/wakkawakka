@@ -6,14 +6,17 @@ description: Use when breaking large web development projects into discrete, ass
 # Task Breakdown and Agent Handoff
 
 ## Goal
+
 Decompose large projects into discrete, independently executable tasks with clear acceptance criteria and handoff protocols.
 
 ## Do Not Use When
+
 - The task is already small and specific
 - Working solo with sequential execution
 - No coordination between agents is needed
 
 ## Required Inputs To Inspect
+
 - `build-plan.md` for phased structure
 - `technical-architecture.md` for component boundaries
 - Available agents/team members and their capabilities
@@ -40,45 +43,54 @@ Produce `task-breakdown.md`:
 ## Workstream: Frontend
 
 ### Task F1: Project Scaffold
+
 **Effort**: S
 **Assignee**: Frontend agent
 **Acceptance Criteria**:
+
 - [ ] Repo initialized with chosen framework
 - [ ] Dev server runs
 - [ ] Folder structure follows conventions
-**Handoff to F2**: Clean repo with README
+      **Handoff to F2**: Clean repo with README
 
 ### Task F2: Design System Setup
+
 **Effort**: M
 **Dependencies**: F1
 **Acceptance Criteria**:
+
 - [ ] Tailwind configured with brand colors
 - [ ] Base components created (Button, Input, Card)
 - [ ] Storybook running (optional)
-**Handoff to F3**: Component library ready
+      **Handoff to F3**: Component library ready
 
 ## Workstream: Backend
 
 ### Task B1: Database Setup
+
 **Effort**: S
 **Dependencies**: None
 **Acceptance Criteria**:
+
 - [ ] Schema created
 - [ ] Migrations runnable
 - [ ] Seed data available
-**Handoff to B2**: Database accessible
+      **Handoff to B2**: Database accessible
 
 ## Integration Points
+
 - F3 (Pages) ↔ B2 (API): Frontend pages call backend APIs
 - F4 (Auth UI) ↔ B3 (Auth API): Login flow end-to-end
 
 ## Review Gates
+
 - [ ] After F2: Design system review
 - [ ] After B3: API contract review
 - [ ] Before deploy: Full integration test
 ```
 
 ## Quality Checks
+
 - [ ] Every task has clear acceptance criteria
 - [ ] Dependencies form a DAG
 - [ ] Handoff artifacts are specified
@@ -86,11 +98,13 @@ Produce `task-breakdown.md`:
 - [ ] Integration points are explicit
 
 ## Safety Rules
+
 - Never parallelize tasks with hidden dependencies
 - Always specify the handoff artifact
 - Include rollback plan for integration failures
 
 ## Coordinates With
+
 - `requirements-to-build-plan` — for phase structure
 - `frontend-scaffold-builder` — for frontend tasks
 - `backend-api-architect` — for backend tasks

@@ -6,13 +6,16 @@ description: Use when verifying API contracts between frontend and backend, chec
 # API Contract Verifier
 
 ## Goal
+
 Verify that frontend and backend agree on API contracts — endpoints, methods, request bodies, response shapes, and error formats.
 
 ## Do Not Use When
+
 - API is already documented and verified
 - Using a type-safe RPC framework (tRPC, GraphQL with codegen)
 
 ## Required Inputs To Inspect
+
 - Backend route definitions
 - Frontend API client code
 - TypeScript types for requests/responses
@@ -29,22 +32,27 @@ Verify that frontend and backend agree on API contracts — endpoints, methods, 
 
 ## Verification Template
 
-```markdown
+````markdown
 ## Endpoint: GET /api/users/:id
 
 ### Request
+
 - Method: GET
 - Params: id (string, UUID)
 
 ### Expected Response (200)
+
 ```json
 { "id": "string", "name": "string", "email": "string" }
 ```
+````
 
 ### Actual Response
+
 [Fill after testing]
 
 ### Status: ✅ Match / ❌ Mismatch
+
 ```
 
 ## Safety Rules
@@ -55,3 +63,4 @@ Verify that frontend and backend agree on API contracts — endpoints, methods, 
 ## Coordinates With
 - `backend-api-architect` — for API design
 - `bug-reproduction-debugger` — for integration bugs
+```

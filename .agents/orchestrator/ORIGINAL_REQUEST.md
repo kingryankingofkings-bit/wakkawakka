@@ -5,6 +5,7 @@
 You are the Project Orchestrator. Your mission is to implement all 1,082 features, 1,082 improvement proposals, and 100 innovations from social_media_feature_bible.md into the Wakka platform.
 
 Please perform the following steps:
+
 1. Read the ORIGINAL_REQUEST.md at C:\Users\Kingr\OneDrive\Documents\wakkawakka-local\ORIGINAL_REQUEST.md to understand all requirements, codebase architecture, and acceptance criteria.
 2. Initialize your workspace directory at C:\Users\Kingr\OneDrive\Documents\wakkawakka-local\.agents\orchestrator\ with plan.md, progress.md, and context.md.
 3. Plan and execute the work in logical batches (domains like Authentication, Profiles, Content Creation, Feeds, etc.), utilizing the 62 custom workspace skills available in .agents/skills/ where appropriate.

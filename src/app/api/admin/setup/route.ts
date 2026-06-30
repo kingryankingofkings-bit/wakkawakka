@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
   try {
@@ -8,11 +8,17 @@ export async function POST(req: NextRequest) {
 
     const expectedSecret = process.env.ADMIN_SETUP_SECRET;
     if (!expectedSecret || secret !== expectedSecret) {
-      return NextResponse.json({ error: 'Invalid setup secret' }, { status: 403 });
+      return NextResponse.json(
+        { error: "Invalid setup secret" },
+        { status: 403 },
+      );
     }
 
     if (!email || !password) {
-      return NextResponse.json({ error: 'email and password are required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "email and password are required" },
+        { status: 400 },
+      );
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
@@ -23,17 +29,17 @@ export async function POST(req: NextRequest) {
         passwordHash,
         isAdmin: true,
         isVerified: true,
-        verificationTier: 'PLATINUM',
+        verificationTier: "PLATINUM",
         emailVerified: true,
       },
       create: {
         email,
         passwordHash,
-        username: username ?? email.split('@')[0],
-        displayName: displayName ?? username ?? email.split('@')[0],
+        username: username ?? email.split("@")[0],
+        displayName: displayName ?? username ?? email.split("@")[0],
         isAdmin: true,
         isVerified: true,
-        verificationTier: 'PLATINUM',
+        verificationTier: "PLATINUM",
         emailVerified: true,
       },
     });
@@ -42,10 +48,14 @@ export async function POST(req: NextRequest) {
       success: true,
       userId: user.id,
       username: user.username,
-      message: 'Admin account created. Sign in with your email via the login page.',
+      message:
+        "Admin account created. Sign in with your email via the login page.",
     });
   } catch (err) {
-    console.error('[admin/setup]', err);
-    return NextResponse.json({ error: 'Setup failed', detail: String(err) }, { status: 500 });
+    console.error("[admin/setup]", err);
+    return NextResponse.json(
+      { error: "Setup failed", detail: String(err) },
+      { status: 500 },
+    );
   }
 }

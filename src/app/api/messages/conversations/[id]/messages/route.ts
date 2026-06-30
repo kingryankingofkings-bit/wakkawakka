@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 const userSelect = {
   id: true,
@@ -16,11 +16,11 @@ const userSelect = {
 // GET /api/messages/conversations/[id]/messages
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   const { id: conversationId } = params;
@@ -37,7 +37,7 @@ export async function GET(
     });
 
     if (!isMember) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+      return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
     const messages = await prisma.message.findMany({
@@ -58,7 +58,7 @@ export async function GET(
         reactions: true,
       },
       orderBy: {
-        createdAt: 'asc',
+        createdAt: "asc",
       },
     });
 
@@ -70,12 +70,13 @@ export async function GET(
       });
 
       // Determine mediaType
-      let mediaType: 'image' | 'video' | 'audio' | 'file' | undefined = undefined;
+      let mediaType: "image" | "video" | "audio" | "file" | undefined =
+        undefined;
       const typeLower = m.type.toLowerCase();
-      if (['image', 'video', 'audio', 'file'].includes(typeLower)) {
+      if (["image", "video", "audio", "file"].includes(typeLower)) {
         mediaType = typeLower as any;
-      } else if (m.type === 'VOICE') {
-        mediaType = 'audio';
+      } else if (m.type === "VOICE") {
+        mediaType = "audio";
       }
 
       return {
@@ -83,7 +84,7 @@ export async function GET(
         conversationId: m.conversationId,
         senderId: m.senderId,
         sender: m.sender,
-        content: m.content || '',
+        content: m.content || "",
         mediaUrl: m.mediaUrl || undefined,
         mediaType,
         type: m.type,
@@ -95,7 +96,7 @@ export async function GET(
               conversationId: m.replyTo.conversationId,
               senderId: m.replyTo.senderId,
               sender: m.replyTo.sender,
-              content: m.replyTo.content || '',
+              content: m.replyTo.content || "",
               mediaUrl: m.replyTo.mediaUrl || undefined,
               type: m.replyTo.type,
               isRead: m.replyTo.isRead,
@@ -111,8 +112,8 @@ export async function GET(
     return NextResponse.json({ data: mapped });
   } catch (err) {
     return NextResponse.json(
-      { error: 'Failed to fetch messages', detail: String(err) },
-      { status: 500 }
+      { error: "Failed to fetch messages", detail: String(err) },
+      { status: 500 },
     );
   }
 }
@@ -120,11 +121,11 @@ export async function GET(
 // POST /api/messages/conversations/[id]/messages
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   const { id: conversationId } = params;
@@ -141,14 +142,14 @@ export async function POST(
     });
 
     if (!isMember) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+      return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
     const body = await req.json();
     const { content, mediaUrl, mediaType, type, replyToId } = body;
 
     // Determine type in database
-    let dbType = type || 'TEXT';
+    let dbType = type || "TEXT";
     if (mediaType && !type) {
       dbType = mediaType.toUpperCase();
     }
@@ -183,12 +184,13 @@ export async function POST(
     });
 
     // Map response
-    let resMediaType: 'image' | 'video' | 'audio' | 'file' | undefined = undefined;
+    let resMediaType: "image" | "video" | "audio" | "file" | undefined =
+      undefined;
     const typeLower = newMessage.type.toLowerCase();
-    if (['image', 'video', 'audio', 'file'].includes(typeLower)) {
+    if (["image", "video", "audio", "file"].includes(typeLower)) {
       resMediaType = typeLower as any;
-    } else if (newMessage.type === 'VOICE') {
-      resMediaType = 'audio';
+    } else if (newMessage.type === "VOICE") {
+      resMediaType = "audio";
     }
 
     const mapped = {
@@ -196,7 +198,7 @@ export async function POST(
       conversationId: newMessage.conversationId,
       senderId: newMessage.senderId,
       sender: newMessage.sender,
-      content: newMessage.content || '',
+      content: newMessage.content || "",
       mediaUrl: newMessage.mediaUrl || undefined,
       mediaType: resMediaType,
       type: newMessage.type,
@@ -208,7 +210,7 @@ export async function POST(
             conversationId: newMessage.replyTo.conversationId,
             senderId: newMessage.replyTo.senderId,
             sender: newMessage.replyTo.sender,
-            content: newMessage.replyTo.content || '',
+            content: newMessage.replyTo.content || "",
             mediaUrl: newMessage.replyTo.mediaUrl || undefined,
             type: newMessage.replyTo.type,
             isRead: newMessage.replyTo.isRead,
@@ -223,8 +225,8 @@ export async function POST(
     return NextResponse.json({ data: mapped });
   } catch (err) {
     return NextResponse.json(
-      { error: 'Failed to save message', detail: String(err) },
-      { status: 500 }
+      { error: "Failed to save message", detail: String(err) },
+      { status: 500 },
     );
   }
 }

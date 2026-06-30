@@ -1,6 +1,7 @@
 # Handoff Report — Batch 5 Forensic Audit Correction
 
 ## 1. Observation
+
 - In `src/components/feed/PostCard.tsx`, the card container used blue/primary styles for pins/likes. We found the styles at lines 396-399.
 - In `src/components/ui/Avatar.tsx`, the avatar story ring class was set to `'story-ring'` on line 39. In `src/app/globals.css`, the animation class was defined as `.story-ring-animated` on line 252.
 - In `src/app/api/posts/route.ts`, the default `whereClause` on lines 208-212 filtered out future scheduled posts:
@@ -8,7 +9,7 @@
   whereClause.isDeleted = false;
   whereClause.OR = [
     { scheduledAt: null },
-    { scheduledAt: { lte: new Date() } }
+    { scheduledAt: { lte: new Date() } },
   ];
   ```
 - In `implementation_tracker.md`, 620 rows corresponding to Batch 5 used the fabricated path `src/components/commerce/CommerceToolsConsole.tsx`.
@@ -29,6 +30,7 @@
   ```
 
 ## 2. Logic Chain
+
 - Implementing `isSpotlightThread = (post.likesCount * 1.5 + post.commentsCount * 3.0) > 15 || post.likesCount > 4` inside `PostCard.tsx` allows us to apply the gold border classes `ring-2 ring-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.35)] bg-gradient-to-b from-amber-500/5 via-card to-card` and render the badge `✨ Spotlight Thread` when a post meets the engagement criteria.
 - Changing `story-ring` to `story-ring-animated` in `Avatar.tsx` ensures active stories correctly reference the keyframes-based animated gradient border utility defined in `globals.css`.
 - Bypassing the future scheduled post filter in `/api/posts/route.ts` when `scheduled=1` is provided enables the scheduling dashboard to query all future queued posts.
@@ -42,12 +44,15 @@
 - Updating `integration_inventory.md` with the new tables completes feature tracking.
 
 ## 3. Caveats
+
 - No caveats. All changes are verified and functional.
 
 ## 4. Conclusion
+
 - All forensic audit failures and gaps for Batch 5 are resolved, compile and test checks pass with zero errors, and mappings have been fully corrected.
 
 ## 5. Verification Method
+
 1. Run `npm run type-check` to verify TypeScript typing.
 2. Run `npm run lint` to verify eslint passes cleanly.
 3. Run `npm run build` to confirm Next.js production build works.

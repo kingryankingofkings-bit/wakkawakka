@@ -6,14 +6,17 @@ description: Use when choosing technology stacks for web projects, evaluating fr
 # Stack Selection Advisor
 
 ## Goal
+
 Recommend optimal technology stacks based on project requirements, constraints, and team context.
 
 ## Do Not Use When
+
 - Stack is already decided and implemented
 - The question is about a specific framework's syntax or API
 - The project is constrained to an existing tech stack
 
 ## Required Inputs To Inspect
+
 - `project-brief.md` for requirements
 - Team experience and preferences
 - Performance requirements (latency, throughput)
@@ -44,46 +47,57 @@ Produce `stack-recommendation.md`:
 # Stack Recommendation: [Project]
 
 ## Requirements Summary
+
 - Type: [SPA/SSR/Static/Full-stack]
 - Key capabilities: [List]
 - Scale: [Users/traffic estimate]
 
 ## Option 1: [Name] — Recommended
+
 **Frontend**: [Framework]
 **Backend**: [Framework]
 **Database**: [Database]
 **Hosting**: [Platform]
 
 ### Pros
+
 - Benefit 1
 - Benefit 2
 
 ### Cons
+
 - Tradeoff 1
 
 ### Best For
+
 [Scenario description]
 
 ## Option 2: [Name] — Alternative
+
 ...
 
 ## Option 3: [Name] — Conservative
+
 ...
 
 ## Recommendation
+
 [Primary recommendation with reasoning]
 
 ## Migration Path
+
 If needs change: [how to migrate between options]
 ```
 
 ## Safety Rules
+
 - Never recommend bleeding-edge tech for production-critical features
 - Always mention the learning curve
 - Include migration considerations
 - Note hosting cost implications
 
 ## Coordinates With
+
 - `web-project-discovery` — for requirements
 - `technical-architecture-planner` — for detailed architecture
 - `compatibility-matrix-builder` — for version verification

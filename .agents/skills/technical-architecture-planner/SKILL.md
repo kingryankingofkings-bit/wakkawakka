@@ -6,14 +6,17 @@ description: Use when designing the technical architecture of web applications, 
 # Technical Architecture Planner
 
 ## Goal
+
 Design robust, scalable technical architecture with clear component boundaries, data flow, and integration patterns.
 
 ## Do Not Use When
+
 - Architecture is already defined
 - The project is a simple static site
 - Making technology choices (use `stack-selection-advisor` first)
 
 ## Required Inputs To Inspect
+
 - `project-brief.md` for requirements
 - `stack-recommendation.md` for chosen stack
 - `information-architecture.md` for page structure
@@ -41,35 +44,42 @@ Produce `technical-architecture.md`:
 # Technical Architecture: [Project]
 
 ## System Overview
+
 [High-level description with component diagram in ASCII or Mermaid]
 
 ## Components
 
 ### Frontend
+
 - Framework:
 - Key libraries:
 - State management:
 
 ### Backend
+
 - Framework:
 - API style:
 - Key endpoints:
 
 ### Database
+
 - Primary:
 - Cache:
 - File storage:
 
 ### External Services
+
 - Auth provider:
 - Payment processor:
 - Email service:
 
 ## Data Flow
 ```
+
 User → CDN → Frontend → API → Database
-                    ↓
-              External Services
+↓
+External Services
+
 ```
 
 ## API Design
@@ -105,6 +115,7 @@ User → CDN → Frontend → API → Database
 ```
 
 ## Quality Checks
+
 - [ ] Every component has a clear responsibility
 - [ ] Data flow has no circular dependencies
 - [ ] Security is addressed at every layer
@@ -112,11 +123,13 @@ User → CDN → Frontend → API → Database
 - [ ] Scaling bottlenecks are identified
 
 ## Safety Rules
+
 - Do not over-engineer for hypothetical scale
 - Do not ignore security fundamentals
 - Prefer simple architectures that can evolve
 
 ## Coordinates With
+
 - `stack-selection-advisor` — for technology choices
 - `database-schema-designer` — for data model details
 - `backend-api-architect` — for API implementation

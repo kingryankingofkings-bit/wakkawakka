@@ -6,13 +6,16 @@ description: Use when deploying websites to hosting platforms, configuring deplo
 # Hosting Platform Deployer
 
 ## Goal
+
 Deploy websites to hosting platforms with proper configuration, custom domains, and SSL.
 
 ## Do Not Use When
+
 - Deployment is already configured
 - Using Docker/Kubernetes exclusively
 
 ## Required Inputs To Inspect
+
 - Hosting platform preference
 - Framework (determines optimal platform)
 - Custom domain needs
@@ -34,17 +37,18 @@ See `references/platform-guides.md` for platform-specific deployment steps.
 
 ## Platform Quick Reference
 
-| Platform | Best For | Key Feature |
-|----------|----------|-------------|
-| Vercel | Next.js | Edge functions, ISR |
-| Netlify | Static, JAMstack | Forms, edge functions |
-| Cloudflare Pages | Global edge | Workers integration |
-| Railway | Full-stack | Easy databases |
-| Render | Traditional | Long-running services |
-| Fly.io | Docker | Global deployment |
-| AWS/GCP | Enterprise | Full control |
+| Platform         | Best For         | Key Feature           |
+| ---------------- | ---------------- | --------------------- |
+| Vercel           | Next.js          | Edge functions, ISR   |
+| Netlify          | Static, JAMstack | Forms, edge functions |
+| Cloudflare Pages | Global edge      | Workers integration   |
+| Railway          | Full-stack       | Easy databases        |
+| Render           | Traditional      | Long-running services |
+| Fly.io           | Docker           | Global deployment     |
+| AWS/GCP          | Enterprise       | Full control          |
 
 ## Quality Checks
+
 - [ ] Site loads without errors
 - [ ] Custom domain works
 - [ ] SSL certificate active
@@ -52,6 +56,7 @@ See `references/platform-guides.md` for platform-specific deployment steps.
 - [ ] Build logs clean
 
 ## Coordinates With
+
 - `deployment-preflight-checker` — for readiness checks
 - `environment-config-manager` — for env vars
 - `monitoring-logging-setup` — for post-deploy monitoring

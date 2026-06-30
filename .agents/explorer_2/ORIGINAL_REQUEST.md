@@ -1,6 +1,8 @@
 ## 2026-06-30T09:33:23Z
+
 You are teamwork_preview_explorer. Your working directory is C:\Users\Kingr\OneDrive\Documents\wakkawakka-local\.agents\explorer_2.
 Your task is to:
+
 1. Parse the `implementation_tracker.md` and identify all features mapped to Batch 2 ("Profiles & Communities" or category 3 features: Profiles, Communities, Groups, and any associated innovations/improvements). Count how many there are.
 2. Scan the current codebase (specifically `src/app/(main)/profile`, `src/app/(main)/communities`, `src/components/profile/`, and `prisma/schema.prisma` models for profiles/communities/members/events) to see what already exists and what is missing.
 3. Propose a set of REAL, functional, integrated features to implement for Batch 2:

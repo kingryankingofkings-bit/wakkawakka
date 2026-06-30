@@ -1,32 +1,34 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
-import { ThemeProvider } from '@/components/layout/ThemeProvider';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { ThemeProvider } from "@/components/layout/ThemeProvider";
 
 const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: 'Wakka',
-    template: '%s | Wakka',
+    default: "Wakka",
+    template: "%s | Wakka",
   },
-  description: 'The next social platform',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  description: "The next social platform",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  ),
   openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    siteName: 'Wakka',
-    title: 'Wakka – The Next Social Platform',
-    description: 'The next social platform built for creators',
+    type: "website",
+    locale: "en_US",
+    siteName: "Wakka",
+    title: "Wakka – The Next Social Platform",
+    description: "The next social platform built for creators",
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'Wakka – The Next Social Platform',
-    description: 'The next social platform built for creators',
+    card: "summary_large_image",
+    title: "Wakka – The Next Social Platform",
+    description: "The next social platform built for creators",
   },
   robots: {
     index: true,

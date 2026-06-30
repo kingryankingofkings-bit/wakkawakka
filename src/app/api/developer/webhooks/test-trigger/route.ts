@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import crypto from 'crypto';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import crypto from "crypto";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,7 +10,10 @@ export async function POST(req: NextRequest) {
     const { subscriptionId } = body;
 
     if (!subscriptionId) {
-      return NextResponse.json({ error: 'subscriptionId is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "subscriptionId is required" },
+        { status: 400 },
+      );
     }
 
     const sub = await prisma.webhookSubscription.findUnique({
@@ -18,39 +21,42 @@ export async function POST(req: NextRequest) {
     });
 
     if (!sub) {
-      return NextResponse.json({ error: 'Subscription not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Subscription not found" },
+        { status: 404 },
+      );
     }
 
     // 1. Construct simulated tipping event payload
     const payload = {
-      event: 'tip.received',
+      event: "tip.received",
       timestamp: new Date().toISOString(),
       data: {
-        sender: 'wakkadev',
-        amount: 25.00,
-        message: 'Awesome work on Batch 5! Keep it up! 🚀',
+        sender: "wakkadev",
+        amount: 25.0,
+        message: "Awesome work on Batch 5! Keep it up! 🚀",
       },
     };
     const payloadString = JSON.stringify(payload);
 
     // 2. Sign using HMAC-SHA256 with the secret
     const signature = crypto
-      .createHmac('sha256', sub.secret)
+      .createHmac("sha256", sub.secret)
       .update(payloadString)
-      .digest('hex');
+      .digest("hex");
 
     // 3. Perform request to the subscriber's URL
     const startTime = Date.now();
     let statusCode: number | null = null;
-    let responseBody = '';
+    let responseBody = "";
     let success = false;
 
     try {
       const res = await fetch(sub.url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'X-Wakka-Signature': signature,
+          "Content-Type": "application/json",
+          "X-Wakka-Signature": signature,
         },
         body: payloadString,
         // Short timeout
@@ -86,6 +92,9 @@ export async function POST(req: NextRequest) {
       signature,
     });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to trigger test event', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to trigger test event", detail: String(err) },
+      { status: 500 },
+    );
   }
 }

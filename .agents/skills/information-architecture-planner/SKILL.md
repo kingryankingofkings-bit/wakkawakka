@@ -6,14 +6,17 @@ description: Use when planning the structure, navigation, and content organizati
 # Information Architecture Planner
 
 ## Goal
+
 Design clear, user-centered site structure, navigation, and URL organization that supports user goals and business objectives.
 
 ## Do Not Use When
+
 - The site is a single page
 - Structure is already defined and agreed upon
 - The task is purely visual design
 
 ## Required Inputs To Inspect
+
 - `project-brief.md` or requirements
 - Reference sites and competitor structures
 - User personas or audience descriptions
@@ -42,14 +45,16 @@ Produce `information-architecture.md`:
 
 ## Sitemap
 ```
+
 Home
 ├── About
-│   ├── Team
-│   └── Careers
+│ ├── Team
+│ └── Careers
 ├── Services
-│   ├── Service A
-│   └── Service B
+│ ├── Service A
+│ └── Service B
 └── Contact
+
 ```
 
 ## URL Structure
@@ -77,6 +82,7 @@ Home
 ```
 
 ## Quality Checks
+
 - [ ] Every page has a clear purpose
 - [ ] Maximum 7 primary nav items
 - [ ] URL structure is semantic and shallow (max 3 levels)
@@ -84,14 +90,17 @@ Home
 - [ ] Mobile navigation is accounted for
 
 ## Safety Rules
+
 - Do not create pages without a clear user purpose
 - Avoid deep nesting (>3 levels)
 - Never orphan pages (no way to navigate to them)
 
 ## Failure Handling
+
 If content inventory is incomplete, design the IA for known content and flag gaps.
 
 ## Coordinates With
+
 - `web-project-discovery` — for requirements
 - `user-flow-and-conversion-planner` — for flow design
 - `frontend-scaffold-builder` — to implement structure

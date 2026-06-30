@@ -6,14 +6,17 @@ description: Use when implementing user authentication (login, signup, password 
 # Authentication and Authorization Builder
 
 ## Goal
+
 Implement secure authentication and authorization with proper session/token management and role-based access control.
 
 ## Do Not Use When
+
 - No user accounts needed
 - Using a third-party auth service exclusively (Auth0, Clerk, etc.)
 - Auth is already implemented
 
 ## Required Inputs To Inspect
+
 - Auth requirements (email/password, social, SSO)
 - Role/permission structure
 - Session strategy (stateful vs JWT)
@@ -42,6 +45,7 @@ Protected request → Verify token/session → Check permissions → Serve
 ```
 
 ## Security Checklist
+
 - [ ] Passwords hashed with bcrypt (cost >= 10) or argon2id
 - [ ] Tokens stored in HttpOnly cookies (not localStorage)
 - [ ] CSRF protection for cookie-based auth
@@ -52,6 +56,7 @@ Protected request → Verify token/session → Check permissions → Serve
 - [ ] HTTPS only in production
 
 ## Coordinates With
+
 - `backend-api-architect` — for auth endpoints
 - `database-schema-designer` — for user/role tables
 - `frontend-routing-navigation` — for protected routes

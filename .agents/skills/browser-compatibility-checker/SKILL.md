@@ -6,13 +6,16 @@ description: Use when testing websites across browsers and devices, fixing cross
 # Browser Compatibility Checker
 
 ## Goal
+
 Ensure websites work correctly across target browsers, versions, and devices.
 
 ## Do Not Use When
+
 - Only supporting a single controlled browser environment
 - The issue is not browser-specific (universal bug)
 
 ## Required Inputs To Inspect
+
 - Target browser matrix (Chrome, Firefox, Safari, Edge, mobile)
 - Polyfill strategy
 - Feature detection approach
@@ -33,14 +36,15 @@ Ensure websites work correctly across target browsers, versions, and devices.
 
 ## Common Issues and Fixes
 
-| Issue | Cause | Fix |
-|-------|-------|-----|
-| Flexbox gap missing | Old Safari | Use margin fallback |
-| Scrollbar styling | Non-standard | `::-webkit-scrollbar` + `scrollbar-width` |
-| Date parsing | Safari strictness | Use `date-fns` or explicit parsing |
-| 100vh mobile | iOS URL bar | Use `dvh` units or `-webkit-fill-available` |
+| Issue               | Cause             | Fix                                         |
+| ------------------- | ----------------- | ------------------------------------------- |
+| Flexbox gap missing | Old Safari        | Use margin fallback                         |
+| Scrollbar styling   | Non-standard      | `::-webkit-scrollbar` + `scrollbar-width`   |
+| Date parsing        | Safari strictness | Use `date-fns` or explicit parsing          |
+| 100vh mobile        | iOS URL bar       | Use `dvh` units or `-webkit-fill-available` |
 
 ## Quality Checks
+
 - [ ] Tested on all target browsers
 - [ ] Mobile browsers tested
 - [ ] No console errors on any browser
@@ -48,11 +52,13 @@ Ensure websites work correctly across target browsers, versions, and devices.
 - [ ] Touch interactions work on mobile
 
 ## Safety Rules
+
 - Use feature detection, not browser sniffing
 - Progressive enhancement over graceful degradation
 - Don't exclude users on older browsers unless necessary
 
 ## Coordinates With
+
 - `frontend-scaffold-builder` — for build tool config
 - `bug-reproduction-debugger` — for specific browser bugs
 - `performance-audit-optimizer` — for mobile performance

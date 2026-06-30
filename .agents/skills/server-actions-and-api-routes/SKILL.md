@@ -6,13 +6,16 @@ description: Use when implementing server-side logic in fullstack frameworks lik
 # Server Actions and API Routes
 
 ## Goal
+
 Implement server-side logic using the appropriate pattern for the framework and use case.
 
 ## Do Not Use When
+
 - Using a separate backend service
 - Framework doesn't support server actions (pure SPA)
 
 ## Required Inputs To Inspect
+
 - Framework (Next.js, Nuxt, SvelteKit, Remix)
 - Data mutation needs
 - Form submission requirements
@@ -21,12 +24,12 @@ Implement server-side logic using the appropriate pattern for the framework and 
 
 ## Decision: API Route vs Server Action
 
-| Factor | API Route | Server Action |
-|--------|-----------|---------------|
-| Called from | Any client | Server components, forms |
-| Caching | HTTP cacheable | Not directly cacheable |
-| Flexibility | Full HTTP control | Simplified calling |
-| Use case | Public API, mobile clients | Form submissions, mutations |
+| Factor      | API Route                  | Server Action               |
+| ----------- | -------------------------- | --------------------------- |
+| Called from | Any client                 | Server components, forms    |
+| Caching     | HTTP cacheable             | Not directly cacheable      |
+| Flexibility | Full HTTP control          | Simplified calling          |
+| Use case    | Public API, mobile clients | Form submissions, mutations |
 
 ## Workflow
 
@@ -42,21 +45,22 @@ Implement server-side logic using the appropriate pattern for the framework and 
 ## Next.js Server Action Example
 
 ```tsx
-'use server';
+"use server";
 
-import { z } from 'zod';
-import { revalidatePath } from 'next/cache';
+import { z } from "zod";
+import { revalidatePath } from "next/cache";
 
 const schema = z.object({ name: z.string().min(1) });
 
 export async function createTodo(formData: FormData) {
   const data = schema.parse(Object.fromEntries(formData));
   await db.todo.create({ data });
-  revalidatePath('/todos');
+  revalidatePath("/todos");
 }
 ```
 
 ## Quality Checks
+
 - [ ] Input validated
 - [ ] Auth checked
 - [ ] Errors handled
@@ -64,12 +68,14 @@ export async function createTodo(formData: FormData) {
 - [ ] No sensitive data leaked
 
 ## Safety Rules
+
 - Never trust client input
 - Always check auth in server actions
 - Don't expose internal errors
 - Revalidate cache after mutations
 
 ## Coordinates With
+
 - `backend-api-architect` — for API design
 - `forms-validation-builder` — for form submissions
 - `cache-and-data-fetching-strategy` — for caching

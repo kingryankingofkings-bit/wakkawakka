@@ -118,6 +118,16 @@ model User {
   bounties             Bounty[]
   fundraiserDonations  FundraiserDonation[]
 
+  // Relations for Server/Channel Architecture (Batch 7)
+  ownedServers         Server[]               @relation("ServerOwner")
+  serverMemberships    ServerMember[]
+  serverBoosts         ServerBoost[]
+  soundboardSounds     SoundboardSound[]
+  customEmojis         CustomEmoji[]
+  serverMessages       ServerMessage[]
+
+
+
 
   // Relations — friends (social graph)
   friendRequestsSent     FriendRequest[] @relation("FriendRequestSender")
@@ -150,6 +160,43 @@ model User {
   // Relations — tagging & timeline
   taggedInPosts          PostTag[]       @relation("PostTagUser")
   lifeEvents             LifeEvent[]
+  channelPoints          Int             @default(0)
+  predictionBets         PredictionBet[]
+  clipsCreated           Clip[]          @relation("ClipCreator")
+  chatMessages           LiveStreamChatMessage[] @relation("UserChatMessages")
+
+  headline                 String?
+  workHistory              String                  @default("[]") // JSON string array
+  education                String                  @default("[]") // JSON string array
+  skills                   String                  @default("[]") // JSON string array
+  inmailQuota              Int                     @default(0)
+
+  ownedCompanies           Company[]               @relation("CompanyOwner")
+  companyMemberships       CompanyMember[]
+  companyFollows           CompanyFollower[]
+  postedJobs               Job[]                   @relation("JobPoster")
+  jobApplications          JobApplication[]        @relation("JobApplicant")
+  sentInMails              InMailMessage[]         @relation("InMailSender")
+  receivedInMails          InMailMessage[]         @relation("InMailReceiver")
+  receivedEndorsements     Endorsement[]           @relation("EndorsementTarget")
+  givenEndorsements        Endorsement[]           @relation("EndorsementSender")
+  requestedRecommendations Recommendation[]        @relation("RecommendationRequester")
+  receivedRecommendations  Recommendation[]        @relation("RecommendationReceiver")
+  writtenRecommendations   Recommendation[]        @relation("RecommendationWriter")
+  learningEnrollments      LearningEnrollment[]
+  articles                 Article[]               @relation("ArticleAuthor")
+
+  // Relations for Reddit-style Forum & Voting (Batch 9)
+  redditKarma              Int                     @default(0)
+  createdSubreddits        Subreddit[]             @relation("SubredditCreator")
+  subredditMemberships     SubredditMember[]
+  subredditPosts           SubredditPost[]
+  subredditComments        SubredditComment[]
+  redditVotes              RedditVote[]
+  sentAwards               RedditAward[]           @relation("AwardsSent")
+  receivedAwards           RedditAward[]           @relation("AwardsReceived")
+  modActions               RedditModAction[]       @relation("ModActionModerator")
+  targetModActions         RedditModAction[]       @relation("ModActionTargetUser")
 
   @@index([username])
   @@index([email])
@@ -580,6 +627,9 @@ model LiveStream {
 
   coHosts      LiveStreamCoHost[]
   gifts        LiveStreamGift[]
+  predictions  Prediction[]
+  clips        Clip[]
+  chatMessages LiveStreamChatMessage[] @relation("StreamChatMessages")
 
   @@index([hostId])
   @@index([isActive])
@@ -593,6 +643,7 @@ model LiveStreamCoHost {
   userId       String
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   joinedAt     DateTime   @default(now())
+  status       String     @default("PENDING")
 
   @@unique([liveStreamId, userId])
   @@index([liveStreamId])
@@ -611,6 +662,83 @@ model LiveStreamGift {
 
   @@index([liveStreamId])
   @@index([senderId])
+}
+
+model LiveStreamChatMessage {
+  id           String     @id @default(cuid())
+  liveStreamId String
+  liveStream   LiveStream @relation("StreamChatMessages", fields: [liveStreamId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User       @relation("UserChatMessages", fields: [userId], references: [id], onDelete: Cascade)
+  message      String
+  type         String     @default("COMMENT") // COMMENT | GIFT | SYSTEM
+  giftAmount   Float?
+  createdAt    DateTime   @default(now())
+
+  @@index([liveStreamId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Prediction {
+  id              String             @id @default(cuid())
+  liveStreamId    String
+  liveStream      LiveStream         @relation(fields: [liveStreamId], references: [id], onDelete: Cascade)
+  title           String
+  status          String             @default("ACTIVE") // ACTIVE, LOCKED, RESOLVED, CANCELLED
+  winningOptionId String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  options         PredictionOption[]
+  bets            PredictionBet[]
+
+  @@index([liveStreamId])
+}
+
+model PredictionOption {
+  id           String          @id @default(cuid())
+  predictionId String
+  prediction   Prediction      @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+  text         String
+  totalPoints  Int             @default(0)
+  bets         PredictionBet[]
+
+  @@index([predictionId])
+}
+
+model PredictionBet {
+  id           String           @id @default(cuid())
+  predictionId String
+  prediction   Prediction       @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+  optionId     String
+  option       PredictionOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  points       Int
+  createdAt    DateTime         @default(now())
+
+  @@unique([predictionId, userId])
+  @@index([predictionId])
+  @@index([userId])
+}
+
+model Clip {
+  id           String      @id @default(cuid())
+  title        String
+  videoUrl     String
+  thumbnailUrl String
+  duration     Int
+  viewsCount   Int         @default(0)
+  creatorId    String
+  creator      User        @relation("ClipCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  liveStreamId String?
+  liveStream   LiveStream? @relation(fields: [liveStreamId], references: [id], onDelete: SetNull)
+  createdAt    DateTime    @default(now())
+
+  @@index([creatorId])
+  @@index([liveStreamId])
+  @@index([createdAt])
 }
 
 // =============================================================================
@@ -1440,6 +1568,567 @@ model Bounty {
 
   @@index([creatorId])
 }
+
+// =============================================================================
+// Server/Channel Architecture (Batch 7)
+// =============================================================================
+
+model Server {
+  id               String            @id @default(cuid())
+  name             String
+  description      String?
+  iconUrl          String?
+  bannerUrl        String?
+  ownerId          String
+  owner            User              @relation("ServerOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  inviteCode       String?           @unique
+  isPublic         Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  members          ServerMember[]
+  roles            ServerRole[]
+  channels         ServerChannel[]
+  boosts           ServerBoost[]
+  soundboardSounds SoundboardSound[]
+  customEmojis     CustomEmoji[]
+  messages         ServerMessage[]
+
+  @@index([ownerId])
+  @@index([isPublic])
+}
+
+model ServerMember {
+  id        String             @id @default(cuid())
+  serverId  String
+  server    Server             @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nickname  String?
+  joinedAt  DateTime           @default(now())
+  roles     ServerMemberRole[]
+  messages  ServerMessage[]
+  stageSpeakers ServerChannelStageSpeaker[]
+
+  @@unique([serverId, userId])
+  @@index([serverId])
+  @@index([userId])
+}
+
+model ServerRole {
+  id          String             @id @default(cuid())
+  name        String
+  color       String             @default("#99aab5")
+  hoist       Boolean            @default(false)
+  position    Int                @default(0)
+  permissions String             @default("[]") // JSON string array of permission names
+  serverId    String
+  server      Server             @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  members     ServerMemberRole[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([serverId])
+}
+
+model ServerMemberRole {
+  memberId String
+  member   ServerMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  roleId   String
+  role     ServerRole   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([memberId, roleId])
+  @@index([memberId])
+  @@index([roleId])
+}
+
+model ServerChannel {
+  id                  String                      @id @default(cuid())
+  name                String
+  type                String                      @default("TEXT") // TEXT | VOICE | FORUM | STAGE | THREAD
+  topic               String?
+  position            Int                         @default(0)
+  serverId            String
+  server              Server                      @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  parentId            String?
+  parent              ServerChannel?              @relation("ChannelHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children            ServerChannel[]             @relation("ChannelHierarchy")
+  messages            ServerMessage[]
+  permissionOverwrites String                     @default("[]") // JSON string array of permission override rules
+  stageSpeakers       ServerChannelStageSpeaker[]
+  createdAt           DateTime                    @default(now())
+  updatedAt           DateTime                    @updatedAt
+
+  @@index([serverId])
+  @@index([parentId])
+}
+
+model ServerMessage {
+  id          String         @id @default(cuid())
+  serverId    String?
+  server      Server?        @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  channelId   String
+  channel     ServerChannel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  senderId    String
+  sender      User           @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  memberId    String?
+  member      ServerMember?  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  content     String?
+  attachments String         @default("[]") // JSON array of file URL strings
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  replyToId   String?
+  replyTo     ServerMessage? @relation("ServerMessageReplies", fields: [replyToId], references: [id], onDelete: Cascade)
+  replies     ServerMessage[] @relation("ServerMessageReplies")
+
+  @@index([channelId])
+  @@index([senderId])
+  @@index([createdAt])
+}
+
+model ServerBoost {
+  id        String   @id @default(cuid())
+  serverId  String
+  server    Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([serverId])
+  @@index([userId])
+}
+
+model SoundboardSound {
+  id        String   @id @default(cuid())
+  name      String
+  soundUrl  String
+  emoji     String?
+  volume    Float    @default(1.0)
+  serverId  String
+  server    Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([serverId])
+  @@index([userId])
+}
+
+model CustomEmoji {
+  id        String   @id @default(cuid())
+  name      String
+  imageUrl  String
+  serverId  String
+  server    Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([serverId])
+  @@index([userId])
+}
+
+model ServerChannelStageSpeaker {
+  id          String        @id @default(cuid())
+  channelId   String
+  channel     ServerChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  memberId    String
+  member      ServerMember  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  isSpeaking  Boolean       @default(false)
+  isRequested Boolean       @default(true)
+  isApproved  Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+
+  @@index([channelId])
+  @@index([memberId])
+}
+
+// =============================================================================
+// Professional & Jobs (Batch 8)
+// =============================================================================
+
+model Company {
+  id           String           @id @default(cuid())
+  name         String
+  slug         String           @unique
+  description  String?
+  logoUrl      String?
+  coverImage   String?
+  website      String?
+  industry     String?
+  companySize  String?          // e.g. "1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"
+  size         String?          // Support E2E test field
+  headquarters String?
+  location     String?          // Support E2E test field
+  foundedAt    DateTime?
+  ownerId      String
+  owner        User             @relation("CompanyOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  
+  members      CompanyMember[]
+  followers    CompanyFollower[]
+  jobs         Job[]
+
+  @@index([ownerId])
+}
+
+model CompanyMember {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   @default("MEMBER") // ADMIN | MEMBER
+  joinedAt  DateTime @default(now())
+
+  @@unique([companyId, userId])
+  @@index([companyId])
+  @@index([userId])
+}
+
+model CompanyFollower {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([companyId, userId])
+  @@index([companyId])
+  @@index([userId])
+}
+
+model Job {
+  id            String           @id @default(cuid())
+  title         String
+  description   String
+  requirements  String?          // Serialized JSON string array of skills or requirements
+  location      String?          // e.g. "San Francisco, CA"
+  type          String           @default("FULL_TIME") // FULL_TIME | PART_TIME | CONTRACT | INTERNSHIP | TEMPORARY
+  workplaceType String           @default("ON_SITE")   // ON_SITE | HYBRID | REMOTE
+  salaryRange   String?          // e.g. "$120,000 - $150,000"
+  salary        String?          // Support E2E test field
+  companyId     String
+  company       Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  posterId      String
+  poster        User             @relation("JobPoster", fields: [posterId], references: [id], onDelete: Cascade)
+  isActive      Boolean          @default(true)
+  viewsCount    Int              @default(0)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  
+  applications  JobApplication[]
+
+  @@index([companyId])
+  @@index([posterId])
+  @@index([isActive])
+}
+
+model JobApplication {
+  id          String   @id @default(cuid())
+  jobId       String
+  job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  applicantId String
+  applicant   User     @relation("JobApplicant", fields: [applicantId], references: [id], onDelete: Cascade)
+  resumeUrl   String?
+  coverLetter String?
+  status      String   @default("PENDING") // PENDING | REVIEWING | INTERVIEWING | OFFERED | REJECTED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([jobId, applicantId])
+  @@index([jobId])
+  @@index([applicantId])
+}
+
+model InMailMessage {
+  id         String   @id @default(cuid())
+  senderId   String
+  sender     User     @relation("InMailSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   User     @relation("InMailReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  subject    String?
+  content    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([createdAt])
+}
+
+model Endorsement {
+  id           String   @id @default(cuid())
+  skill        String
+  targetUserId String
+  targetUser   User     @relation("EndorsementTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
+  endorserId   String
+  endorser     User     @relation("EndorsementSender", fields: [endorserId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+
+  @@unique([targetUserId, endorserId, skill])
+  @@index([targetUserId])
+  @@index([endorserId])
+}
+
+model Recommendation {
+  id           String   @id @default(cuid())
+  requesterId  String?
+  requester    User?    @relation("RecommendationRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  receiverId   String
+  receiver     User     @relation("RecommendationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  writerId     String
+  writer       User     @relation("RecommendationWriter", fields: [writerId], references: [id], onDelete: Cascade)
+  text         String
+  relationship String?  // e.g. "Managed writer directly"
+  status       String   @default("PENDING") // REQUESTED | PENDING | APPROVED | REJECTED
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([requesterId])
+  @@index([receiverId])
+  @@index([writerId])
+}
+
+model LearningCourse {
+  id              String               @id @default(cuid())
+  title           String
+  description     String
+  instructor      String
+  category        String?              @default("General") // e.g. "Software Engineering", "Business"
+  duration        String?              // e.g. "4 hours"
+  durationMinutes Int                  @default(0)
+  level           String?              @default("BEGINNER")
+  modulesList     String?              @default("[]")
+  thumbnailUrl    String?
+  videoUrl        String?
+  isPremium       Boolean              @default(false)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  
+  enrollments     LearningEnrollment[]
+
+  @@index([category])
+}
+
+model LearningEnrollment {
+  id                 String         @id @default(cuid())
+  courseId           String
+  course             LearningCourse @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId             String
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  progressPercentage Float          @default(0.0) // 0.0 to 100.0
+  completedModules   String         @default("[]") // JSON array of completed module names/ids
+  status             String         @default("ENROLLED") // ENROLLED | IN_PROGRESS | COMPLETED
+  certificateUrl     String?
+  completed          Boolean        @default(false)
+  completedAt        DateTime?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  @@unique([courseId, userId])
+  @@index([courseId])
+  @@index([userId])
+}
+
+model Article {
+  id          String    @id @default(cuid())
+  title       String
+  content     String
+  summary     String?
+  coverImage  String?
+  authorId    String
+  author      User      @relation("ArticleAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  viewsCount  Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([authorId])
+  @@index([isPublished])
+  @@index([createdAt])
+}
+
+// =============================================================================
+// Reddit-style Forum & Voting (Batch 9)
+// =============================================================================
+
+model Subreddit {
+  id           String            @id @default(cuid())
+  name         String            @unique
+  slug         String            @unique
+  description  String?
+  creatorId    String
+  creator      User              @relation("SubredditCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  rules        String?           // SQLite compatible
+  memberCount  Int               @default(0)
+  postCount    Int               @default(0)
+  customTheme  String?           // SQLite JSON string default "{}"
+  isNSFW       Boolean           @default(false)
+  isSpoiler    Boolean           @default(false)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  members      SubredditMember[]
+  posts        SubredditPost[]
+  crossposts   RedditCrosspost[]
+  modActions   RedditModAction[]
+
+  @@index([creatorId])
+  @@index([slug])
+  @@index([createdAt])
+}
+
+model SubredditMember {
+  id          String    @id @default(cuid())
+  subredditId String
+  subreddit   Subreddit @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        String    @default("MEMBER") // MEMBER | MODERATOR | ADMIN
+  flair       String?
+  joinedAt    DateTime  @default(now())
+  isBanned    Boolean   @default(false)
+  isMuted     Boolean   @default(false)
+
+  @@unique([subredditId, userId])
+  @@index([subredditId])
+  @@index([userId])
+  @@index([role])
+}
+
+model SubredditPost {
+  id              String            @id @default(cuid())
+  title           String
+  content         String?
+  type            String            @default("TEXT") // TEXT | POLL | LINK | MEDIA
+  mediaUrls       String            @default("[]")   // SQLite JSON string array
+  pollOptions     String?           // SQLite JSON string
+  pollVotes       String?           // SQLite JSON string
+  upvotes         Int               @default(0)
+  downvotes       Int               @default(0)
+  score           Int               @default(0)      // upvotes - downvotes
+  authorId        String
+  author          User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  subredditId     String
+  subreddit       Subreddit         @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+  isSpoiler       Boolean           @default(false)
+  isNSFW          Boolean           @default(false)
+  isLocked        Boolean           @default(false)
+  isPinned        Boolean           @default(false)
+  isAMA           Boolean           @default(false)
+  karmaValue      Int               @default(1)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  comments        SubredditComment[]
+  crosspostsAsOriginal RedditCrosspost[] @relation("OriginalPost")
+  crosspostsAsCrosspost RedditCrosspost[] @relation("CrosspostedPost")
+  modActions      RedditModAction[]
+
+  @@index([authorId])
+  @@index([subredditId])
+  @@index([createdAt])
+  @@index([score])
+}
+
+model SubredditComment {
+  id          String             @id @default(cuid())
+  content     String
+  authorId    String
+  author      User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  postId      String
+  post        SubredditPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parentId    String?
+  parent      SubredditComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     SubredditComment[] @relation("CommentReplies")
+  upvotes     Int                @default(0)
+  downvotes   Int                @default(0)
+  score       Int                @default(0)
+  isDeleted   Boolean            @default(false)
+  isAMAAnswer Boolean            @default(false)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  modActions  RedditModAction[]
+
+  @@index([authorId])
+  @@index([postId])
+  @@index([parentId])
+  @@index([createdAt])
+}
+
+model RedditVote {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetId    String   // Can represent SubredditPost.id or SubredditComment.id
+  type        String   // UPVOTE | DOWNVOTE
+  targetType  String   // POST | COMMENT
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, targetId, targetType])
+  @@index([userId])
+  @@index([targetId, targetType])
+}
+
+model RedditAward {
+  id          String   @id @default(cuid())
+  name        String
+  icon        String
+  price       Int      @default(0)
+  senderId    String
+  sender      User     @relation("AwardsSent", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId  String
+  receiver    User     @relation("AwardsReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+  targetId    String   // Post or Comment ID
+  targetType  String   // POST | COMMENT
+  createdAt   DateTime @default(now())
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([targetId, targetType])
+}
+
+model RedditCrosspost {
+  id                 String        @id @default(cuid())
+  originalPostId     String
+  originalPost       SubredditPost @relation("OriginalPost", fields: [originalPostId], references: [id], onDelete: Cascade)
+  targetSubredditId  String
+  targetSubreddit    Subreddit     @relation(fields: [targetSubredditId], references: [id], onDelete: Cascade)
+  crosspostedPostId  String
+  crosspostedPost    SubredditPost @relation("CrosspostedPost", fields: [crosspostedPostId], references: [id], onDelete: Cascade)
+  createdAt          DateTime      @default(now())
+
+  @@unique([originalPostId, targetSubredditId])
+  @@index([originalPostId])
+  @@index([targetSubredditId])
+}
+
+model RedditModAction {
+  id              String            @id @default(cuid())
+  subredditId     String
+  subreddit       Subreddit         @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+  moderatorId     String
+  moderator       User              @relation("ModActionModerator", fields: [moderatorId], references: [id], onDelete: Cascade)
+  action          String            // LOCK_POST, REMOVE_POST, REMOVE_COMMENT, BAN_USER, MUTE_USER
+  targetUserId    String?
+  targetUser      User?             @relation("ModActionTargetUser", fields: [targetUserId], references: [id], onDelete: SetNull)
+  targetPostId    String?
+  targetPost      SubredditPost?    @relation(fields: [targetPostId], references: [id], onDelete: SetNull)
+  targetCommentId String?
+  targetComment   SubredditComment? @relation(fields: [targetCommentId], references: [id], onDelete: SetNull)
+  reason          String?
+  createdAt       DateTime          @default(now())
+
+  @@index([subredditId])
+  @@index([moderatorId])
+}
+
+
 
 
 

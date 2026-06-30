@@ -6,14 +6,17 @@ description: Use when designing or implementing RESTful or GraphQL APIs, plannin
 # Backend API Architect
 
 ## Goal
+
 Design and implement consistent, versioned APIs with proper validation, error handling, and documentation.
 
 ## Do Not Use When
+
 - No backend is needed (static site)
 - API is already designed and implemented
 - Using a backend-as-a-service exclusively (Supabase, Firebase)
 
 ## Required Inputs To Inspect
+
 - `technical-architecture.md` for API boundaries
 - Frontend data requirements
 - Authentication strategy
@@ -50,14 +53,13 @@ DELETE /api/v1/resources/:id   → Remove
   "error": {
     "code": "VALIDATION_ERROR",
     "message": "Request validation failed",
-    "details": [
-      { "field": "email", "message": "Invalid email format" }
-    ]
+    "details": [{ "field": "email", "message": "Invalid email format" }]
   }
 }
 ```
 
 ## Quality Checks
+
 - [ ] All endpoints return consistent response shapes
 - [ ] Validation on all inputs
 - [ ] Proper HTTP status codes
@@ -67,12 +69,14 @@ DELETE /api/v1/resources/:id   → Remove
 - [ ] API is documented
 
 ## Safety Rules
+
 - Never expose stack traces in production errors
 - Validate all inputs — never trust the client
 - Use HTTPS only in production
 - Sanitize all outputs to prevent XSS
 
 ## Coordinates With
+
 - `technical-architecture-planner` — for API boundaries
 - `database-schema-designer` — for data models
 - `authentication-authorization-builder` — for auth

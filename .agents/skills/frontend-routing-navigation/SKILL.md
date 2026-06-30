@@ -6,14 +6,17 @@ description: Use when implementing client-side routing, navigation structures, r
 # Frontend Routing and Navigation
 
 ## Goal
+
 Implement clear, predictable routing with proper navigation patterns and route guards.
 
 ## Do Not Use When
+
 - Single page with no navigation
 - Routing is already set up
 - The task is backend API routing
 
 ## Required Inputs To Inspect
+
 - `information-architecture.md` for page structure
 - Framework routing conventions
 - Authentication requirements (protected routes)
@@ -34,6 +37,7 @@ Implement clear, predictable routing with proper navigation patterns and route g
 10. **Meta management**: Dynamic titles, descriptions per route
 
 ## Quality Checks
+
 - [ ] All IA pages have routes
 - [ ] Dynamic routes are typed
 - [ ] 404 page exists
@@ -42,11 +46,13 @@ Implement clear, predictable routing with proper navigation patterns and route g
 - [ ] Back button works correctly
 
 ## Safety Rules
+
 - Never expose sensitive routes client-side (always verify server-side)
 - Handle route param validation
 - Don't break the back button
 
 ## Coordinates With
+
 - `information-architecture-planner` — for page structure
 - `authentication-authorization-builder` — for route guards
 - `frontend-scaffold-builder` — for framework routing setup

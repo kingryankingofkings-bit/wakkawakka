@@ -1,10 +1,15 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
-import Image from 'next/image';
-import { cn, formatCurrency } from '@/lib/utils';
-import { useCartStore, selectCartTotal, selectCartCount, type CartItem } from '@/store/cartStore';
+import { useEffect, useRef } from "react";
+import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { cn, formatCurrency } from "@/lib/utils";
+import {
+  useCartStore,
+  selectCartTotal,
+  selectCartCount,
+  type CartItem,
+} from "@/store/cartStore";
 
 interface CartItemRowProps {
   item: CartItem;
@@ -36,9 +41,15 @@ function CartItemRow({ item }: CartItemRowProps) {
 
       {/* Info */}
       <div className="flex flex-col flex-1 min-w-0 gap-1">
-        <p className="text-sm font-medium text-foreground line-clamp-1">{item.product.name}</p>
-        <p className="text-xs text-muted-foreground">{item.product.seller.displayName}</p>
-        <p className="text-sm font-bold text-foreground">{formatCurrency(item.product.price)}</p>
+        <p className="text-sm font-medium text-foreground line-clamp-1">
+          {item.product.name}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {item.product.seller.displayName}
+        </p>
+        <p className="text-sm font-bold text-foreground">
+          {formatCurrency(item.product.price)}
+        </p>
 
         {/* Quantity controls */}
         <div className="flex items-center gap-2 mt-1">
@@ -49,7 +60,9 @@ function CartItemRow({ item }: CartItemRowProps) {
           >
             <Minus className="w-3 h-3" />
           </button>
-          <span className="text-sm font-medium w-6 text-center">{item.quantity}</span>
+          <span className="text-sm font-medium w-6 text-center">
+            {item.quantity}
+          </span>
           <button
             onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
             className="w-6 h-6 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors"
@@ -87,20 +100,22 @@ export function ShoppingCart({ onCheckout }: ShoppingCartProps) {
   // Close on Escape
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape' && isOpen) closeCart();
+      if (e.key === "Escape" && isOpen) closeCart();
     }
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   }, [isOpen, closeCart]);
 
   // Lock body scroll when open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   const panelRef = useRef<HTMLDivElement>(null);
@@ -110,8 +125,10 @@ export function ShoppingCart({ onCheckout }: ShoppingCartProps) {
       {/* Backdrop */}
       <div
         className={cn(
-          'fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300',
-          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          "fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300",
+          isOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none",
         )}
         onClick={closeCart}
         aria-hidden="true"
@@ -124,8 +141,8 @@ export function ShoppingCart({ onCheckout }: ShoppingCartProps) {
         aria-label="Shopping cart"
         aria-modal="true"
         className={cn(
-          'fixed top-0 right-0 h-full w-full max-w-md z-50 bg-background shadow-2xl flex flex-col transition-transform duration-300 ease-in-out',
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+          "fixed top-0 right-0 h-full w-full max-w-md z-50 bg-background shadow-2xl flex flex-col transition-transform duration-300 ease-in-out",
+          isOpen ? "translate-x-0" : "translate-x-full",
         )}
       >
         {/* Header */}
@@ -166,8 +183,12 @@ export function ShoppingCart({ onCheckout }: ShoppingCartProps) {
                 <ShoppingBag className="w-10 h-10 text-muted-foreground" />
               </div>
               <div>
-                <p className="font-semibold text-foreground">Your cart is empty</p>
-                <p className="text-sm text-muted-foreground mt-1">Add items from the shop to get started</p>
+                <p className="font-semibold text-foreground">
+                  Your cart is empty
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Add items from the shop to get started
+                </p>
               </div>
               <button
                 onClick={closeCart}
@@ -190,9 +211,13 @@ export function ShoppingCart({ onCheckout }: ShoppingCartProps) {
           <div className="border-t border-border px-5 py-4 space-y-3 bg-card">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground text-sm">Subtotal</span>
-              <span className="font-bold text-foreground text-lg">{formatCurrency(total)}</span>
+              <span className="font-bold text-foreground text-lg">
+                {formatCurrency(total)}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">Shipping and taxes calculated at checkout</p>
+            <p className="text-xs text-muted-foreground">
+              Shipping and taxes calculated at checkout
+            </p>
             <button
               onClick={() => {
                 closeCart();

@@ -1,45 +1,52 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getRequestUserId } from '@/lib/currentUser';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getRequestUserId } from "@/lib/currentUser";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   const userId = getRequestUserId(req);
   if (!userId) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
     const { targetUserId, action } = await req.json();
     if (!targetUserId || !action) {
-      return NextResponse.json({ error: 'targetUserId and action are required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "targetUserId and action are required" },
+        { status: 400 },
+      );
     }
 
-    if (action === 'pass') {
+    if (action === "pass") {
       return NextResponse.json({ match: false });
     }
 
     // Fetch user's dating profile
-    let myProfile = await prisma.datingProfile.findUnique({ where: { userId } });
+    let myProfile = await prisma.datingProfile.findUnique({
+      where: { userId },
+    });
     if (!myProfile) {
       myProfile = await prisma.datingProfile.create({
-        data: { userId }
+        data: { userId },
       });
     }
 
     // Fetch target's dating profile
-    let targetProfile = await prisma.datingProfile.findUnique({ where: { userId: targetUserId } });
+    let targetProfile = await prisma.datingProfile.findUnique({
+      where: { userId: targetUserId },
+    });
     if (!targetProfile) {
       targetProfile = await prisma.datingProfile.create({
-        data: { userId: targetUserId }
+        data: { userId: targetUserId },
       });
     }
 
     // Parse lists
     const parseList = (str: string) => {
       try {
-        return JSON.parse(str || '[]');
+        return JSON.parse(str || "[]");
       } catch {
         return [];
       }
@@ -69,7 +76,7 @@ export async function POST(req: NextRequest) {
       data: {
         crushes: JSON.stringify(myCrushes),
         matches: JSON.stringify(myMatches),
-      }
+      },
     });
 
     if (isMatch) {
@@ -77,12 +84,19 @@ export async function POST(req: NextRequest) {
         where: { userId: targetUserId },
         data: {
           matches: JSON.stringify(targetMatches),
-        }
+        },
       });
     }
 
-    return NextResponse.json({ match: isMatch, crushes: myCrushes, matches: myMatches });
+    return NextResponse.json({
+      match: isMatch,
+      crushes: myCrushes,
+      matches: myMatches,
+    });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to process swipe', detail: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to process swipe", detail: String(err) },
+      { status: 500 },
+    );
   }
 }

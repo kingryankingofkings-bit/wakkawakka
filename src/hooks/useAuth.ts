@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect } from 'react';
-import { useAuthStore } from '@/store/authStore';
-import { CURRENT_USER } from '@/lib/mockData';
-import type { User } from '@/types';
+import { useCallback, useEffect } from "react";
+import { useAuthStore } from "@/store/authStore";
+import { CURRENT_USER } from "@/lib/mockData";
+import type { User } from "@/types";
 
 const HAS_FIREBASE_CONFIG =
-  typeof process !== 'undefined' &&
+  typeof process !== "undefined" &&
   !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
-  process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'demo-api-key';
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== "demo-api-key";
 
 // ----- helpers ---------------------------------------------------------------
 
@@ -20,18 +20,18 @@ function firebaseUserToAppUser(fbUser: {
 }): User {
   return {
     id: fbUser.uid,
-    username: (fbUser.email ?? fbUser.uid).split('@')[0] ?? fbUser.uid,
-    email: fbUser.email ?? '',
-    displayName: fbUser.displayName ?? 'User',
+    username: (fbUser.email ?? fbUser.uid).split("@")[0] ?? fbUser.uid,
+    email: fbUser.email ?? "",
+    displayName: fbUser.displayName ?? "User",
     avatar: fbUser.photoURL ?? undefined,
     isVerified: false,
-    verificationTier: 'NONE',
+    verificationTier: "NONE",
     isPremium: false,
     isPrivate: false,
     twoFactorEnabled: false,
-    theme: 'system',
-    accentColor: 'blue',
-    language: 'en',
+    theme: "system",
+    accentColor: "blue",
+    language: "en",
     followersCount: 0,
     followingCount: 0,
     postsCount: 0,
@@ -45,8 +45,14 @@ function firebaseUserToAppUser(fbUser: {
 // ----- hook ------------------------------------------------------------------
 
 export function useAuth() {
-  const { user, isLoading, isAuthenticated, setUser, logout: storeLogout, setLoading } =
-    useAuthStore();
+  const {
+    user,
+    isLoading,
+    isAuthenticated,
+    setUser,
+    logout: storeLogout,
+    setLoading,
+  } = useAuthStore();
 
   // Set up auth listener on mount
   useEffect(() => {
@@ -55,7 +61,7 @@ export function useAuth() {
     if (HAS_FIREBASE_CONFIG) {
       // Real Firebase auth
       (async () => {
-        const { onAuthChange } = await import('@/lib/firebase');
+        const { onAuthChange } = await import("@/lib/firebase");
         unsubscribe = onAuthChange((fbUser) => {
           if (fbUser) {
             setUser(firebaseUserToAppUser(fbUser));
@@ -86,7 +92,7 @@ export function useAuth() {
       setLoading(true);
       try {
         if (HAS_FIREBASE_CONFIG) {
-          const { signInWithEmail } = await import('@/lib/firebase');
+          const { signInWithEmail } = await import("@/lib/firebase");
           const result = await signInWithEmail(email, password);
           setUser(firebaseUserToAppUser(result.user));
         } else {
@@ -99,16 +105,20 @@ export function useAuth() {
         throw err;
       }
     },
-    [setUser, setLoading]
+    [setUser, setLoading],
   );
 
   // Register
   const register = useCallback(
-    async (email: string, password: string, displayName: string): Promise<void> => {
+    async (
+      email: string,
+      password: string,
+      displayName: string,
+    ): Promise<void> => {
       setLoading(true);
       try {
         if (HAS_FIREBASE_CONFIG) {
-          const { signUpWithEmail } = await import('@/lib/firebase');
+          const { signUpWithEmail } = await import("@/lib/firebase");
           const result = await signUpWithEmail(email, password, displayName);
           setUser(firebaseUserToAppUser(result.user));
         } else {
@@ -118,7 +128,7 @@ export function useAuth() {
             ...CURRENT_USER,
             email,
             displayName,
-            username: displayName.toLowerCase().replace(/\s+/g, '_'),
+            username: displayName.toLowerCase().replace(/\s+/g, "_"),
           };
           setUser(mockNewUser);
         }
@@ -127,14 +137,14 @@ export function useAuth() {
         throw err;
       }
     },
-    [setUser, setLoading]
+    [setUser, setLoading],
   );
 
   // Logout
   const logout = useCallback(async (): Promise<void> => {
     try {
       if (HAS_FIREBASE_CONFIG) {
-        const { signOut } = await import('@/lib/firebase');
+        const { signOut } = await import("@/lib/firebase");
         await signOut();
       }
     } finally {

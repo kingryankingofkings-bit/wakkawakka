@@ -1,5 +1,5 @@
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextRequest } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 /**
  * Resolve the acting user for an API request.
@@ -10,10 +10,13 @@ import { prisma } from '@/lib/prisma';
  *
  * Returns the user id string, or null if none could be resolved.
  */
-export function getRequestUserId(req: NextRequest, bodyUserId?: string): string | null {
-  const header = req.headers.get('x-user-id');
+export function getRequestUserId(
+  req: NextRequest,
+  bodyUserId?: string,
+): string | null {
+  const header = req.headers.get("x-user-id");
   if (header) return header;
-  const q = req.nextUrl.searchParams.get('userId');
+  const q = req.nextUrl.searchParams.get("userId");
   if (q) return q;
   return bodyUserId ?? null;
 }

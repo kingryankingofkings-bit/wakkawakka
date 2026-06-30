@@ -1,4 +1,4 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from "firebase/app";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -17,16 +17,19 @@ import {
   User as FirebaseUser,
   updateProfile,
   sendEmailVerification,
-} from 'firebase/auth';
-import { getStorage } from 'firebase/storage';
+} from "firebase/auth";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'demo-api-key',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'demo.firebaseapp.com',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'demo-project',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'demo.appspot.com',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '123456789',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:123:web:abc',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "demo-api-key",
+  authDomain:
+    process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "demo.firebaseapp.com",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "demo-project",
+  storageBucket:
+    process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "demo.appspot.com",
+  messagingSenderId:
+    process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "123456789",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:123:web:abc",
 };
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
@@ -38,8 +41,8 @@ export const googleProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
 export const twitterProvider = new TwitterAuthProvider();
 
-googleProvider.addScope('profile');
-googleProvider.addScope('email');
+googleProvider.addScope("profile");
+googleProvider.addScope("email");
 
 export async function signInWithGoogle() {
   return signInWithPopup(auth, googleProvider);
@@ -57,7 +60,11 @@ export async function signInWithEmail(email: string, password: string) {
   return signInWithEmailAndPassword(auth, email, password);
 }
 
-export async function signUpWithEmail(email: string, password: string, displayName: string) {
+export async function signUpWithEmail(
+  email: string,
+  password: string,
+  displayName: string,
+) {
   const result = await createUserWithEmailAndPassword(auth, email, password);
   await updateProfile(result.user, { displayName });
   await sendEmailVerification(result.user);
@@ -76,12 +83,15 @@ export function onAuthChange(callback: (user: FirebaseUser | null) => void) {
   return onAuthStateChanged(auth, callback);
 }
 
-export async function setupTwoFactor(phoneNumber: string, recaptchaContainerId: string) {
+export async function setupTwoFactor(
+  phoneNumber: string,
+  recaptchaContainerId: string,
+) {
   const user = auth.currentUser;
-  if (!user) throw new Error('No authenticated user');
+  if (!user) throw new Error("No authenticated user");
 
   const recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaContainerId, {
-    size: 'invisible',
+    size: "invisible",
   });
 
   const multiFactorSession = await multiFactor(user).getSession();
@@ -89,19 +99,25 @@ export async function setupTwoFactor(phoneNumber: string, recaptchaContainerId: 
   const phoneAuthProvider = new PhoneAuthProvider(auth);
   const verificationId = await phoneAuthProvider.verifyPhoneNumber(
     phoneInfoOptions,
-    recaptchaVerifier
+    recaptchaVerifier,
   );
 
   return verificationId;
 }
 
-export async function completeTwoFactorSetup(verificationId: string, verificationCode: string) {
+export async function completeTwoFactorSetup(
+  verificationId: string,
+  verificationCode: string,
+) {
   const user = auth.currentUser;
-  if (!user) throw new Error('No authenticated user');
+  if (!user) throw new Error("No authenticated user");
 
-  const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
+  const credential = PhoneAuthProvider.credential(
+    verificationId,
+    verificationCode,
+  );
   const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(credential);
-  await multiFactor(user).enroll(multiFactorAssertion, 'Phone');
+  await multiFactor(user).enroll(multiFactorAssertion, "Phone");
 }
 
 export { type FirebaseUser };

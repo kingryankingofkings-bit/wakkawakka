@@ -1,21 +1,29 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import toast from 'react-hot-toast';
-import { Eye, EyeOff, Mail, Lock, Loader2, Github, AlertCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useAuth } from '@/hooks/useAuth';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import toast from "react-hot-toast";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  Loader2,
+  Github,
+  AlertCircle,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 // ── Zod schema ──────────────────────────────────────────────────────────────
 
 const loginSchema = z.object({
-  email: z.string().min(1, 'Email is required').email('Enter a valid email'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().min(1, "Email is required").email("Enter a valid email"),
+  password: z.string().min(1, "Password is required"),
   remember: z.boolean().optional(),
 });
 
@@ -27,7 +35,9 @@ export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [isSocialLoading, setIsSocialLoading] = useState<'google' | 'github' | null>(null);
+  const [isSocialLoading, setIsSocialLoading] = useState<
+    "google" | "github" | null
+  >(null);
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -36,39 +46,44 @@ export default function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '', remember: false },
+    defaultValues: { email: "", password: "", remember: false },
   });
 
   const onSubmit = async (data: LoginFormValues) => {
     setServerError(null);
     try {
       await login(data.email, data.password);
-      toast.success('Welcome back!');
-      router.push('/feed');
+      toast.success("Welcome back!");
+      router.push("/feed");
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : 'Invalid email or password. Please try again.';
+        err instanceof Error
+          ? err.message
+          : "Invalid email or password. Please try again.";
       setServerError(message);
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'github') => {
+  const handleSocialLogin = async (provider: "google" | "github") => {
     setIsSocialLoading(provider);
     setServerError(null);
     try {
-      const { signInWithGoogle, signInWithGithub } = await import('@/lib/firebase');
-      if (provider === 'google') {
+      const { signInWithGoogle, signInWithGithub } =
+        await import("@/lib/firebase");
+      if (provider === "google") {
         await signInWithGoogle();
       } else {
         await signInWithGithub();
       }
-      toast.success('Signed in!');
-      router.push('/feed');
+      toast.success("Signed in!");
+      router.push("/feed");
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : 'Social sign-in failed. Please try again.';
+        err instanceof Error
+          ? err.message
+          : "Social sign-in failed. Please try again.";
       // Popup closed by user is expected — don't show error
-      if (!message.includes('popup-closed')) {
+      if (!message.includes("popup-closed")) {
         setServerError(message);
       }
     } finally {
@@ -77,17 +92,20 @@ export default function LoginPage() {
   };
 
   const handleForgotPassword = async () => {
-    const email = (document.getElementById('email') as HTMLInputElement | null)?.value;
+    const email = (document.getElementById("email") as HTMLInputElement | null)
+      ?.value;
     if (!email) {
-      toast.error('Enter your email first, then click Forgot password.');
+      toast.error("Enter your email first, then click Forgot password.");
       return;
     }
     try {
-      const { resetPassword } = await import('@/lib/firebase');
+      const { resetPassword } = await import("@/lib/firebase");
       await resetPassword(email);
-      toast.success('Password reset email sent!');
+      toast.success("Password reset email sent!");
     } catch {
-      toast.error('Could not send reset email. Check the address and try again.');
+      toast.error(
+        "Could not send reset email. Check the address and try again.",
+      );
     }
   };
 
@@ -95,7 +113,9 @@ export default function LoginPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="space-y-1">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">Welcome back</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">
+          Welcome back
+        </h2>
         <p className="text-sm text-muted-foreground">
           Sign in to your account to continue
         </p>
@@ -105,16 +125,16 @@ export default function LoginPage() {
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
-          onClick={() => handleSocialLogin('google')}
+          onClick={() => handleSocialLogin("google")}
           disabled={!!isSocialLoading || isSubmitting}
           className={cn(
-            'flex items-center justify-center gap-2 rounded-lg border border-border bg-background',
-            'px-4 py-2.5 text-sm font-medium text-foreground',
-            'transition-all hover:bg-muted hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-ring',
-            'disabled:opacity-50 disabled:cursor-not-allowed'
+            "flex items-center justify-center gap-2 rounded-lg border border-border bg-background",
+            "px-4 py-2.5 text-sm font-medium text-foreground",
+            "transition-all hover:bg-muted hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-ring",
+            "disabled:opacity-50 disabled:cursor-not-allowed",
           )}
         >
-          {isSocialLoading === 'google' ? (
+          {isSocialLoading === "google" ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
@@ -141,16 +161,16 @@ export default function LoginPage() {
 
         <button
           type="button"
-          onClick={() => handleSocialLogin('github')}
+          onClick={() => handleSocialLogin("github")}
           disabled={!!isSocialLoading || isSubmitting}
           className={cn(
-            'flex items-center justify-center gap-2 rounded-lg border border-border bg-background',
-            'px-4 py-2.5 text-sm font-medium text-foreground',
-            'transition-all hover:bg-muted hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-ring',
-            'disabled:opacity-50 disabled:cursor-not-allowed'
+            "flex items-center justify-center gap-2 rounded-lg border border-border bg-background",
+            "px-4 py-2.5 text-sm font-medium text-foreground",
+            "transition-all hover:bg-muted hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-ring",
+            "disabled:opacity-50 disabled:cursor-not-allowed",
           )}
         >
-          {isSocialLoading === 'github' ? (
+          {isSocialLoading === "github" ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <Github className="h-4 w-4" />
@@ -165,7 +185,9 @@ export default function LoginPage() {
           <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-background px-3 text-muted-foreground">or continue with email</span>
+          <span className="bg-background px-3 text-muted-foreground">
+            or continue with email
+          </span>
         </div>
       </div>
 
@@ -181,7 +203,10 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {/* Email */}
         <div className="space-y-1.5">
-          <label htmlFor="email" className="block text-sm font-medium text-foreground">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-foreground"
+          >
             Email
           </label>
           <div className="relative">
@@ -191,12 +216,14 @@ export default function LoginPage() {
               type="email"
               autoComplete="email"
               placeholder="you@example.com"
-              {...register('email')}
+              {...register("email")}
               className={cn(
-                'w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border bg-background text-foreground',
-                'transition-all placeholder:text-muted-foreground/60',
-                'focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring',
-                errors.email ? 'border-destructive focus:ring-destructive' : 'border-input'
+                "w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border bg-background text-foreground",
+                "transition-all placeholder:text-muted-foreground/60",
+                "focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring",
+                errors.email
+                  ? "border-destructive focus:ring-destructive"
+                  : "border-input",
               )}
             />
           </div>
@@ -208,7 +235,10 @@ export default function LoginPage() {
         {/* Password */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label htmlFor="password" className="block text-sm font-medium text-foreground">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-foreground"
+            >
               Password
             </label>
             <button
@@ -223,28 +253,36 @@ export default function LoginPage() {
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <input
               id="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               placeholder="••••••••"
-              {...register('password')}
+              {...register("password")}
               className={cn(
-                'w-full pl-10 pr-10 py-2.5 text-sm rounded-lg border bg-background text-foreground',
-                'transition-all placeholder:text-muted-foreground/60',
-                'focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring',
-                errors.password ? 'border-destructive focus:ring-destructive' : 'border-input'
+                "w-full pl-10 pr-10 py-2.5 text-sm rounded-lg border bg-background text-foreground",
+                "transition-all placeholder:text-muted-foreground/60",
+                "focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring",
+                errors.password
+                  ? "border-destructive focus:ring-destructive"
+                  : "border-input",
               )}
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
             </button>
           </div>
           {errors.password && (
-            <p className="text-xs text-destructive">{errors.password.message}</p>
+            <p className="text-xs text-destructive">
+              {errors.password.message}
+            </p>
           )}
         </div>
 
@@ -253,10 +291,13 @@ export default function LoginPage() {
           <input
             id="remember"
             type="checkbox"
-            {...register('remember')}
+            {...register("remember")}
             className="h-4 w-4 rounded border-input text-primary accent-primary cursor-pointer"
           />
-          <label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
+          <label
+            htmlFor="remember"
+            className="text-sm text-muted-foreground cursor-pointer"
+          >
             Remember me for 30 days
           </label>
         </div>
@@ -266,10 +307,10 @@ export default function LoginPage() {
           type="submit"
           disabled={isSubmitting || !!isSocialLoading}
           className={cn(
-            'w-full flex items-center justify-center gap-2 rounded-lg px-4 py-2.5',
-            'bg-primary text-primary-foreground font-semibold text-sm',
-            'transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background',
-            'disabled:opacity-60 disabled:cursor-not-allowed shadow-sm'
+            "w-full flex items-center justify-center gap-2 rounded-lg px-4 py-2.5",
+            "bg-primary text-primary-foreground font-semibold text-sm",
+            "transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background",
+            "disabled:opacity-60 disabled:cursor-not-allowed shadow-sm",
           )}
         >
           {isSubmitting ? (
@@ -278,14 +319,14 @@ export default function LoginPage() {
               Signing in…
             </>
           ) : (
-            'Sign in'
+            "Sign in"
           )}
         </button>
       </form>
 
       {/* Sign up link */}
       <p className="text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{' '}
+        Don&apos;t have an account?{" "}
         <Link
           href="/signup"
           className="font-semibold text-primary hover:underline underline-offset-2 transition-colors"

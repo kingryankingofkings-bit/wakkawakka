@@ -6,13 +6,16 @@ description: Use when auditing websites for accessibility compliance, checking W
 # Accessibility Audit Reviewer
 
 ## Goal
+
 Audit websites for WCAG compliance and identify accessibility barriers.
 
 ## Do Not Use When
+
 - Building accessible components (use `accessibility-builder`)
 - The site is known to be accessible
 
 ## Required Inputs To Inspect
+
 - Target WCAG level (A, AA, AAA)
 - Page URLs to audit
 - Component library used
@@ -21,6 +24,7 @@ Audit websites for WCAG compliance and identify accessibility barriers.
 ## Automated Checks
 
 Run these tools first:
+
 1. **axe DevTools**: Browser extension
 2. **Lighthouse**: Accessibility score
 3. **WAVE**: Web accessibility evaluator
@@ -29,12 +33,14 @@ Run these tools first:
 ## Manual Checklist
 
 ### Keyboard
+
 - [ ] All interactive elements reachable with Tab
 - [ ] Focus order is logical
 - [ ] Focus indicators visible
 - [ ] No keyboard traps
 
 ### Screen Reader
+
 - [ ] Headings navigate correctly (H1-H6)
 - [ ] Images have alt text
 - [ ] Form labels associated
@@ -42,6 +48,7 @@ Run these tools first:
 - [ ] Skip link works
 
 ### Visual
+
 - [ ] Color contrast 4.5:1 minimum (text)
 - [ ] Information not conveyed by color alone
 - [ ] Text resizes without breaking layout
@@ -49,13 +56,14 @@ Run these tools first:
 
 ## Severity Labels
 
-| Severity | Example |
-|----------|---------|
-| Critical | Form unusable without mouse |
-| High | Missing alt text on informative images |
-| Medium | Low contrast on secondary text |
-| Low | Focus indicator could be more visible |
+| Severity | Example                                |
+| -------- | -------------------------------------- |
+| Critical | Form unusable without mouse            |
+| High     | Missing alt text on informative images |
+| Medium   | Low contrast on secondary text         |
+| Low      | Focus indicator could be more visible  |
 
 ## Coordinates With
+
 - `accessibility-builder` — for building accessible components
 - `design-system-enforcer` — for contrast requirements

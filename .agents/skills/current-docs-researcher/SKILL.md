@@ -6,14 +6,17 @@ description: Use when researching current documentation for libraries, framework
 # Current Docs Researcher
 
 ## Goal
+
 Verify API signatures, syntax, and best practices against current official documentation before implementing.
 
 ## Do Not Use When
+
 - The API is well-known and stable
 - Working with internal/proprietary APIs not publicly documented
 - The implementation is already verified
 
 ## Required Inputs To Inspect
+
 - Library/framework name and version
 - Specific feature or API to verify
 - Current documentation URL
@@ -30,24 +33,26 @@ Verify API signatures, syntax, and best practices against current official docum
 
 ## Documentation Sources
 
-| Type | Source |
-|------|--------|
-| React | react.dev |
-| Next.js | nextjs.org/docs |
-| Vue | vuejs.org |
-| Svelte | svelte.dev/docs |
+| Type     | Source               |
+| -------- | -------------------- |
+| React    | react.dev            |
+| Next.js  | nextjs.org/docs      |
+| Vue      | vuejs.org            |
+| Svelte   | svelte.dev/docs      |
 | Tailwind | tailwindcss.com/docs |
-| Prisma | prisma.io/docs |
-| Drizzle | ORM Drizzle docs |
-| Stripe | stripe.com/docs |
-| Auth.js | authjs.dev |
+| Prisma   | prisma.io/docs       |
+| Drizzle  | ORM Drizzle docs     |
+| Stripe   | stripe.com/docs      |
+| Auth.js  | authjs.dev           |
 
 ## Safety Rules
+
 - Never assume API from memory — always verify
 - Check the installed version, not latest
 - Note when docs were last verified
 - Flag if documentation is unclear
 
 ## Coordinates With
+
 - All implementation skills — verify before coding
 - `package-version-verifier` — for version checks

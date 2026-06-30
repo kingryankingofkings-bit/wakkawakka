@@ -6,13 +6,16 @@ description: Use when building ecommerce functionality, integrating payment proc
 # Ecommerce and Payments Builder
 
 ## Goal
+
 Implement secure ecommerce functionality with proper payment processing, cart management, and order tracking.
 
 ## Do Not Use When
+
 - No payment processing needed
 - Using a full ecommerce platform (Shopify, etc.)
 
 ## Required Inputs To Inspect
+
 - Payment processor (Stripe, PayPal, Square)
 - Product types (physical, digital, subscription)
 - Cart requirements (guest checkout, persistent cart)
@@ -33,6 +36,7 @@ Implement secure ecommerce functionality with proper payment processing, cart ma
 10. **Secure implementation**: Never trust client-side totals
 
 ## Security Rules
+
 - Always calculate totals server-side
 - Verify webhook signatures
 - Use Stripe Checkout for PCI compliance
@@ -40,6 +44,7 @@ Implement secure ecommerce functionality with proper payment processing, cart ma
 - Handle idempotency (prevent duplicate charges)
 
 ## Quality Checks
+
 - [ ] Payment flows work end-to-end
 - [ ] Webhooks handled correctly
 - [ ] Orders saved after payment
@@ -49,6 +54,7 @@ Implement secure ecommerce functionality with proper payment processing, cart ma
 - [ ] Refund process documented
 
 ## Coordinates With
+
 - `backend-api-architect` — for order API
 - `database-schema-designer` — for order/product tables
 - `email-notification-builder` — for confirmations

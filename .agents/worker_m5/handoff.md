@@ -1,6 +1,7 @@
 # Handoff Report — Batch 4: Direct Messaging & Communication (Real Database Integration)
 
 ## 1. Observation
+
 - Verified that all TypeScript compilation (`npm run type-check`), linter rules (`npm run lint`), and static production build tasks (`npm run build`) complete successfully.
 - Verified that the full integration and E2EE test suite (`node tests/e2e_runner.js`) passes successfully.
 - Implemented and verified the following new API endpoints:
@@ -18,6 +19,7 @@
 - Updated `integration_inventory.md` with status `Implemented` for the Batch 4 Features section.
 
 ## 2. Logic Chain
+
 - Built real API endpoints in `/api/messages/conversations` to allow fetching of conversation structures from SQLite via Prisma Client, ensuring that 1-to-1 conversation requests query for pre-existing channels first to prevent duplicate channels.
 - Configured `/api/messages/conversations/[id]/messages` to retrieve and write actual messages in SQLite, automatically updating the parent conversation's `lastMessageAt` field to keep active discussions bubble up correctly.
 - Enabled real-time event pipeline connections by subscribing clients to typing events (`typing`, `stop-typing`) via Socket.io and resolving individual display names using conversation membership metadata.
@@ -26,13 +28,16 @@
 - Arranged sidebar layout into tabs ("Details" and "Shared Media"), dynamically extracting media files from local message arrays, and utilizing `/api/search` to feed user search inputs into the group membership POST endpoint.
 
 ## 3. Caveats
+
 - Socket connections rely on the server running. In standard dev mode, standard Socket.io fallbacks are enabled to avoid client side crashes if the socket server is temporarily offline.
 - File uploads rely on the `/api/upload` endpoint configuration and temporary storage layout.
 
 ## 4. Conclusion
+
 - Batch 4 (Direct Messaging & Communication) real database integrations, client typing indicator socket pipelines, simulated E2EE encryption/decryption toggles, and in-chat management sidebars are fully implemented, verified, and passing all tests.
 
 ## 5. Verification Method
+
 - Run `npm run type-check` to verify TypeScript compile checks.
 - Run `npm run lint` to verify linter status.
 - Run `npm run build` to check build artifacts and compile static routes.

@@ -6,13 +6,16 @@ description: Use when checking for visual changes, CSS regressions, layout shift
 # Visual Regression Reviewer
 
 ## Goal
+
 Detect and fix unintended visual changes introduced by code modifications.
 
 ## Do Not Use When
+
 - Visual change is intentional
 - The issue is functional, not visual
 
 ## Required Inputs To Inspect
+
 - Before/after screenshots
 - Browser and viewport
 - Recent CSS/HTML changes
@@ -28,6 +31,7 @@ Detect and fix unintended visual changes introduced by code modifications.
 6. **Verify**: Compare again
 
 ## Tools
+
 - Chromatic (Storybook)
 - Playwright screenshots
 - Percy
@@ -35,19 +39,21 @@ Detect and fix unintended visual changes introduced by code modifications.
 
 ## Common Regressions
 
-| Change | Risk |
-|--------|------|
-| Global CSS | Breaks unrelated components |
-| Dependency update | Component styling changes |
-| Refactoring | Removes needed classes |
-| Responsive changes | Breaks other breakpoints |
+| Change             | Risk                        |
+| ------------------ | --------------------------- |
+| Global CSS         | Breaks unrelated components |
+| Dependency update  | Component styling changes   |
+| Refactoring        | Removes needed classes      |
+| Responsive changes | Breaks other breakpoints    |
 
 ## Quality Checks
+
 - [ ] Visual differences identified
 - [ ] Root cause CSS/HTML found
 - [ ] Fix restores intended appearance
 - [ ] No new regressions introduced
 
 ## Coordinates With
+
 - `component-system-builder` — for component isolation
 - `css-styling-architecture` — for CSS changes

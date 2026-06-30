@@ -3,6 +3,7 @@
 Last visited: 2026-06-30T10:30:00Z
 
 ## Tasks
+
 - [x] Verification of current codebase state (compilation and tests pass)
 - [x] Create API route `/api/messages/conversations/route.ts` (GET / POST)
 - [x] Create API route `/api/messages/conversations/[id]/messages/route.ts` (GET / POST)
