@@ -293,6 +293,35 @@ export const FEATURE_STATUS: Record<string, FeatureStatus> = {
     href: '/safety',
     note: 'Review active sessions by device/location and sign out remote ones.',
   },
+
+  // ---------------------------------------------------------------------------
+  // Batch 8 — Developer APIs & Integrations
+  // ---------------------------------------------------------------------------
+  'developer-apis-and-integrations--f769--api-developer-access-v2': {
+    status: 'live',
+    href: '/developer',
+    note: 'Developer Portal to generate scoped API keys with reveal/copy/revoke.',
+  },
+  'developer-apis-and-integrations--f836--rest-api': {
+    status: 'live',
+    href: '/developer',
+    note: 'Scoped API keys (posts/profile/messages/webhooks) for REST access.',
+  },
+  'developer-apis-and-integrations--f835--post-published-webhook': {
+    status: 'live',
+    href: '/developer',
+    note: 'Register webhook endpoints for post.published and other events, with test send.',
+  },
+  'developer-apis-and-integrations--f829--oauth-2-0-authentication': {
+    status: 'live',
+    href: '/developer',
+    note: 'Manage OAuth-connected apps and revoke their access by scope.',
+  },
+  'developer-apis-and-integrations--f799--direct-web-widgets': {
+    status: 'live',
+    href: '/developer',
+    note: 'Embed-code generator for profile and post widgets (copyable iframe snippet).',
+  },
 };
 
 const DEFAULT: FeatureStatus = { status: 'planned' };
