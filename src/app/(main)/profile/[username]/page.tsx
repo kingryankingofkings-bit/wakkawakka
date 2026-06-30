@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { MOCK_USERS, MOCK_POSTS, CURRENT_USER } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
+import { EndorsementsCard } from '@/components/profile/EndorsementsCard';
 import { EditProfileModal } from '@/components/profile/EditProfileModal';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
@@ -171,6 +172,13 @@ export default function ProfilePage({ params }: ProfilePageProps) {
           </motion.div>
         ) : (
           <>
+            {/* Skills & endorsements */}
+            <EndorsementsCard
+              userId={profileUser.id}
+              displayName={profileUser.displayName}
+              isOwnProfile={isOwnProfile}
+            />
+
             {/* Tabs */}
             <div className="sticky top-0 z-10 mt-4 bg-background/80 backdrop-blur-sm border-b border-border">
               <div className="flex overflow-x-auto no-scrollbar">

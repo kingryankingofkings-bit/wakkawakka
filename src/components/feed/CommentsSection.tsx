@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Reply, Trash2, ChevronDown, ChevronUp, Send } from 'lucide-react';
+import { Heart, Reply, Trash2, ChevronDown, ChevronUp, Send, Pin, Pencil, ArrowUpDown, Check, X } from 'lucide-react';
 import { Comment, Post } from '@/types';
 import { CURRENT_USER } from '@/lib/mockData';
 import { formatRelativeTime, cn } from '@/lib/utils';
@@ -131,13 +131,24 @@ interface CommentItemProps {
   onReply: (commentId: string, authorName: string) => void;
   onDelete: (commentId: string) => void;
   onLike: (commentId: string) => void;
+  onPin?: (commentId: string) => void;
+  onEdit?: (commentId: string, content: string) => void;
+  isPinned?: boolean;
   isReply?: boolean;
 }
 
-function CommentItem({ comment, onReply, onDelete, onLike, isReply = false }: CommentItemProps) {
+function CommentItem({ comment, onReply, onDelete, onLike, onPin, onEdit, isPinned = false, isReply = false }: CommentItemProps) {
   const isOwn = comment.authorId === CURRENT_USER.id;
   const [showReplies, setShowReplies] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(comment.content);
   const replyCount = comment.replies?.length ?? 0;
+
+  function saveEdit() {
+    const v = draft.trim();
+    if (v && v !== comment.content) onEdit?.(comment.id, v);
+    setEditing(false);
+  }
 
   return (
     <motion.div
@@ -165,7 +176,7 @@ function CommentItem({ comment, onReply, onDelete, onLike, isReply = false }: Co
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <div className="bg-muted rounded-2xl px-3 py-2">
+        <div className={cn('rounded-2xl px-3 py-2', isPinned ? 'bg-primary/5 border border-primary/20' : 'bg-muted')}>
           <div className="flex items-center gap-1.5 mb-0.5">
             <span className="text-sm font-semibold text-foreground">
               {comment.author.displayName}
@@ -173,8 +184,33 @@ function CommentItem({ comment, onReply, onDelete, onLike, isReply = false }: Co
             {comment.author.isVerified && (
               <span className="text-xs text-blue-500">✓</span>
             )}
+            {isPinned && (
+              <span className="ml-auto flex items-center gap-1 text-[10px] font-bold text-primary">
+                <Pin className="h-3 w-3 fill-current" /> Pinned
+              </span>
+            )}
           </div>
-          <p className="text-sm text-foreground leading-relaxed">{comment.content}</p>
+          {editing ? (
+            <div className="space-y-1.5">
+              <textarea
+                value={draft}
+                onChange={e => setDraft(e.target.value)}
+                className="w-full text-sm bg-background border border-border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                rows={2}
+                autoFocus
+              />
+              <div className="flex items-center gap-2">
+                <button onClick={saveEdit} className="flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
+                  <Check className="h-3 w-3" /> Save
+                </button>
+                <button onClick={() => { setEditing(false); setDraft(comment.content); }} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+                  <X className="h-3 w-3" /> Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-foreground leading-relaxed">{comment.content}</p>
+          )}
         </div>
 
         {/* Actions */}
@@ -201,6 +237,27 @@ function CommentItem({ comment, onReply, onDelete, onLike, isReply = false }: Co
             >
               <Reply className="w-3 h-3" />
               Reply
+            </button>
+          )}
+          {isOwn && !editing && (
+            <button
+              onClick={() => { setEditing(true); setDraft(comment.content); }}
+              className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              <Pencil className="w-3 h-3" />
+              Edit
+            </button>
+          )}
+          {!isReply && onPin && (
+            <button
+              onClick={() => onPin(comment.id)}
+              className={cn(
+                'text-xs font-medium transition-colors flex items-center gap-1',
+                isPinned ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <Pin className={cn('w-3 h-3', isPinned && 'fill-current')} />
+              {isPinned ? 'Unpin' : 'Pin'}
             </button>
           )}
           {isOwn && (
@@ -267,9 +324,39 @@ export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
   const [showAll, setShowAll] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [replyingTo, setReplyingTo] = useState<{ id: string; name: string } | null>(null);
+  const [sortMode, setSortMode] = useState<'top' | 'newest'>('top');
+  const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const displayedComments = showAll ? comments : comments.slice(0, 2);
+  // Order: pinned first, then by the selected sort mode.
+  const orderedComments = useMemo(() => {
+    const score = (c: Comment) =>
+      sortMode === 'top' ? c.likesCount : +new Date(c.createdAt);
+    return [...comments].sort((a, b) => {
+      const ap = pinnedIds.has(a.id) ? 1 : 0;
+      const bp = pinnedIds.has(b.id) ? 1 : 0;
+      if (ap !== bp) return bp - ap;
+      return score(b) - score(a);
+    });
+  }, [comments, sortMode, pinnedIds]);
+
+  const displayedComments = showAll ? orderedComments : orderedComments.slice(0, 2);
+
+  const handlePin = (commentId: string) => {
+    setPinnedIds(prev => {
+      const n = new Set(prev);
+      n.has(commentId) ? n.delete(commentId) : n.add(commentId);
+      return n;
+    });
+  };
+
+  const handleEdit = (commentId: string, content: string) => {
+    const apply = (c: Comment): Comment =>
+      c.id === commentId
+        ? { ...c, content }
+        : { ...c, replies: c.replies?.map(apply) ?? [] };
+    setComments(prev => prev.map(apply));
+  };
 
   const handleReply = (commentId: string, authorName: string) => {
     setReplyingTo({ id: commentId, name: authorName });
@@ -286,6 +373,12 @@ export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
           replies: c.replies?.filter((r) => r.id !== commentId) ?? [],
         }))
     );
+    setPinnedIds((prev) => {
+      if (!prev.has(commentId)) return prev;
+      const n = new Set(prev);
+      n.delete(commentId);
+      return n;
+    });
   };
 
   const handleLike = (commentId: string) => {
@@ -361,6 +454,20 @@ export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
           className="overflow-hidden"
         >
           <div className="pt-3 pb-1 border-t border-border space-y-3">
+            {/* Sort control */}
+            {comments.length > 1 && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">{comments.length} comments</span>
+                <button
+                  onClick={() => setSortMode(m => (m === 'top' ? 'newest' : 'top'))}
+                  className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <ArrowUpDown className="h-3 w-3" />
+                  {sortMode === 'top' ? 'Top' : 'Newest'}
+                </button>
+              </div>
+            )}
+
             {/* Comment list */}
             <AnimatePresence mode="popLayout">
               {displayedComments.map((comment) => (
@@ -370,6 +477,9 @@ export function CommentsSection({ post, isExpanded }: CommentsSectionProps) {
                   onReply={handleReply}
                   onDelete={handleDelete}
                   onLike={handleLike}
+                  onPin={handlePin}
+                  onEdit={handleEdit}
+                  isPinned={pinnedIds.has(comment.id)}
                 />
               ))}
             </AnimatePresence>

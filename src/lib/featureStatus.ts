@@ -103,6 +103,35 @@ export const FEATURE_STATUS: Record<string, FeatureStatus> = {
     href: '/explore',
     note: 'Muted keywords (managed in Explore) hide matching posts from the feed.',
   },
+
+  // ---------------------------------------------------------------------------
+  // Batch 3 — Interpersonal & Community Engagement
+  // ---------------------------------------------------------------------------
+  'interpersonal-and-community-engagement--f250--comments-and-pinning': {
+    status: 'live',
+    href: '/feed',
+    note: 'Comment threads with pin-to-top, Top/Newest sorting, likes, and replies.',
+  },
+  'interpersonal-and-community-engagement--f311--post-comments': {
+    status: 'live',
+    href: '/feed',
+    note: 'Threaded comments with inline editing, replies, likes, and delete.',
+  },
+  'interpersonal-and-community-engagement--f320--recommendations-and-endorsements': {
+    status: 'live',
+    href: '/profile/maya_lifestyle',
+    note: 'LinkedIn-style skill endorsements; owners curate skills, visitors endorse.',
+  },
+  'interpersonal-and-community-engagement--f288--interactive-polls': {
+    status: 'live',
+    href: '/feed?create=1',
+    note: 'Create polls in the composer; vote and see live tallies on posts.',
+  },
+  'interpersonal-and-community-engagement--f285--heart-reactions': {
+    status: 'live',
+    href: '/feed',
+    note: 'Six animated reactions (Like/Love/Haha/Wow/Sad/Angry) on posts.',
+  },
 };
 
 const DEFAULT: FeatureStatus = { status: 'planned' };
