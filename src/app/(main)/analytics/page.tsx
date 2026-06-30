@@ -1,17 +1,40 @@
 'use client';
 
-import { useState } from 'react';
-import { TrendingUp, TrendingDown, Eye, Users, BarChart2, FileDown } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { TrendingUp, TrendingDown, Eye, Users, BarChart2, FileDown, DollarSign, FileJson, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
-import { formatCount, formatRelativeTime } from '@/lib/utils';
+import { formatCount, formatRelativeTime, formatCurrency } from '@/lib/utils';
 import { MOCK_POSTS, CURRENT_USER } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
+import { downloadCSV, downloadJSON } from '@/lib/exportData';
 import toast from 'react-hot-toast';
 
 const DATE_RANGES = ['7d', '30d', '90d'] as const;
 type DateRange = typeof DATE_RANGES[number];
+
+/** Deterministic pseudo-random in [0,1) from a string seed (stable across renders). */
+function seededRandom(seed: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return ((h >>> 0) % 1000) / 1000;
+}
+
+function generateRevenue(range: DateRange) {
+  const multiplier = range === '7d' ? 1 : range === '30d' ? 4.3 : 13;
+  const sources = [
+    { label: 'Subscriptions', value: Math.round(420 * multiplier), color: '#8b5cf6' },
+    { label: 'Tips', value: Math.round(180 * multiplier), color: '#ec4899' },
+    { label: 'Shop sales', value: Math.round(260 * multiplier), color: '#3b82f6' },
+    { label: 'Creator bonus', value: Math.round(90 * multiplier), color: '#22c55e' },
+  ];
+  const total = sources.reduce((s, x) => s + x.value, 0);
+  return { sources, total };
+}
 
 function generateStats(range: DateRange) {
   const multiplier = range === '7d' ? 1 : range === '30d' ? 4.3 : 13;
@@ -97,10 +120,42 @@ function DonutChart({ segments }: { segments: { label: string; value: number; co
 
 export default function AnalyticsPage() {
   const [range, setRange] = useState<DateRange>('30d');
-  const stats = generateStats(range);
-  const barData = generateBarData(range);
+  const [exportOpen, setExportOpen] = useState(false);
+  // barData is generated with randomness — memoize so it's stable per range.
+  const stats = useMemo(() => generateStats(range), [range]);
+  const barData = useMemo(() => generateBarData(range), [range]);
+  const revenue = useMemo(() => generateRevenue(range), [range]);
 
   const topPosts = MOCK_POSTS.slice().sort((a, b) => b.likesCount - a.likesCount).slice(0, 3);
+
+  function buildExportRows() {
+    const summary = [
+      { metric: 'Impressions', value: stats.impressions, trendPct: stats.impressionsTrend },
+      { metric: 'Reach', value: stats.reach, trendPct: stats.reachTrend },
+      { metric: 'Profile Views', value: stats.profileViews, trendPct: stats.profileViewsTrend },
+      { metric: 'New Followers', value: stats.followerGrowth, trendPct: stats.followerGrowthTrend },
+      ...revenue.sources.map((s) => ({ metric: `Revenue: ${s.label}`, value: s.value, trendPct: '' })),
+      { metric: 'Revenue: Total', value: revenue.total, trendPct: '' },
+    ];
+    return summary;
+  }
+
+  function handleExport(format: 'csv' | 'json') {
+    const rows = buildExportRows();
+    const stamp = new Date().toISOString().slice(0, 10);
+    if (format === 'csv') {
+      downloadCSV(`wakka-analytics-${range}-${stamp}.csv`, rows, ['metric', 'value', 'trendPct']);
+    } else {
+      downloadJSON(`wakka-analytics-${range}-${stamp}.json`, {
+        range,
+        generatedAt: new Date().toISOString(),
+        summary: rows,
+        timeseries: barData,
+      });
+    }
+    setExportOpen(false);
+    toast.success(`Exported ${format.toUpperCase()}`);
+  }
 
   const contentTypes = [
     { label: 'Images', value: 45, color: '#3b82f6' },
@@ -120,10 +175,25 @@ export default function AnalyticsPage() {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-bold">Analytics</h1>
-        <Button variant="outline" size="sm" onClick={() => toast.success('CSV export started!')}>
-          <FileDown className="h-4 w-4" />
-          Export
-        </Button>
+        <div className="relative">
+          <Button variant="outline" size="sm" onClick={() => setExportOpen(v => !v)}>
+            <FileDown className="h-4 w-4" />
+            Export
+          </Button>
+          {exportOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setExportOpen(false)} />
+              <div className="absolute right-0 mt-1 z-50 w-44 rounded-xl border border-border bg-card shadow-xl py-1">
+                <button onClick={() => handleExport('csv')} className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted text-left">
+                  <FileSpreadsheet className="h-4 w-4 text-green-500" /> Export as CSV
+                </button>
+                <button onClick={() => handleExport('json')} className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted text-left">
+                  <FileJson className="h-4 w-4 text-amber-500" /> Export as JSON
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="p-4 space-y-6">
@@ -164,6 +234,33 @@ export default function AnalyticsPage() {
             </Card>
           ))}
         </div>
+
+        {/* Revenue breakdown */}
+        <Card padding="md">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-green-500" /> Revenue Breakdown
+            </h3>
+            <div className="text-right">
+              <p className="text-xl font-bold">{formatCurrency(revenue.total)}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">this period</p>
+            </div>
+          </div>
+          <div className="space-y-2.5">
+            {revenue.sources.map((s) => (
+              <div key={s.label} className="flex items-center gap-3">
+                <span className="text-sm w-28 flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: s.color }} />
+                  {s.label}
+                </span>
+                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(s.value / revenue.total) * 100}%`, backgroundColor: s.color }} />
+                </div>
+                <span className="text-sm font-semibold w-16 text-right">{formatCurrency(s.value)}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
 
         {/* Impressions chart */}
         <Card padding="md">
@@ -219,7 +316,7 @@ export default function AnalyticsPage() {
                 <div key={day} className="contents">
                   <div className="text-xs text-muted-foreground py-1 pr-2 flex items-center">{day}</div>
                   {Array.from({ length: 24 }, (_, h) => {
-                    const val = Math.random();
+                    const val = seededRandom(`${day}-${h}-${range}`);
                     return (
                       <div
                         key={h}

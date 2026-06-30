@@ -210,6 +210,50 @@ export const FEATURE_STATUS: Record<string, FeatureStatus> = {
     href: '/profile/maya_lifestyle',
     note: 'Recurring monthly subscription tiers per creator, cancellable any time.',
   },
+
+  // ---------------------------------------------------------------------------
+  // Batch 6 — Analytics, Business & Creator Tools
+  // ---------------------------------------------------------------------------
+  'analytics-business-and-creator-tools--f589--creator-analytics-dashboard': {
+    status: 'live',
+    href: '/analytics',
+    note: 'Full dashboard: impressions, reach, follower growth, content & audience charts.',
+  },
+  'analytics-business-and-creator-tools--f591--creator-dashboard': {
+    status: 'live',
+    href: '/analytics',
+    note: 'Creator overview with date-range switching (7d / 30d / 90d).',
+  },
+  'analytics-business-and-creator-tools--f634--revenue-breakdown-dashboard': {
+    status: 'live',
+    href: '/analytics',
+    note: 'Revenue by source (subscriptions, tips, shop sales, bonus) with totals.',
+  },
+  'analytics-business-and-creator-tools--f603--feed-performance-metrics': {
+    status: 'live',
+    href: '/analytics',
+    note: 'Impressions time-series chart across the selected date range.',
+  },
+  'analytics-business-and-creator-tools--f608--individual-post-performance-metrics': {
+    status: 'live',
+    href: '/analytics',
+    note: 'Top-performing posts ranked with likes, comments, and views.',
+  },
+  'analytics-business-and-creator-tools--f565--audience-location-demographics': {
+    status: 'live',
+    href: '/analytics',
+    note: 'Top audience locations with share bars.',
+  },
+  'analytics-business-and-creator-tools--f604--follower-demographics': {
+    status: 'live',
+    href: '/analytics',
+    note: 'Audience gender split and location breakdown.',
+  },
+  'analytics-business-and-creator-tools--f572--automated-pdf-report-generator': {
+    status: 'beta',
+    href: '/analytics',
+    note: 'One-click CSV/JSON analytics export; PDF generation is planned.',
+  },
 };
 
 const DEFAULT: FeatureStatus = { status: 'planned' };
