@@ -70,7 +70,7 @@ export async function PATCH(
         return NextResponse.json({ error: "You must be enrolled to rate this course" }, { status: 403 });
       }
 
-      const course = await prisma.learningCourse.findUnique({ where: { id } }) as any;
+      const course = await prisma.learningCourse.findUnique({ where: { id } });
       if (!course) {
         return NextResponse.json({ error: "Course not found" }, { status: 404 });
       }
@@ -80,7 +80,7 @@ export async function PATCH(
       const newCount = (course.ratingCount ?? 0) + 1;
       const newAverage = (currentTotal + newRating) / newCount;
 
-      const updated = await (prisma.learningCourse.update as any)({
+      const updated = await prisma.learningCourse.update({
         where: { id },
         data: {
           rating: parseFloat(newAverage.toFixed(2)),

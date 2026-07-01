@@ -317,7 +317,7 @@ export async function POST(req: NextRequest) {
     ].join(" ");
     const flaggedAsMature = isMature(contentToCheck);
 
-    const newDbPost = await (prisma.post.create as any)({
+    const newDbPost = await prisma.post.create({
       data: {
         content: validated.content,
         authorId: authorId,
