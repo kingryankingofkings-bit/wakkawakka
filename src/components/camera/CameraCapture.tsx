@@ -1,19 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useCameraStore, CameraMode } from "@/store/cameraStore";
+import { useCameraStore } from "@/store/cameraStore";
 import { useFeedStore } from "@/store/feedStore";
 import { useMessageStore } from "@/store/messageStore";
 import { useUIStore } from "@/store/uiStore";
 import { useAuthStore } from "@/store/authStore";
-import { 
-  RotateCw, 
-  Sparkles, 
-  MapPin, 
-  X, 
-  Send 
-} from "lucide-react";
-import type { Post, Message } from "@/types";
+
+// UI Components
+import { CameraPreview } from "./components/CameraPreview";
+import { CapturedMediaPreview } from "./components/CapturedMediaPreview";
+import { CameraSimulatedFeed } from "./components/CameraSimulatedFeed";
+import { CameraTopControls } from "./components/CameraTopControls";
+import { CameraBottomControls } from "./components/CameraBottomControls";
+import { CameraPostConfirmation } from "./components/CameraPostConfirmation";
 
 export default function CameraCapture() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -330,271 +330,68 @@ export default function CameraCapture() {
       {!capturedImage ? (
         <div className="absolute inset-0 w-full h-full bg-neutral-950 flex items-center justify-center">
           {hasCameraPermission === false ? (
-            <div className="p-6 text-center max-w-sm flex flex-col items-center">
-              <div className="w-16 h-16 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mb-4 animate-pulse">
-                <RotateCw className="h-8 w-8" />
-              </div>
-              <p className="font-semibold text-lg mb-2">Simulated Camera Feed</p>
-              <p className="text-sm text-neutral-400 mb-6">
-                Hardware camera permissions are unavailable. We will simulate a camera capture with high-fidelity random visual generation.
-              </p>
-              <button 
-                onClick={() => setHasCameraPermission(true)}
-                className="px-6 py-2.5 bg-primary rounded-xl font-semibold text-sm hover:bg-primary/90 transition active:scale-95"
-              >
-                Use Real-time Mock Capture
-              </button>
-            </div>
+            <CameraSimulatedFeed setHasCameraPermission={setHasCameraPermission} />
           ) : (
-            <>
-              {/* Actual Video Tag or Simulated Visualizer */}
-              {hasCameraPermission === true ? (
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  style={{ filter: filterStyle }}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  <p className="text-sm text-neutral-400">Requesting camera access...</p>
-                </div>
-              )}
-
-              {/* Dual Camera PIP Container */}
-              {cameraMode === "BE_REAL" && (
-                <div className="absolute top-4 left-4 w-28 aspect-[3/4] rounded-2xl overflow-hidden border-2 border-white shadow-2xl bg-neutral-900 z-10 animate-fade-in touch-none">
-                  {hasCameraPermission === true ? (
-                    <video
-                      ref={pipVideoRef}
-                      autoPlay
-                      playsInline
-                      muted
-                      className="w-full h-full object-cover scale-x-[-1]"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
-                      <span className="text-[10px] text-neutral-400">Selfie Feed</span>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Geofilter Overlay */}
-              {showGeofilter && (
-                <div className="absolute top-20 left-0 right-0 pointer-events-none flex flex-col items-center text-center select-none z-10 drop-shadow-md">
-                  <div className="px-4 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center gap-1.5 animate-pulse">
-                    <MapPin className="h-3.5 w-3.5 text-red-500 fill-red-500" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-white">
-                      {userLocation ? "San Francisco, CA" : "Silicon Valley"}
-                    </span>
-                  </div>
-                  <h1 className="font-display font-extrabold text-4xl mt-3 bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-100 bg-clip-text text-transparent italic tracking-tight uppercase leading-none font-serif">
-                    WAKKA LIFE
-                  </h1>
-                </div>
-              )}
-            </>
+            <CameraPreview
+              hasCameraPermission={hasCameraPermission}
+              videoRef={videoRef}
+              pipVideoRef={pipVideoRef}
+              filterStyle={filterStyle}
+              cameraMode={cameraMode}
+              showGeofilter={showGeofilter}
+              userLocation={userLocation}
+            />
           )}
         </div>
       ) : (
         /* Captured Media Preview */
-        <div className="absolute inset-0 w-full h-full bg-black flex items-center justify-center z-20">
-          <img 
-            src={capturedImage} 
-            alt="Captured" 
-            className="w-full h-full object-cover" 
-          />
-
-          {/* PIP Image Overlaid for DailySnap preview */}
-          {cameraMode === "BE_REAL" && capturedPipImage && (
-            <div className="absolute top-4 left-4 w-28 aspect-[3/4] rounded-2xl overflow-hidden border-2 border-white shadow-2xl bg-neutral-900 z-30">
-              <img 
-                src={capturedPipImage} 
-                alt="Selfie" 
-                className="w-full h-full object-cover" 
-              />
-            </div>
-          )}
-
-          {/* Geofilter overlay on preview */}
-          {showGeofilter && (
-            <div className="absolute top-20 left-0 right-0 pointer-events-none flex flex-col items-center text-center select-none z-30 drop-shadow-md">
-              <div className="px-4 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5 text-red-500 fill-red-500" />
-                <span className="text-xs font-bold uppercase tracking-wider text-white">
-                  {userLocation ? "San Francisco, CA" : "Silicon Valley"}
-                </span>
-              </div>
-              <h1 className="font-display font-extrabold text-4xl mt-3 bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-100 bg-clip-text text-transparent italic tracking-tight uppercase leading-none font-serif">
-                WAKKA LIFE
-              </h1>
-            </div>
-          )}
-        </div>
+        <CapturedMediaPreview
+          capturedImage={capturedImage}
+          capturedPipImage={capturedPipImage}
+          cameraMode={cameraMode}
+          showGeofilter={showGeofilter}
+          userLocation={userLocation}
+        />
       )}
 
       {/* TOP CONTROLS (Floating) */}
-      <div className="absolute top-4 left-0 right-0 flex items-center justify-between px-4 z-30 pointer-events-none">
-        <div className="flex gap-2 pointer-events-auto">
-          {capturedImage && (
-            <button 
-              onClick={handleDiscard}
-              className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center border border-white/10 hover:bg-black/75 transition"
-            >
-              <X className="h-5 w-5 text-white" />
-            </button>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2 pointer-events-auto">
-          {!capturedImage && (
-            <>
-              {hasCameraPermission && (
-                <button 
-                  onClick={toggleCamera}
-                  className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center border border-white/10 hover:bg-black/75 transition"
-                  title="Flip Camera"
-                >
-                  <RotateCw className="h-5 w-5 text-white" />
-                </button>
-              )}
-              <button 
-                onClick={() => setShowGeofilter(prev => !prev)}
-                className={`w-10 h-10 rounded-full flex items-center justify-center border border-white/10 transition ${showGeofilter ? "bg-primary text-white" : "bg-black/50 text-white hover:bg-black/75"}`}
-                title="Toggle Geofilter"
-              >
-                <MapPin className="h-5 w-5" />
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+      <CameraTopControls
+        capturedImage={capturedImage}
+        hasCameraPermission={hasCameraPermission}
+        showGeofilter={showGeofilter}
+        setShowGeofilter={setShowGeofilter}
+        toggleCamera={toggleCamera}
+        handleDiscard={handleDiscard}
+      />
 
       {/* BOTTOM CONTROL CONTAINER */}
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pt-12 pb-6 px-4 z-35 flex flex-col items-center gap-4">
         
         {/* Post confirm menu (Visible only when media is captured) */}
         {capturedImage && (
-          <div className="w-full max-w-sm bg-neutral-900/95 border border-neutral-800 rounded-3xl p-4 shadow-2xl flex flex-col gap-3">
-            <h3 className="text-sm font-semibold text-center text-neutral-300">
-              {cameraMode === "BE_REAL" && "⚡ Share Daily DailySnap"}
-              {cameraMode === "NORMAL" && "📸 Share to Feed & Story"}
-              {cameraMode === "DISAPPEARING" && "🔒 Send Disappearing Photo"}
-            </h3>
-
-            {cameraMode === "DISAPPEARING" && (
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs text-neutral-400 font-medium">Select Friend / Chat</label>
-                <select
-                  value={selectedConversationId}
-                  onChange={(e) => setSelectedConversationId(e.target.value)}
-                  className="w-full text-sm bg-neutral-800 text-white rounded-xl py-2 px-3 focus:outline-none border border-neutral-700/50"
-                >
-                  <option value="">-- Choose recipient --</option>
-                  {conversations.map((c) => {
-                    const otherUser = c.members.find((m) => m.id !== user?.id) || c.members[0];
-                    return (
-                      <option key={c.id} value={c.id}>
-                        {c.isGroup ? `👥 ${c.name}` : `👤 ${otherUser.displayName}`}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-            )}
-
-            <div className="flex gap-2">
-              <button
-                onClick={handleDiscard}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-neutral-800 bg-neutral-800/50 hover:bg-neutral-850 transition text-neutral-400"
-              >
-                Discard
-              </button>
-              <button
-                onClick={handleConfirmPost}
-                disabled={isPosting || (cameraMode === "DISAPPEARING" && !selectedConversationId)}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-primary hover:bg-primary/95 transition text-white flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
-              >
-                <Send className="h-4 w-4" />
-                {isPosting ? "Posting..." : "Share"}
-              </button>
-            </div>
-          </div>
+          <CameraPostConfirmation
+            cameraMode={cameraMode}
+            conversations={conversations as any}
+            user={user as any}
+            selectedConversationId={selectedConversationId}
+            setSelectedConversationId={setSelectedConversationId}
+            isPosting={isPosting}
+            handleDiscard={handleDiscard}
+            handleConfirmPost={handleConfirmPost}
+          />
         )}
 
         {/* Carousel & Trigger (Visible only when no media captured) */}
         {!capturedImage && (
-          <>
-            {/* AR Lens selector carousel */}
-            <div className="w-full flex justify-center py-1">
-              <div className="flex items-center gap-3 overflow-x-auto no-scrollbar px-6 max-w-full">
-                <button
-                  onClick={() => setActiveLensId(null)}
-                  className={`w-12 h-12 rounded-full border-2 flex-shrink-0 flex items-center justify-center text-[10px] font-bold transition-all ${
-                    activeLensId === null
-                      ? "border-primary bg-primary/20 scale-110"
-                      : "border-white/20 bg-neutral-900/60 text-neutral-300"
-                  }`}
-                >
-                  Normal
-                </button>
-
-                {availableLenses.map((lens) => (
-                  <button
-                    key={lens.id}
-                    onClick={() => setActiveLensId(lens.id)}
-                    className={`w-12 h-12 rounded-full border-2 flex-shrink-0 flex flex-col items-center justify-center text-[10px] font-bold leading-none p-1 transition-all ${
-                      activeLensId === lens.id
-                        ? "border-primary bg-primary/20 scale-110 text-white"
-                        : "border-white/20 bg-neutral-900/60 text-neutral-400"
-                    }`}
-                  >
-                    <Sparkles className="h-3 w-3 mb-0.5 text-yellow-400" />
-                    <span className="text-[8px] text-center truncate w-full">{lens.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Shutter capture button */}
-            <div className="flex items-center justify-center gap-8 py-2">
-              <div className="w-10 h-10" />
-
-              <button
-                onClick={handleCapture}
-                className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center bg-transparent active:scale-90 transition-transform relative group"
-              >
-                <div className="w-16 h-16 rounded-full bg-white group-hover:scale-95 transition-transform" />
-              </button>
-
-              <div className="w-10 h-10" />
-            </div>
-
-            {/* Mode toggles */}
-            <div className="flex justify-center border-t border-white/10 w-full pt-4">
-              <div className="flex items-center gap-6 text-xs font-semibold tracking-wider text-neutral-400">
-                {(["NORMAL", "BE_REAL", "DISAPPEARING"] as CameraMode[]).map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => setCameraMode(mode)}
-                    className={`pb-1 transition-all uppercase ${
-                      cameraMode === mode
-                        ? "text-primary border-b-2 border-primary"
-                        : "hover:text-white"
-                    }`}
-                  >
-                    {mode.replace("_", " ")}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </>
+          <CameraBottomControls
+            availableLenses={availableLenses}
+            activeLensId={activeLensId}
+            cameraMode={cameraMode}
+            setActiveLensId={setActiveLensId}
+            setCameraMode={setCameraMode}
+            handleCapture={handleCapture}
+          />
         )}
-
       </div>
     </div>
   );
