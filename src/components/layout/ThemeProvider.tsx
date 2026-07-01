@@ -70,7 +70,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     >
       <style
         dangerouslySetInnerHTML={{
-          __html: `:root { --primary: ${hsl}; --ring: ${hsl}; } .dark { --primary: ${hsl}; --ring: ${hsl}; }`,
+          __html: `:root:root { --primary: ${hsl}; --ring: ${hsl}; } .dark:root { --primary: ${hsl}; --ring: ${hsl}; }`,
         }}
       />
       {children}
