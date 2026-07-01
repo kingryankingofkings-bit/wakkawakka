@@ -202,7 +202,6 @@ export default function SettingsPage() {
   const [show2FAWizard, setShow2FAWizard] = useState(false);
   const [twoFAStep, setTwoFAStep] = useState<1 | 2 | 3 | 4>(1);
   const [verificationCode, setVerificationCode] = useState("");
-
   const [showEditProfile, setShowEditProfile] = useState(false);
 
   function setToggle(key: keyof typeof toggles, value: boolean) {
@@ -303,17 +302,17 @@ export default function SettingsPage() {
                   </Button>
                 </SettingRow>
                 <SettingRow label="Email" description={user.email}>
-                  <Button variant="ghost" size="sm" onClick={() => toast("Email update feature coming soon")}>
+                  <Button variant="ghost" size="sm">
                     Update
                   </Button>
                 </SettingRow>
                 <SettingRow label="Password">
-                  <Button variant="ghost" size="sm" onClick={() => toast.error("Account information is locked in demo mode")}>
+                  <Button variant="ghost" size="sm">
                     Change
                   </Button>
                 </SettingRow>
                 <SettingRow label="Language" description="English">
-                  <Button variant="ghost" size="sm" onClick={() => toast("Language feature coming soon")}>
+                  <Button variant="ghost" size="sm">
                     Change
                   </Button>
                 </SettingRow>
@@ -1051,54 +1050,15 @@ export default function SettingsPage() {
                     </div>
                     <span className="text-sm font-bold text-foreground">0</span>
                   </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Advanced Settings & Features */}
           {activeSection === "advanced" && (
-            <div className="space-y-6 max-w-2xl animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div className="space-y-1">
-                <h2 className="text-2xl font-bold text-foreground tracking-tight">Advanced Settings</h2>
-                <p className="text-muted-foreground">Manage data, export options, and developer features.</p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="p-4 rounded-xl border border-border bg-card shadow-sm space-y-4">
-                  <h3 className="font-semibold text-foreground border-b border-border pb-2">Developer Tools</h3>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-foreground">Developer Mode</p>
-                      <p className="text-sm text-muted-foreground">Enable experimental features and console access</p>
-                    </div>
-                    <Switch
-                      checked={toggles.developerMode || false}
-                      onCheckedChange={(c) => setToggle("developerMode" as any, c)}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-foreground">API Access</p>
-                      <p className="text-sm text-muted-foreground">Manage personal access tokens</p>
-                    </div>
-                    <Button variant="outline" size="sm" onClick={() => toast("API Keys coming soon")}>Manage</Button>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl border border-border bg-card shadow-sm space-y-4">
-                  <h3 className="font-semibold text-foreground border-b border-border pb-2">Data & Privacy</h3>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-foreground">Export Data</p>
-                      <p className="text-sm text-muted-foreground">Download a copy of your personal data</p>
-                    </div>
-                    <Button variant="secondary" size="sm" onClick={() => toast.success("Data export started. We will email you when it's ready.")}>Request Export</Button>
-                  </div>
-                  <div className="flex items-center justify-between pt-2">
-                    <div>
-                      <p className="font-medium text-destructive">Delete Account</p>
-                      <p className="text-sm text-muted-foreground">Permanently delete your account and all data</p>
-                    </div>
-                    <Button variant="destructive" size="sm" onClick={() => toast.error("Account deletion requires email confirmation.")}>Delete</Button>
-                  </div>
-                </div>
-              </div>
+            <div className="text-center py-12 text-muted-foreground">
+              Advanced settings are currently unavailable.
             </div>
           )}
         </div>
@@ -1275,7 +1235,8 @@ export default function SettingsPage() {
                   <div>9930-4100</div>
                   <div>4421-0892</div>
                 </div>
-                <div className="pt-4 space-y-2">
+
+                <div className="pt-4 space-y-2">
                   <Button onClick={handleFinish2FA} className="w-full">
                     Finish Setup
                   </Button>
@@ -1286,10 +1247,12 @@ export default function SettingsPage() {
         </div>
       </Modal>
 
-      <EditProfileModal
-        isOpen={showEditProfile}
-        onClose={() => setShowEditProfile(false)}
-      />
+      {showEditProfile && (
+        <EditProfileModal
+          user={user}
+          onClose={() => setShowEditProfile(false)}
+        />
+      )}
     </div>
   );
 }

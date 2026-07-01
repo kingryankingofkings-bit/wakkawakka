@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Users, Lock, Globe, Sparkles } from "lucide-react";
+import { Plus, Users, Lock, Globe, Sparkles, Radio, ShieldCheck, Coins } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { formatCount } from "@/lib/utils";
@@ -152,7 +152,7 @@ export default function CommunitiesPage() {
               <h3 className="font-semibold text-foreground border-b border-border pb-2">Community Tools</h3>
               <div className="space-y-2">
                 <Button variant="secondary" className="w-full justify-start" onClick={() => toast("Add Yours prompt sent!")}>
-                  <Sparkles className="w-4 h-4 mr-2" /> Create "Add Yours" Prompt
+                  <Sparkles className="w-4 h-4 mr-2" /> Create &quot;Add Yours&quot; Prompt
                 </Button>
                 <Button variant="secondary" className="w-full justify-start" onClick={() => toast("Broadcast Channel created.")}>
                   <Radio className="w-4 h-4 mr-2" /> Start Broadcast Channel
