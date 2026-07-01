@@ -62,6 +62,11 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const [scheduledAt, setScheduledAt] = useState<Date | null>(null);
   const [showScheduler, setShowScheduler] = useState(false);
 
+  // Music States
+  const [isMusicPost, setIsMusicPost] = useState(false);
+  const [explicitLyrics, setExplicitLyrics] = useState(false);
+  const [musicGenre, setMusicGenre] = useState("Pop");
+
   // Poll States
   const [showPollCreator, setShowPollCreator] = useState(false);
   const [pollQuestion, setPollQuestion] = useState("");
@@ -140,7 +145,9 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
       const payload = {
         content: content.trim(),
         mediaUrls,
-        type: tab === "Reel" ? "REEL" : previews.length > 0 ? "IMAGE" : "TEXT",
+        type: isMusicPost ? "MUSIC" : tab === "Reel" ? "REEL" : previews.length > 0 ? "IMAGE" : "TEXT",
+        isExplicit: isMusicPost ? explicitLyrics : undefined,
+        musicGenre: isMusicPost ? musicGenre : undefined,
         visibility,
         isEphemeral: tab === "Story",
         expiresAt:
@@ -284,6 +291,35 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                 {hashtags.length > 3 && `+${hashtags.length - 3}`}
               </span>
             )}
+            {isMusicPost && (
+              <div className="flex items-center gap-2">
+                <select 
+                  value={musicGenre} 
+                  onChange={(e) => setMusicGenre(e.target.value)}
+                  className="bg-muted border border-border rounded text-xs px-2 py-0.5 text-muted-foreground outline-none"
+                >
+                  <option value="Pop">Pop</option>
+                  <option value="Hip-Hop">Hip-Hop</option>
+                  <option value="R&B">R&B</option>
+                  <option value="Rock">Rock</option>
+                  <option value="Electronic">Electronic</option>
+                  <option value="Country">Country</option>
+                  <option value="Classical">Classical</option>
+                </select>
+                <button
+                  onClick={() => setExplicitLyrics(!explicitLyrics)}
+                  className={cn(
+                    "px-2 py-0.5 rounded text-[10px] font-bold border transition-colors",
+                    explicitLyrics 
+                      ? "bg-red-500 text-white border-red-500" 
+                      : "bg-muted text-muted-foreground border-border hover:bg-muted/80"
+                  )}
+                  title="Explicit Lyrics"
+                >
+                  E
+                </button>
+              </div>
+            )}
             <button
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               className={cn(
@@ -386,13 +422,14 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                 onClick={() => {
                   if (label === "Schedule") {
                     setShowScheduler(!showScheduler);
+                  } else if (label === "Music") {
+                    setIsMusicPost(!isMusicPost);
                   }
                 }}
                 className={cn(
                   "p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-colors",
-                  label === "Schedule" &&
-                    showScheduler &&
-                    "text-primary bg-muted",
+                  label === "Schedule" && showScheduler && "text-primary bg-muted",
+                  label === "Music" && isMusicPost && "text-purple-500 bg-purple-500/10",
                 )}
               >
                 <Icon className="h-4 w-4" />

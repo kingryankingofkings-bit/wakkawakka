@@ -1,6 +1,6 @@
 "use client";
 
-import { Image, Video, Radio, Smile } from "lucide-react";
+import { Image, Video, Music, Radio, Smile } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { CURRENT_USER } from "@/lib/mockData";
 
@@ -27,6 +27,7 @@ export function CreatePostCard({ onOpenModal }: CreatePostCardProps) {
           {[
             { icon: Image, label: "Photo", color: "text-green-500" },
             { icon: Video, label: "Video", color: "text-blue-500" },
+            { icon: Music, label: "Music", color: "text-purple-500" },
             { icon: Radio, label: "Live", color: "text-red-500" },
             { icon: Smile, label: "Feeling", color: "text-yellow-500" },
           ].map(({ icon: Icon, label, color }) => (

@@ -39,6 +39,11 @@ function firebaseUserToAppUser(fbUser: {
     badges: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    professionalTier: "NONE",
+    idVerificationStatus: "UNVERIFIED",
+    freeCoursesCreatedThisMonth: 0,
+    paidCoursesCreatedThisMonth: 0,
+    averageCourseRating: 0,
   };
 }
 

@@ -93,6 +93,8 @@ export interface LearningCourse {
   thumbnailUrl?: string;
   videoUrl?: string;
   isPremium: boolean;
+  rating?: number;
+  ratingCount?: number;
   createdAt: string;
 }
 

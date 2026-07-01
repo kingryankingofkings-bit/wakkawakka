@@ -17,6 +17,7 @@ interface Listing {
   category: string;
   condition: string;
   images: string;
+  listingType?: "PHYSICAL" | "DIGITAL";
   shippingInfo?: string;
   seller: {
     id: string;
@@ -159,7 +160,7 @@ export default function MarketplacePage() {
                 <p className="text-sm truncate">{l.name}</p>
                 <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
                   <MapPin className="h-3 w-3" />{" "}
-                  {l.seller.location || l.condition}
+                  {l.listingType === "DIGITAL" ? "Digital Download" : (l.seller.location || l.condition)}
                 </p>
               </div>
             </Card>
@@ -193,6 +194,7 @@ function CreateListingModal({
     price: "",
     category: "Other",
     condition: "USED",
+    listingType: "PHYSICAL",
     description: "",
     images: "",
   });
@@ -216,6 +218,7 @@ function CreateListingModal({
         price: "",
         category: "Other",
         condition: "USED",
+        listingType: "PHYSICAL",
         description: "",
         images: "",
       });
@@ -250,16 +253,26 @@ function CreateListingModal({
             ))}
           </select>
           <select
-            value={form.condition}
-            onChange={(e) => setForm({ ...form, condition: e.target.value })}
+            value={form.listingType}
+            onChange={(e) => setForm({ ...form, listingType: e.target.value })}
             className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm"
           >
-            {["NEW", "USED", "REFURBISHED"].map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
+            <option value="PHYSICAL">Physical Good</option>
+            <option value="DIGITAL">Digital Good</option>
           </select>
+          {form.listingType === "PHYSICAL" && (
+            <select
+              value={form.condition}
+              onChange={(e) => setForm({ ...form, condition: e.target.value })}
+              className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm"
+            >
+              {["NEW", "USED", "REFURBISHED"].map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
         <textarea
           placeholder="Description"

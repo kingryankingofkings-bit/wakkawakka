@@ -36,6 +36,7 @@ import {
   MessageSquare,
   Camera,
   Map,
+  Music,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/Avatar";
@@ -48,9 +49,10 @@ import { CURRENT_USER } from "@/lib/mockData";
 const NAV_ITEMS = [
   { href: "/feed", icon: Home, label: "Feed" },
   { href: "/explore", icon: Compass, label: "Explore" },
-  { href: "/forum", icon: MessageSquare, label: "Forums" },
+  { href: "/forums", icon: MessageSquare, label: "Forums" },
   { href: "/servers", icon: Server, label: "Servers" },
   { href: "/reels", icon: Film, label: "Reels" },
+  { href: "/music", icon: Music, label: "Music" },
   { href: "/live", icon: Radio, label: "Live" },
   { href: "/jobs", icon: Briefcase, label: "Jobs" },
   { href: "/learning", icon: GraduationCap, label: "Learning" },

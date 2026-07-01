@@ -54,6 +54,11 @@ function mapPrismaPostToPost(
       isVerified: prismaPost.author.isVerified,
       verificationTier: (prismaPost.author.verificationTier ||
         "NONE") as VerificationTier,
+      professionalTier: prismaPost.author.professionalTier || "NONE",
+      idVerificationStatus: prismaPost.author.idVerificationStatus || "UNVERIFIED",
+      freeCoursesCreatedThisMonth: prismaPost.author.freeCoursesCreatedThisMonth || 0,
+      paidCoursesCreatedThisMonth: prismaPost.author.paidCoursesCreatedThisMonth || 0,
+      averageCourseRating: prismaPost.author.averageCourseRating || 0,
       isPremium: prismaPost.author.isPremium,
       isPrivate: prismaPost.author.isPrivate,
       twoFactorEnabled: prismaPost.author.twoFactorEnabled,

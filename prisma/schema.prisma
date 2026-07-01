@@ -72,8 +72,26 @@ model User {
   passwordResetExpiry DateTime?
   profileSoundtrack  String?
   profileSoundtrackVisible Boolean @default(true)
+
+  // Professional features
+  professionalTier              String  @default("NONE") // NONE | SIMPLE | BETTER | BEST | PURE
+  idVerificationStatus          String  @default("UNVERIFIED") // UNVERIFIED | PENDING | VERIFIED
+  freeCoursesCreatedThisMonth   Int     @default(0)
+  paidCoursesCreatedThisMonth   Int     @default(0)
+  averageCourseRating           Float   @default(0.0)
+  courseRating                  Float?
+  courseRatingCount             Int     @default(0)
+
+  // Profile customization
+  customCss          String?
+  profileTabOrder    String? // JSON array of tab ids
+  hideFollowerCount  Boolean   @default(false)
+  pinnedPostId       String?
+  streakDays         Int       @default(0)
+
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+
 
   posts              Post[]
   comments           Comment[]
@@ -232,6 +250,7 @@ model Post {
   btsUrl          String?
   greenScreenBg   String?
   labels          String?   @default("[]")
+  isExplicit      Boolean   @default(false)
 
   likesCount      Int       @default(0)
   commentsCount   Int       @default(0)
@@ -240,6 +259,7 @@ model Post {
   isPinned        Boolean   @default(false)
   isArchived      Boolean   @default(false)
   isDeleted       Boolean   @default(false)
+  isFlagged       Boolean   @default(false)
   deletedAt       DateTime?
   editedAt        DateTime?
   originalPostId  String?
@@ -260,6 +280,7 @@ model Post {
   @@index([type])
   @@index([visibility])
   @@index([createdAt])
+  @@index([isFlagged])
   @@index([isEphemeral, expiresAt])
   @@index([isDeleted])
 }
@@ -1917,12 +1938,15 @@ model LearningCourse {
   thumbnailUrl    String?
   videoUrl        String?
   isPremium       Boolean              @default(false)
+  rating          Float                @default(0.0) // average out of 10
+  ratingCount     Int                  @default(0)
   createdAt       DateTime             @default(now())
   updatedAt       DateTime             @updatedAt
   
   enrollments     LearningEnrollment[]
 
   @@index([category])
+  @@index([rating])
 }
 
 model LearningEnrollment {

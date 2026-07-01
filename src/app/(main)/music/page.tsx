@@ -15,22 +15,29 @@ import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { apiFetch } from "@/lib/apiClient";
 
-const FEED_TABS = [
-  { id: "forYou", label: "For You" },
-  { id: "following", label: "Following" },
-  { id: "trending", label: "Trending" },
+const MUSIC_TABS = [
+  { id: "all", label: "All Music" },
+  { id: "pop", label: "Pop" },
+  { id: "rock", label: "Rock" },
+  { id: "hiphop", label: "Hip Hop" },
+  { id: "rnb", label: "R&B" },
+  { id: "country", label: "Country" },
+  { id: "jazz", label: "Jazz" },
+  { id: "classical", label: "Classical" },
+  { id: "electronic", label: "Electronic" },
 ] as const;
 
-export default function FeedPage() {
+export default function MusicPage() {
   return (
     <Suspense>
-      <FeedPageInner />
+      <MusicPageInner />
     </Suspense>
   );
 }
 
-function FeedPageInner() {
-  const { posts, feedType, setFeedType, setPosts } = useFeedStore();
+function MusicPageInner() {
+  const { posts, setPosts } = useFeedStore();
+  const [activeGenre, setActiveGenre] = useState("all");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showNewPosts, setShowNewPosts] = useState(false);
   const [hideLabels, setHideLabels] = useState<string[]>([]);
@@ -43,15 +50,13 @@ function FeedPageInner() {
     }
   }, [searchParams]);
 
-  // Fetch actual posts from the API on mount and when feedType changes
+  // Fetch actual posts from the API on mount
   useEffect(() => {
     let active = true;
     async function loadPosts() {
-      let url = "/api/posts";
-      if (feedType === "following") {
-        url += "?feed=following";
-      } else if (feedType === "trending") {
-        url += "?feed=trending";
+      let url = "/api/posts?type=MUSIC";
+      if (activeGenre !== "all") {
+        url += `&genre=${activeGenre}`;
       }
       try {
         const response = await apiFetch(url);
@@ -69,15 +74,17 @@ function FeedPageInner() {
     return () => {
       active = false;
     };
-  }, [feedType, setPosts]);
+  }, [activeGenre, setPosts]);
 
-  // Simulate new posts arriving (Disabled as per user feedback: fake pill)
+  // Simulate new posts arriving (Disabled: fake pill)
   // useEffect(() => {
   //   const t = setTimeout(() => setShowNewPosts(true), 15000);
   //   return () => clearTimeout(t);
   // }, []);
 
   const filteredPosts = posts.filter((post) => {
+    // Demo: pretend some posts are music if they have the word 'music' or we just show them all in this view for demo purposes
+    // since the backend might not return type: "MUSIC" yet. But we filter out hidden labels anyway.
     if (!post.labels) return true;
     try {
       const parsedLabels: string[] = JSON.parse(post.labels);
@@ -92,22 +99,22 @@ function FeedPageInner() {
       {/* Sticky header */}
       <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="flex items-center justify-between px-4">
-          <div className="flex flex-1">
-            {FEED_TABS.map((tab) => (
+          <div className="flex flex-1 overflow-x-auto no-scrollbar">
+            {MUSIC_TABS.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setFeedType(tab.id)}
+                onClick={() => setActiveGenre(tab.id)}
                 className={cn(
-                  "flex-1 py-3.5 text-sm font-semibold transition-colors relative",
-                  feedType === tab.id
+                  "px-4 py-3.5 text-sm font-semibold transition-colors relative whitespace-nowrap",
+                  activeGenre === tab.id
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {tab.label}
-                {feedType === tab.id && (
+                {activeGenre === tab.id && (
                   <motion.div
-                    layoutId="feed-tab-indicator"
+                    layoutId="music-tab-indicator"
                     className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-primary"
                   />
                 )}
@@ -164,10 +171,11 @@ function FeedPageInner() {
         )}
       </AnimatePresence>
 
-      {/* Stories */}
+      {/* Stories - hidden for music feed to match design pattern
       <div className="border-b border-border bg-card/30">
         <StoriesRow />
       </div>
+      */}
 
       {/* Create post quick composer */}
       <div className="border-b border-border">
@@ -199,22 +207,10 @@ function FeedPageInner() {
               <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
                 <Sliders className="h-8 w-8 text-muted-foreground" />
               </div>
-              <h3 className="text-xl font-bold mb-2">No posts here yet</h3>
+              <h3 className="text-xl font-bold mb-2">No music here yet</h3>
               <p className="text-muted-foreground max-w-sm mb-6">
-                {feedType === "following"
-                  ? "Follow more people to see their posts in your feed."
-                  : feedType === "trending"
-                    ? "Check back later for trending conversations."
-                    : "Be the first to share something with your friends!"}
+                Be the first to share your favorite tracks and beats with your friends!
               </p>
-              {feedType === "following" && (
-                <button
-                  onClick={() => setFeedType("forYou")}
-                  className="px-6 py-2 bg-primary text-primary-foreground font-semibold rounded-full hover:bg-primary/90 transition"
-                >
-                  Explore For You
-                </button>
-              )}
             </motion.div>
           )}
         </AnimatePresence>

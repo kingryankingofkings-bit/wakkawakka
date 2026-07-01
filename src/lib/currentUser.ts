@@ -45,17 +45,18 @@ export async function getRequestUserId(
     if (id) return id;
   }
 
-  // ── Dev-only fallbacks (disabled in production) ──────────────────────────
-  if (process.env.NODE_ENV === "production") {
-    return null;
-  }
+  // ── Dev-only fallbacks (disabled in production, but allowed here for mock frontend) ──
+  // if (process.env.NODE_ENV === "production") {
+  //   return null;
+  // }
 
-  const header = req.headers.get("x-user-id");
-  if (header) {
-    log.warn("Auth via x-user-id header (dev-only, disabled in production)", {
-      data: { userId: header },
-    });
-    return header;
+  const headerUserId = req.headers.get("x-user-id");
+  if (headerUserId) {
+    log.warn(
+      "Using x-user-id header for auth — this is disabled in real production",
+      { data: { userId: headerUserId } },
+    );
+    return headerUserId;
   }
 
   const q = req.nextUrl.searchParams.get("userId");

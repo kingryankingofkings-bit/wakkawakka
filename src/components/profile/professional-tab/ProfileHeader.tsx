@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { Sparkles, Award } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import toast from "react-hot-toast";
 
@@ -29,6 +29,11 @@ export function ProfileHeader({
         <p className="text-sm font-medium text-primary">
           {profileData?.headline || "No professional headline set yet."}
         </p>
+        {profileData?.courseRating !== undefined && (
+          <p className="text-xs font-bold text-amber-500 mt-1 flex items-center gap-1">
+            <Award className="w-4 h-4" /> Creator Rating: [{profileData.courseRating.toFixed(1)}/10]
+          </p>
+        )}
       </div>
 
       <div className="flex gap-2">

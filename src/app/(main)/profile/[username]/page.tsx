@@ -23,6 +23,7 @@ import { MOCK_USERS, MOCK_POSTS, CURRENT_USER } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { EditProfileModal } from "@/components/profile/EditProfileModal";
+import { ProfileCustomizerModal } from "@/components/profile/ProfileCustomizerModal";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -108,6 +109,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
     orderedTabs[0]?.id || "posts",
   );
   const [editOpen, setEditOpen] = useState(false);
+  const [customizerOpen, setCustomizerOpen] = useState(false);
 
   // Albums State
   const [albums, setAlbums] = useState<Album[]>(DEFAULT_ALBUMS);
@@ -174,12 +176,36 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
   return (
     <>
+      {profileUser.customCss && (
+        <style dangerouslySetInnerHTML={{ __html: profileUser.customCss.replace(/</g, "") }} />
+      )}
+      
+      {/* Profile Customizer Modal */}
+      {customizerOpen && isOwnProfile && (
+        <ProfileCustomizerModal
+          user={profileUser}
+          onClose={() => setCustomizerOpen(false)}
+        />
+      )}
+      
+      {profileUser.profileSoundtrack && profileUser.profileSoundtrackVisible !== false && (
+        <div className="fixed bottom-20 right-4 z-50 bg-background/80 backdrop-blur-md p-3 rounded-2xl shadow-xl border border-border flex flex-col gap-2 w-64">
+          <p className="text-xs font-bold truncate">Now Playing</p>
+          <audio 
+            controls 
+            autoPlay 
+            className="w-full h-8" 
+            src={profileUser.profileSoundtrack.includes('|') ? profileUser.profileSoundtrack.split('|')[1].trim() : profileUser.profileSoundtrack} 
+          />
+        </div>
+      )}
+
       <div className="max-w-2xl mx-auto min-h-screen">
         {/* Profile Header */}
         <ProfileHeader
           user={profileUser}
           isOwnProfile={isOwnProfile}
-          onEditProfile={() => setEditOpen(true)}
+          onEditProfile={() => setCustomizerOpen(true)}
         />
 
         {/* Private account lock screen */}

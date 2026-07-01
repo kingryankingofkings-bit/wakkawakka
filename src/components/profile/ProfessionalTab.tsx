@@ -11,6 +11,7 @@ import { ExperienceSection } from "./professional-tab/ExperienceSection";
 import { EducationSection } from "./professional-tab/EducationSection";
 import { SkillsSection } from "./professional-tab/SkillsSection";
 import { RecommendationsSection } from "./professional-tab/RecommendationsSection";
+import { AnalyticsSection } from "./professional-tab/AnalyticsSection";
 
 // Modals
 import { EditProfileModal } from "./professional-tab/modals/EditProfileModal";
@@ -302,6 +303,13 @@ export function ProfessionalTab({ profileUserId, isOwnProfile }: ProfessionalTab
         setEditProfileOpen={setEditProfileOpen}
         setInMailOpen={setInMailOpen}
         setWriteRecOpen={setWriteRecOpen}
+      />
+
+      <AnalyticsSection 
+        isOwnProfile={isOwnProfile} 
+        authUser={authUser}
+        tier={authUser?.professionalTier || "None"} 
+        userId={profileUserId}
       />
 
       <ExperienceSection

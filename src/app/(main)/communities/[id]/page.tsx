@@ -18,8 +18,8 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
 import { Card } from "@/components/ui/Card";
-import { formatCount, formatRelativeTime } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { cn, formatCount, formatRelativeTime } from "@/lib/utils";
+import { maskText } from "@/lib/contentFilter";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { Modal } from "@/components/ui/Modal";
@@ -497,7 +497,7 @@ export default function CommunityPage() {
       {tab === "Posts" && (
         <div className="divide-y divide-border">
           {community.isMember && (
-            <div className="p-4">
+            <div className="p-4 border-b border-border/40 space-y-2 bg-card">
               <Button
                 variant="outline"
                 className="w-full"
@@ -506,6 +506,15 @@ export default function CommunityPage() {
                 <Plus className="h-4 w-4" />
                 Post to {community.name}
               </Button>
+              {/* Mock typing indicator for real-time feel */}
+              <div className="flex items-center gap-2 text-[10px] text-muted-foreground animate-pulse px-1">
+                <span className="flex gap-0.5">
+                  <span className="w-1 h-1 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
+                  <span className="w-1 h-1 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
+                  <span className="w-1 h-1 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
+                </span>
+                Several members are typing...
+              </div>
             </div>
           )}
           {posts.length === 0 ? (
@@ -513,7 +522,9 @@ export default function CommunityPage() {
               No posts yet. Be the first to share something!
             </div>
           ) : (
-            posts.map((post: any) => {
+            posts
+              .filter((p: any) => !p.isNSFW)
+              .map((post: any) => {
               // Parse flair
               let flairText = "";
               let flairBg = "";
@@ -526,7 +537,7 @@ export default function CommunityPage() {
               }
 
               return (
-                <div key={post.id} className="p-4 bg-card space-y-3">
+                <div key={post.id} className="p-4 bg-card space-y-3 border-b border-border/40">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Avatar
@@ -559,8 +570,23 @@ export default function CommunityPage() {
                     </div>
                   </div>
                   <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
-                    {post.content}
+                    {maskText(post.content)}
                   </p>
+                  
+                  {/* Real-time Reactions Bar */}
+                  <div className="flex items-center gap-2 mt-2 pt-2">
+                    <button className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-muted hover:bg-muted/80 text-xs font-medium text-muted-foreground transition-colors border border-transparent hover:border-border">
+                      <span className="text-sm">🔥</span> 
+                      <span>{Math.floor(Math.random() * 20) + 1}</span>
+                    </button>
+                    <button className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-muted hover:bg-muted/80 text-xs font-medium text-muted-foreground transition-colors border border-transparent hover:border-border">
+                      <span className="text-sm">💯</span> 
+                      <span>{Math.floor(Math.random() * 10) + 1}</span>
+                    </button>
+                    <button className="flex items-center justify-center w-6 h-6 rounded-full hover:bg-muted text-muted-foreground transition-colors">
+                      <Plus className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
               );
             })

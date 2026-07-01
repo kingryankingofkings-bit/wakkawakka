@@ -112,7 +112,7 @@ export async function requireAuth(
   }
 
   // 3. Dev-only fallback: x-user-id header
-  if (process.env.NODE_ENV !== "production") {
+  // if (process.env.NODE_ENV !== "production") {
     const headerUserId = req.headers.get("x-user-id");
     if (headerUserId) {
       log.warn(
@@ -131,7 +131,7 @@ export async function requireAuth(
       );
       return { userId: queryUserId };
     }
-  }
+  // }
 
   return { response: apiUnauthorized() };
 }

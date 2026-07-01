@@ -12,6 +12,27 @@ export function usePosts() {
 
   const reactToPost = useCallback(
     async (postId: string, reaction: ReactionType) => {
+      const post = posts.find((p) => p.id === postId);
+      if (!post) return;
+
+      const previousReaction = post.userReaction;
+      const previousLikesCount = post.likesCount;
+      const isRemoving = previousReaction === reaction;
+      const newReaction = isRemoving ? undefined : reaction;
+
+      let newLikesCount = previousLikesCount;
+      if (previousReaction && !newReaction) {
+        newLikesCount = Math.max(0, previousLikesCount - 1);
+      } else if (!previousReaction && newReaction) {
+        newLikesCount = previousLikesCount + 1;
+      }
+
+      // Optimistic update
+      updatePost(postId, {
+        userReaction: newReaction,
+        likesCount: newLikesCount,
+      });
+
       try {
         const response = await apiFetch(`/api/posts/${postId}/react`, {
           method: "POST",
@@ -26,14 +47,24 @@ export function usePosts() {
             });
           }
         } else {
+          // Revert
+          updatePost(postId, {
+            userReaction: previousReaction,
+            likesCount: previousLikesCount,
+          });
           toast.error("Failed to react to post");
         }
       } catch (err) {
         console.error(err);
+        // Revert
+        updatePost(postId, {
+          userReaction: previousReaction,
+          likesCount: previousLikesCount,
+        });
         toast.error("Failed to react to post");
       }
     },
-    [updatePost],
+    [posts, updatePost],
   );
 
   const bookmarkPost = useCallback(

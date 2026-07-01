@@ -6,6 +6,7 @@ import { z } from "zod";
 import { validateRequest, optionalAuth } from "@/lib/apiValidation";
 import { apiInternalError } from "@/lib/apiResponse";
 import { createLogger } from "@/lib/logger";
+import { isMature } from "@/lib/contentFilter";
 import {
   Post,
   PostType,
@@ -20,12 +21,13 @@ const log = createLogger("PostsAPI");
 // Zod validation schema for creating a post
 const createPostSchema = z.object({
   content: z.string().default(""),
-  type: z.enum(["TEXT", "IMAGE", "VIDEO", "REEL", "STORY", "AUDIO", "LIVE"]).default("TEXT"),
+  type: z.enum(["TEXT", "IMAGE", "VIDEO", "REEL", "STORY", "AUDIO", "LIVE", "MUSIC"]).default("TEXT"),
   visibility: z.enum(["PUBLIC", "FOLLOWERS", "PRIVATE"]).default("PUBLIC"),
   mediaUrls: z.array(z.string().url()).optional().default([]),
   hashtags: z.array(z.string()).optional().default([]),
   collaborators: z.array(z.object({ id: z.string() })).optional().default([]),
   isEphemeral: z.boolean().optional().default(false),
+  isExplicit: z.boolean().optional().default(false),
   expiresAt: z.string().datetime().optional().nullable(),
   scheduledAt: z.string().datetime().optional().nullable(),
   btsUrl: z.string().url().optional().nullable(),
@@ -85,8 +87,12 @@ function mapPrismaPostToPost(
       website: prismaPost.author.website || undefined,
       location: prismaPost.author.location || undefined,
       isVerified: prismaPost.author.isVerified,
-      verificationTier: (prismaPost.author.verificationTier ||
-        "NONE") as VerificationTier,
+      verificationTier: (prismaPost.author.verificationTier || "NONE") as VerificationTier,
+      professionalTier: prismaPost.author.professionalTier || "NONE",
+      idVerificationStatus: prismaPost.author.idVerificationStatus || "UNVERIFIED",
+      freeCoursesCreatedThisMonth: prismaPost.author.freeCoursesCreatedThisMonth || 0,
+      paidCoursesCreatedThisMonth: prismaPost.author.paidCoursesCreatedThisMonth || 0,
+      averageCourseRating: prismaPost.author.averageCourseRating || 0,
       isPremium: prismaPost.author.isPremium,
       isPrivate: prismaPost.author.isPrivate,
       twoFactorEnabled: prismaPost.author.twoFactorEnabled,
@@ -116,9 +122,12 @@ function mapPrismaPostToPost(
     hashtags,
     collaborators: [],
     userReaction,
+    isExplicit: prismaPost.isExplicit || false,
     btsUrl: prismaPost.btsUrl || undefined,
     greenScreenBg: prismaPost.greenScreenBg || undefined,
     labels: prismaPost.labels || undefined,
+    isFlagged: prismaPost.isFlagged || false,
+    scheduledAt: prismaPost.scheduledAt ? prismaPost.scheduledAt.toISOString() : undefined,
     createdAt: prismaPost.createdAt.toISOString(),
     updatedAt: prismaPost.updatedAt.toISOString(),
   };
@@ -190,6 +199,7 @@ export async function GET(req: NextRequest) {
     }
 
     whereClause.isDeleted = false;
+    whereClause.isFlagged = false; // auto-flagged mature content excluded from feeds
 
     const scheduledParam = searchParams.get("scheduled");
     if (scheduledParam === "1") {
@@ -300,7 +310,14 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const newDbPost = await prisma.post.create({
+    // --- Content filtering: auto-flag mature content ---
+    const contentToCheck = [
+      validated.content,
+      ...(validated.hashtags || []),
+    ].join(" ");
+    const flaggedAsMature = isMature(contentToCheck);
+
+    const newDbPost = await (prisma.post.create as any)({
       data: {
         content: validated.content,
         authorId: authorId,
@@ -312,6 +329,7 @@ export async function POST(req: NextRequest) {
           validated.collaborators?.map((c) => c.id) || [],
         ),
         isEphemeral: validated.isEphemeral,
+        isExplicit: validated.isExplicit ?? false,
         expiresAt: validated.expiresAt ? new Date(validated.expiresAt) : null,
         scheduledAt: validated.scheduledAt ? new Date(validated.scheduledAt) : null,
         btsUrl: validated.btsUrl || null,
@@ -321,6 +339,7 @@ export async function POST(req: NextRequest) {
             ? JSON.stringify(validated.labels)
             : String(validated.labels)
           : "[]",
+        isFlagged: flaggedAsMature,
         likesCount: 0,
         commentsCount: 0,
         sharesCount: 0,
@@ -330,6 +349,10 @@ export async function POST(req: NextRequest) {
         author: true,
       },
     });
+
+    if (flaggedAsMature) {
+      log.warn("Post auto-flagged for mature content", { data: { postId: newDbPost.id, authorId } });
+    }
 
     const data = mapPrismaPostToPost(newDbPost, authorId);
     return NextResponse.json({ data }, { status: 201 });

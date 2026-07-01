@@ -10,6 +10,8 @@ import { Card } from "@/components/ui/Card";
 import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
 import { ForumPostComposer } from "@/components/forums/ForumPostComposer";
+import { ThreadVoting } from "@/components/forum/ThreadVoting";
+import { maskText } from "@/lib/contentFilter";
 import Link from "next/link";
 
 export default function ForumGlobalFeed() {
@@ -200,26 +202,16 @@ export default function ForumGlobalFeed() {
           </Card>
         ) : (
           <div className="space-y-4">
-            {posts.map((post) => (
+            {posts
+              .filter(p => !p.isNSFW)
+              .map((post) => (
               <Card key={post.id} className="p-4 hover:border-border/80 transition-all border border-border">
                 <div className="flex items-start gap-3">
                   {/* Vote Column */}
-                  <div className="flex flex-col items-center gap-1.5 bg-muted/40 p-1.5 rounded-md min-w-[36px]">
-                    <button
-                      onClick={() => handleVote(post.id, null, "UPVOTE")}
-                      className={`text-sm hover:text-orange-500 transition-all`}
-                    >
-                      ▲
-                    </button>
-                    <span className="text-xs font-bold text-foreground">{post.score}</span>
-                    <button
-                      onClick={() => handleVote(post.id, null, "DOWNVOTE")}
-                      className={`text-sm hover:text-blue-500 transition-all`}
-                    >
-                      ▼
-                    </button>
-                  </div>
-
+                  <ThreadVoting 
+                    initialScore={post.score} 
+                    onVote={(_score, type) => handleVote(post.id, null, type === "up" ? "UPVOTE" : type === "down" ? "DOWNVOTE" : "UPVOTE")} // simplistic toggle
+                  />
                   {/* Main Post Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
@@ -239,7 +231,7 @@ export default function ForumGlobalFeed() {
 
                     <Link href={`/forum/r/${post.subforum?.slug}/comments/${post.id}`} className="block group mt-2">
                       <h2 className="text-base font-bold text-foreground group-hover:text-primary transition-all">
-                        {post.title}
+                        {maskText(post.title)}
                       </h2>
                     </Link>
 
@@ -264,8 +256,8 @@ export default function ForumGlobalFeed() {
 
                     {/* Content Preview */}
                     {post.type === "TEXT" && post.content && (
-                      <p className="mt-2.5 text-sm text-muted-foreground line-clamp-3 leading-relaxed whitespace-pre-wrap">
-                        {post.content}
+                      <p className="text-sm text-muted-foreground mt-2 line-clamp-3">
+                        {maskText(post.content)}
                       </p>
                     )}
 

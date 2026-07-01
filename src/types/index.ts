@@ -1,6 +1,6 @@
 export type Theme = "light" | "dark" | "system";
 export type PostType =
-  "TEXT" | "IMAGE" | "VIDEO" | "REEL" | "STORY" | "AUDIO" | "LIVE";
+  "TEXT" | "IMAGE" | "VIDEO" | "REEL" | "STORY" | "AUDIO" | "LIVE" | "MUSIC";
 export type Visibility = "PUBLIC" | "FOLLOWERS" | "PRIVATE";
 export type ReactionType = "LIKE" | "LOVE" | "HAHA" | "WOW" | "SAD" | "ANGRY";
 export type NotificationType =
@@ -22,6 +22,9 @@ export type OrderStatus =
   "PENDING" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED";
 export type SubscriptionStatus = "ACTIVE" | "CANCELLED" | "EXPIRED";
 
+export type ProfessionalTier = "NONE" | "SIMPLE" | "BETTER" | "BEST" | "PURE";
+export type IDVerificationStatus = "UNVERIFIED" | "PENDING" | "VERIFIED";
+
 export interface User {
   id: string;
   username: string;
@@ -35,6 +38,11 @@ export interface User {
   birthdate?: string;
   isVerified: boolean;
   verificationTier: VerificationTier;
+  professionalTier: ProfessionalTier;
+  idVerificationStatus: IDVerificationStatus;
+  freeCoursesCreatedThisMonth: number;
+  paidCoursesCreatedThisMonth: number;
+  averageCourseRating: number;
   isPremium: boolean;
   isPrivate: boolean;
   isAdmin?: boolean;
@@ -45,6 +53,7 @@ export interface User {
   profileTheme?: string;
   profileSoundtrack?: string;
   profileSoundtrackVisible?: boolean;
+  customCss?: string;
   profileTabOrder?: string[];
   hideFollowerCount?: boolean;
   pinnedPostId?: string;
@@ -54,6 +63,8 @@ export interface User {
   streakDays: number;
   channelPoints?: number;
   forumKarma?: number;
+  courseRating?: number;
+  courseRatingCount?: number;
   badges: Badge[];
   createdAt: string;
   updatedAt: string;
@@ -73,6 +84,8 @@ export interface Post {
   commentsCount: number;
   sharesCount: number;
   viewsCount: number;
+  musicGenre?: string;
+  isExplicit?: boolean;
   hashtags: string[];
   collaborators: User[];
   productTag?: Product;
@@ -81,6 +94,8 @@ export interface Post {
   isShared?: boolean;
   isPinned?: boolean;
   isArchived?: boolean;
+  isFlagged?: boolean;
+  scheduledAt?: string;
   originalPost?: Post;
   musicTrack?: MusicTrack;
   poll?: Poll;
@@ -417,4 +432,20 @@ export interface TwoFactorSetup {
   secret: string;
   qrCodeUrl: string;
   backupCodes: string[];
+}
+
+export type CourseType = "FREE" | "PAID";
+
+export interface Course {
+  id: string;
+  title: string;
+  description: string;
+  type: CourseType;
+  price?: number;
+  authorId: string;
+  author: Partial<User>;
+  rating: number;
+  ratingCount: number;
+  thumbnailUrl?: string;
+  createdAt: string;
 }
