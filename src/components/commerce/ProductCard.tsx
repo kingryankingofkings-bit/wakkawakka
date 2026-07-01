@@ -229,12 +229,23 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </span>
             <button
               onClick={handleAddToCart}
-              disabled={addedToCart}
+              disabled={
+                addedToCart ||
+                (product.stockCount !== undefined &&
+                  product.stockCount !== null &&
+                  product.stockCount <= 0) ||
+                !product.inStock
+              }
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all",
                 addedToCart
                   ? "bg-green-500 text-white"
                   : "bg-primary text-primary-foreground hover:bg-primary/90",
+                ((product.stockCount !== undefined &&
+                  product.stockCount !== null &&
+                  product.stockCount <= 0) ||
+                  !product.inStock) &&
+                  "opacity-50 cursor-not-allowed",
               )}
             >
               {addedToCart ? (
@@ -242,6 +253,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   Added
                 </>
+              ) : (product.stockCount !== undefined &&
+                  product.stockCount !== null &&
+                  product.stockCount <= 0) ||
+                !product.inStock ? (
+                <>Out of Stock</>
               ) : (
                 <>
                   <ShoppingCart className="w-3.5 h-3.5" />

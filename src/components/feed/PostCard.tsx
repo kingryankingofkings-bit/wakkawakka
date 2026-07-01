@@ -24,6 +24,7 @@ import { MediaGrid } from "./MediaGrid";
 import { PostMenu } from "./PostMenu";
 import { PostActionsBar } from "./PostActionsBar";
 import { ReportPostModal } from "./ReportPostModal";
+import { EditPostModal } from "./EditPostModal";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import toast from "react-hot-toast";
@@ -61,6 +62,7 @@ export function PostCard({ post }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(post.isBookmarked ?? false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Block & Report States
   const [isHidden, setIsHidden] = useState(false);
@@ -218,8 +220,27 @@ export function PostCard({ post }: PostCardProps) {
           onShare={() => setShowShareModal(true)}
           onReport={() => setShowReportModal(true)}
           onBlock={handleBlockUser}
+          onEdit={() => setIsEditing(true)}
         />
       </div>
+
+      {/* ── Content ── */}
+      <div className="px-4 pb-2">
+        {post.content && (
+          <p
+            className="text-foreground text-[15px] leading-relaxed whitespace-pre-wrap break-words"
+            dangerouslySetInnerHTML={{
+              __html: highlightText(post.content),
+            }}
+          />
+        )}
+      </div>
+
+      <EditPostModal
+        isOpen={isEditing}
+        onClose={() => setIsEditing(false)}
+        post={post}
+      />
 
       {/* ── Collaborators pill ── */}
       {post.collaborators.length > 0 && (

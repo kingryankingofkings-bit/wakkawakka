@@ -206,16 +206,16 @@ export function ProfileCustomizerModal({ user, onClose }: ProfileCustomizerModal
                       {ACCENT_COLORS.map((c) => (
                         <button
                           key={c.name}
-                          onClick={() => setSelectedAccent(c.hex)}
+                          onClick={() => setSelectedAccent(c.name)}
                           style={{ backgroundColor: c.hex }}
                           className={cn(
                             "w-10 h-10 rounded-full transition-transform hover:scale-110 flex items-center justify-center",
-                            selectedAccent === c.hex
+                            selectedAccent === c.name || selectedAccent === c.hex
                               ? "ring-2 ring-offset-2 ring-white scale-110"
                               : ""
                           )}
                         >
-                          {selectedAccent === c.hex && (
+                          {(selectedAccent === c.name || selectedAccent === c.hex) && (
                             <Check className="w-4 h-4 text-white" />
                           )}
                         </button>

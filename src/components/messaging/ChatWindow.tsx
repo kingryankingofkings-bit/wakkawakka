@@ -14,6 +14,7 @@ import { ChatSidebar } from "./ChatSidebar";
 import type { Message } from "@/types";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
+import { apiFetch } from "@/lib/apiClient";
 
 // ---------------------------------------------------------------------------
 // Main ChatWindow — orchestrates sub-components
@@ -71,7 +72,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
   useEffect(() => {
     async function fetchMessages() {
       try {
-        const res = await fetch(
+        const res = await apiFetch(
           `/api/messages/conversations/${conversationId}/messages`,
         );
         if (res.ok) {
@@ -170,7 +171,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
     const contentToSend = e2eeEnabled ? encryptText(content) : content;
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/messages/conversations/${conversationId}/messages`,
         {
           method: "POST",
@@ -209,7 +210,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
   const sendVoiceMessage = useCallback(
     async (audioUrl: string) => {
       try {
-        const response = await fetch(
+        const response = await apiFetch(
           `/api/messages/conversations/${conversationId}/messages`,
           {
             method: "POST",
@@ -257,7 +258,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
         formData.append("file", audioBlob, "voice.webm");
 
         try {
-          const response = await fetch("/api/upload", {
+          const response = await apiFetch("/api/upload", {
             method: "POST",
             body: formData,
           });
@@ -315,14 +316,14 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
 
     try {
       toast.loading("Uploading file...", { id: "upload" });
-      const response = await fetch("/api/upload", {
+      const response = await apiFetch("/api/upload", {
         method: "POST",
         body: formData,
       });
       if (response.ok) {
         const data = await response.json();
         if (data.url) {
-          const res = await fetch(
+          const res = await apiFetch(
             `/api/messages/conversations/${conversationId}/messages`,
             {
               method: "POST",
@@ -376,7 +377,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
         return;
       }
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+        const res = await apiFetch(`/api/search?q=${encodeURIComponent(q)}`);
         if (res.ok) {
           const json = await res.json();
           if (json.data && json.data.users) {
@@ -400,7 +401,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
     async (targetUserId: string) => {
       setIsAddingMember(true);
       try {
-        const res = await fetch(
+        const res = await apiFetch(
           `/api/messages/conversations/${conversationId}/members`,
           {
             method: "POST",

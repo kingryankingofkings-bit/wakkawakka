@@ -147,8 +147,32 @@ export default function CommunitiesPage() {
 
       <div className="p-4 space-y-6">
         {activeView === "console" ? (
-          <div className="text-center py-12 text-muted-foreground">
-            Console tools are currently unavailable.
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="rounded-xl border border-border bg-card p-4 space-y-4 shadow-sm">
+              <h3 className="font-semibold text-foreground border-b border-border pb-2">Community Tools</h3>
+              <div className="space-y-2">
+                <Button variant="secondary" className="w-full justify-start" onClick={() => toast("Add Yours prompt sent!")}>
+                  <Sparkles className="w-4 h-4 mr-2" /> Create "Add Yours" Prompt
+                </Button>
+                <Button variant="secondary" className="w-full justify-start" onClick={() => toast("Broadcast Channel created.")}>
+                  <Radio className="w-4 h-4 mr-2" /> Start Broadcast Channel
+                </Button>
+                <Button variant="secondary" className="w-full justify-start" onClick={() => toast("Affiliation badging settings opened.")}>
+                  <ShieldCheck className="w-4 h-4 mr-2" /> Manage Affiliation Badges
+                </Button>
+              </div>
+            </div>
+            <div className="rounded-xl border border-border bg-card p-4 space-y-4 shadow-sm">
+              <h3 className="font-semibold text-foreground border-b border-border pb-2">Engagement Console</h3>
+              <div className="space-y-2">
+                <Button variant="outline" className="w-full justify-start" onClick={() => toast("Channel Points configured.")}>
+                  <Coins className="w-4 h-4 mr-2 text-yellow-500" /> Channel Points Settings
+                </Button>
+                <Button variant="outline" className="w-full justify-start" onClick={() => toast("No pending requests right now.")}>
+                  <Users className="w-4 h-4 mr-2" /> Pending Join Requests
+                </Button>
+              </div>
+            </div>
           </div>
         ) : (
           <>

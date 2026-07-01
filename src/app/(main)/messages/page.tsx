@@ -13,6 +13,7 @@ import { Modal } from "@/components/ui/Modal";
 import { SponsoredAd } from "@/components/ads/SponsoredAd";
 import toast from "react-hot-toast";
 
+import { NewMessageModal } from "@/components/messaging/NewMessageModal";
 import { useSocket } from "@/hooks/useSocket";
 
 export default function MessagesPage() {
@@ -23,6 +24,8 @@ export default function MessagesPage() {
   const [messageTab, setMessageTab] = useState<"chats" | "status" | "channels">(
     "chats",
   );
+
+  const [showNewMessage, setShowNewMessage] = useState(false);
 
   // Status Notes States
   const [notes, setNotes] = useState<any[]>([]);
@@ -105,11 +108,17 @@ export default function MessagesPage() {
           <button
             className="p-2 rounded-xl hover:bg-muted transition-colors"
             title="New message"
+            onClick={() => setShowNewMessage(true)}
           >
             <Edit className="h-5 w-5" />
           </button>
         </div>
       </div>
+
+      <NewMessageModal 
+        isOpen={showNewMessage} 
+        onClose={() => setShowNewMessage(false)} 
+      />
 
       {/* DirectChat sub-tabs */}
       <div className="flex bg-muted rounded-2xl p-1 border border-border mx-4 my-2 shrink-0">

@@ -24,6 +24,8 @@ import {
 } from "@/lib/mockData";
 import Link from "next/link";
 import { useFeedStore } from "@/store/feedStore";
+import { useAuthStore } from "@/store/authStore";
+import { CURRENT_USER } from "@/lib/mockData";
 import { SponsoredAd } from "@/components/ads/SponsoredAd";
 import { apiFetch } from "@/lib/apiClient";
 
@@ -80,6 +82,8 @@ const INTEREST_CATEGORIES: readonly InterestCategory[] = [
 ] as const;
 
 export default function ExplorePage() {
+  const authUser = useAuthStore((s) => s.user);
+  const currentUser = authUser ?? CURRENT_USER;
   const { posts, setPosts } = useFeedStore();
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState<ExploreTab>("All");
@@ -118,7 +122,7 @@ export default function ExplorePage() {
 
   // Filter Users
   const filteredUsers = useMemo(() => {
-    let result = MOCK_USERS;
+    let result = MOCK_USERS.filter((u) => u.id !== currentUser.id);
     if (query) {
       result = result.filter(
         (u) =>
@@ -546,10 +550,15 @@ export default function ExplorePage() {
         )}
 
         {/* Empty state */}
-        {filteredUsers.length === 0 &&
+        {((tab === "All" &&
+          filteredUsers.length === 0 &&
           filteredPosts.length === 0 &&
           filteredTags.length === 0 &&
-          filteredCommunities.length === 0 && (
+          filteredCommunities.length === 0) ||
+          (tab === "People" && filteredUsers.length === 0) ||
+          (tab === "Posts" && filteredPosts.length === 0) ||
+          (tab === "Tags" && filteredTags.length === 0) ||
+          (tab === "Communities" && filteredCommunities.length === 0)) && (
             <div className="flex flex-col items-center justify-center text-center py-20 bg-card border border-border border-dashed rounded-3xl space-y-4">
               <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
                 <Search className="h-8 w-8" />

@@ -88,10 +88,16 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   const authUser = useAuthStore((s) => s.user);
   const currentUser = authUser ?? CURRENT_USER;
 
-  const profileUser =
+  const baseProfileUser =
     currentUser.username === username
       ? currentUser
       : (MOCK_USERS.find((u) => u.username === username) ?? MOCK_USERS[0]);
+
+  const userPosts = MOCK_POSTS.filter((p) => p.authorId === baseProfileUser.id);
+  const profileUser = {
+    ...baseProfileUser,
+    postsCount: userPosts.length,
+  };
 
   const isOwnProfile = profileUser.username === currentUser.username;
   // Fallback to checking a generic following array or default to true for demo purposes if it's the 2nd mock user
@@ -119,7 +125,6 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   const [newAlbumTitle, setNewAlbumTitle] = useState("");
   const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
 
-  const userPosts = MOCK_POSTS.filter((p) => p.authorId === profileUser.id);
   const isPrivateLocked =
     profileUser.isPrivate && !isOwnProfile && !isFollowing;
 

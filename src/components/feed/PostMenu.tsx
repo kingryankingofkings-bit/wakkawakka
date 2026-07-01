@@ -25,6 +25,7 @@ interface PostMenuProps {
   onShare: () => void;
   onReport: () => void;
   onBlock: () => void;
+  onEdit?: () => void;
 }
 
 export function PostMenu({
@@ -37,6 +38,7 @@ export function PostMenu({
   onShare,
   onReport,
   onBlock,
+  onEdit,
 }: PostMenuProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
@@ -94,7 +96,10 @@ export function PostMenu({
                 {isOwnPost && (
                   <>
                     <button
-                      onClick={() => setShowMenu(false)}
+                      onClick={() => {
+                        setShowMenu(false);
+                        onEdit?.();
+                      }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
                     >
                       <Pencil className="w-4 h-4 text-muted-foreground" />

@@ -225,7 +225,7 @@ export async function GET(req: NextRequest) {
     const postsWithMetrics = posts.map((p) => {
       const likes = p.likesCount;
       const comments = p.commentsCount;
-      const views = p.viewsCount || 1;
+      const views = Math.max(p.viewsCount || 0, likes + comments) || 1;
       const engagementRate = ((likes + comments) / views) * 100;
       totalViews += p.viewsCount;
       totalEngagement += likes + comments;
