@@ -16,11 +16,11 @@ const CameraCapture = dynamic(() => import("./CameraCapture"), {
   ),
 });
 
-export default function CameraGateway() {
+export default function CameraGateway({ ssrMobile = false }: { ssrMobile?: boolean }) {
   // Mobile viewport query (max-width: 767px).
   // If matches, the user is on mobile.
   // If not, it means the screen was resized to desktop, so we show the fallback.
-  const isMobile = useMediaQuery("(max-width: 767px)");
+  const isMobile = useMediaQuery("(max-width: 767px)", ssrMobile);
 
   if (!isMobile) {
     return <DesktopFallback />;

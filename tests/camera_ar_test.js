@@ -498,6 +498,39 @@ async function main() {
       }
     });
 
+    // =========================================================================
+    // Scenario 6: Desktop Fallback Redirect Check
+    // =========================================================================
+    await runTestCase("Desktop Fallback Redirect Check", async () => {
+      // 1. Fetch with a desktop User-Agent and assert that the response contains "Switch to Mobile"
+      const desktopRes = await fetch(`${BASE_URL}/camera`, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        },
+      });
+      if (desktopRes.status !== 200) {
+        throw new Error(`Desktop request failed with status: ${desktopRes.status}`);
+      }
+      const desktopHtml = await desktopRes.text();
+      if (!desktopHtml.includes("Switch to Mobile")) {
+        throw new Error("Expected desktop response to contain 'Switch to Mobile' fallback HTML");
+      }
+
+      // 2. Fetch with a mobile User-Agent and assert that the response does NOT contain "Switch to Mobile"
+      const mobileRes = await fetch(`${BASE_URL}/camera`, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1",
+        },
+      });
+      if (mobileRes.status !== 200) {
+        throw new Error(`Mobile request failed with status: ${mobileRes.status}`);
+      }
+      const mobileHtml = await mobileRes.text();
+      if (mobileHtml.includes("Switch to Mobile")) {
+        throw new Error("Expected mobile response NOT to contain 'Switch to Mobile' fallback HTML");
+      }
+    });
+
   } catch (err) {
     console.error("Unexpected error during test execution:", err);
   } finally {

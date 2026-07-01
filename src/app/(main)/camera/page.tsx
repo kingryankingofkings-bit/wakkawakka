@@ -13,5 +13,5 @@ export default function CameraPage() {
     return <DesktopFallback />;
   }
 
-  return <CameraGateway />;
+  return <CameraGateway ssrMobile={isMobileUA} />;
 }

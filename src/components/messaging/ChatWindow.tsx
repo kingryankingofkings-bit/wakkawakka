@@ -983,38 +983,51 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
               style={{ maxHeight: 140 }}
             />
 
+            {/* Screen-reader only dynamic announcer for recording status */}
+            <div className="sr-only" aria-live="polite" role="status">
+              {isRecording ? "Voice recording in progress" : "Voice recording stopped"}
+            </div>
+
             {/* Mic / Send Button */}
             {inputValue.trim() || isRecording ? (
               isRecording ? (
                 <motion.button
+                  type="button"
                   onClick={stopRecording}
-                  whileTap={{ scale: 0.9 }}
-                  className="rounded-full p-2.5 bg-red-500 text-white hover:bg-red-600 transition-colors flex-shrink-0 animate-pulse"
+                  whileTap={{ scale: 0.95 }}
+                  aria-label="Stop recording voice message"
+                  aria-pressed="true"
+                  className="rounded-full p-3 bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors flex-shrink-0 w-11 h-11 flex items-center justify-center animate-pulse"
                 >
-                  <Mic className="h-4 w-4" />
+                  <Mic className="h-5 w-5" aria-hidden="true" />
                 </motion.button>
               ) : (
                 <motion.button
+                  type="button"
                   onClick={sendMessage}
                   disabled={!inputValue.trim()}
-                  whileTap={{ scale: 0.9 }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label="Send message"
                   className={cn(
-                    "rounded-full p-2.5 transition-colors flex-shrink-0",
+                    "rounded-full p-3 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 flex-shrink-0 w-11 h-11 flex items-center justify-center",
                     inputValue.trim()
                       ? "bg-primary text-primary-foreground hover:bg-primary/90"
                       : "bg-muted text-muted-foreground cursor-not-allowed",
                   )}
                 >
-                  <Send className="h-4 w-4" />
+                  <Send className="h-5 w-5" aria-hidden="true" />
                 </motion.button>
               )
             ) : (
               <motion.button
+                type="button"
                 onClick={startRecording}
-                whileTap={{ scale: 0.9 }}
-                className="rounded-full p-2.5 bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-colors flex-shrink-0"
+                whileTap={{ scale: 0.95 }}
+                aria-label="Start recording voice message"
+                aria-pressed="false"
+                className="rounded-full p-3 bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors flex-shrink-0 w-11 h-11 flex items-center justify-center"
               >
-                <Mic className="h-4 w-4" />
+                <Mic className="h-5 w-5" aria-hidden="true" />
               </motion.button>
             )}
           </div>

@@ -4,8 +4,11 @@ import { useState, useEffect } from "react";
  * Custom hook to detect when the viewport matches a given CSS media query.
  * Default is target boundary max-width: 767px for mobile.
  */
-export function useMediaQuery(query: string = "(max-width: 767px)"): boolean {
-  const [matches, setMatches] = useState<boolean>(false);
+export function useMediaQuery(
+  query: string = "(max-width: 767px)",
+  defaultValue: boolean = false
+): boolean {
+  const [matches, setMatches] = useState<boolean>(defaultValue);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
