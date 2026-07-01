@@ -10,15 +10,14 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 // =============================================================================
 // Enums
-// NOTE: SQLite does not support native enums. We model them as String and
-//       validate at the application layer. When migrating to PostgreSQL,
-//       convert these to proper Prisma enum declarations.
+// NOTE: Enum values are modeled as String fields and validated at the
+//       application layer. This provides flexibility across providers.
 // =============================================================================
 // PostType        : TEXT | IMAGE | VIDEO | REEL | STORY | AUDIO | LIVE
 // PostVisibility  : PUBLIC | FOLLOWERS | PRIVATE
