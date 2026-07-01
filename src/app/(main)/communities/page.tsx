@@ -8,6 +8,7 @@ import { formatCount } from "@/lib/utils";
 import Link from "next/link";
 import { Modal } from "@/components/ui/Modal";
 import toast from "react-hot-toast";
+import { apiFetch } from "@/lib/apiClient";
 
 const CATEGORIES = [
   "All",
@@ -43,7 +44,7 @@ export default function CommunitiesPage() {
   async function loadCommunities() {
     setLoading(true);
     try {
-      const res = await fetch(`/api/communities?category=${activeCategory}`);
+      const res = await apiFetch(`/api/communities?category=${activeCategory}`);
       if (res.ok) {
         const json = await res.json();
         setCommunities(json.data || []);
@@ -57,7 +58,7 @@ export default function CommunitiesPage() {
 
   async function handleJoin(commId: string) {
     try {
-      const res = await fetch(`/api/communities/${commId}/join`, {
+      const res = await apiFetch(`/api/communities/${commId}/join`, {
         method: "POST",
       });
       if (res.ok) {
@@ -80,7 +81,7 @@ export default function CommunitiesPage() {
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     try {
-      const res = await fetch("/api/communities", {
+      const res = await apiFetch("/api/communities", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

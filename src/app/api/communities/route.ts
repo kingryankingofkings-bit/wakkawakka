@@ -73,29 +73,35 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    // Check membership
-    const data = await Promise.all(
-      items.map(async (c) => {
-        let isMember = false;
-        let isModerator = false;
-        if (userId) {
-          const member = await prisma.communityMember.findUnique({
-            where: { communityId_userId: { communityId: c.id, userId } },
-          });
-          isMember = !!member;
-          isModerator =
-            c.creatorId === userId ||
-            (member && ["ADMIN", "MODERATOR"].includes(member.role)) ||
-            false;
-        }
-        return {
-          ...c,
-          isMember,
-          isModerator,
-          isPrivate: c.visibility === "PRIVATE",
-        };
-      }),
-    );
+    // Bulk-fetch memberships for current user in one query (avoids N+1)
+    let membershipMap: Record<string, { role: string }> = {};
+    if (userId) {
+      const memberships = await prisma.communityMember.findMany({
+        where: {
+          userId,
+          communityId: { in: items.map((c) => c.id) },
+        },
+        select: { communityId: true, role: true },
+      });
+      membershipMap = Object.fromEntries(
+        memberships.map((m) => [m.communityId, { role: m.role }]),
+      );
+    }
+
+    const data = items.map((c) => {
+      const membership = membershipMap[c.id];
+      const isMember = !!membership;
+      const isModerator =
+        c.creatorId === userId ||
+        (membership && ["ADMIN", "MODERATOR"].includes(membership.role)) ||
+        false;
+      return {
+        ...c,
+        isMember,
+        isModerator,
+        isPrivate: c.visibility === "PRIVATE",
+      };
+    });
 
     return NextResponse.json({ data });
   } catch (err) {

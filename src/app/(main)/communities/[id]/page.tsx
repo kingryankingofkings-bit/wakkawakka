@@ -6,7 +6,6 @@ import {
   Users,
   Lock,
   Globe,
-  Settings,
   Plus,
   ArrowLeft,
   Check,
@@ -23,6 +22,7 @@ import { maskText } from "@/lib/contentFilter";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { Modal } from "@/components/ui/Modal";
+import { apiFetch } from "@/lib/apiClient";
 
 const COMMUNITY_TABS = [
   "Posts",
@@ -112,7 +112,7 @@ export default function CommunityPage() {
   }
 
   async function loadCommunityDetails() {
-    const res = await fetch(`/api/communities/${id}`);
+    const res = await apiFetch(`/api/communities/${id}`);
     if (res.ok) {
       const json = await res.json();
       setCommunity(json.data);
@@ -131,7 +131,7 @@ export default function CommunityPage() {
   }
 
   async function loadPosts() {
-    const res = await fetch(`/api/communities/${id}/posts`);
+    const res = await apiFetch(`/api/communities/${id}/posts`);
     if (res.ok) {
       const json = await res.json();
       setPosts(json.data || []);
@@ -139,7 +139,7 @@ export default function CommunityPage() {
   }
 
   async function loadMembers() {
-    const res = await fetch(`/api/communities/${id}/members`);
+    const res = await apiFetch(`/api/communities/${id}/members`);
     if (res.ok) {
       const json = await res.json();
       setMembers(json.data || []);
@@ -147,7 +147,7 @@ export default function CommunityPage() {
   }
 
   async function loadRequests() {
-    const res = await fetch(`/api/communities/${id}/requests`);
+    const res = await apiFetch(`/api/communities/${id}/requests`);
     if (res.ok) {
       const json = await res.json();
       setRequests(json.data || []);
@@ -155,7 +155,7 @@ export default function CommunityPage() {
   }
 
   async function loadCommunityEvents() {
-    const res = await fetch(`/api/events?communityId=${id}`);
+    const res = await apiFetch(`/api/events?communityId=${id}`);
     if (res.ok) {
       const json = await res.json();
       setCommunityEvents(json.data || []);
@@ -166,7 +166,7 @@ export default function CommunityPage() {
     e.preventDefault();
     if (!eventForm.title || !eventForm.startsAt) return;
     try {
-      const res = await fetch("/api/events", {
+      const res = await apiFetch("/api/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -199,7 +199,7 @@ export default function CommunityPage() {
   async function handleToggleJoin() {
     if (!community) return;
     try {
-      const res = await fetch(`/api/communities/${id}/join`, {
+      const res = await apiFetch(`/api/communities/${id}/join`, {
         method: "POST",
       });
       if (res.ok) {
@@ -219,7 +219,7 @@ export default function CommunityPage() {
 
   async function handleApprove(reqId: string) {
     try {
-      const res = await fetch(`/api/communities/${id}/requests/${reqId}`, {
+      const res = await apiFetch(`/api/communities/${id}/requests/${reqId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "approve" }),
@@ -236,13 +236,13 @@ export default function CommunityPage() {
 
   async function handleReject(reqId: string) {
     try {
-      const res = await fetch(`/api/communities/${id}/requests/${reqId}`, {
+      const res = await apiFetch(`/api/communities/${id}/requests/${reqId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "reject" }),
       });
       if (res.ok) {
-        toast.error("Rejected join request");
+        toast("Request rejected.");
         loadAll();
       }
     } catch (err) {
@@ -257,7 +257,7 @@ export default function CommunityPage() {
       const flair = postFlairText
         ? `${postFlairText}|${postFlairBg}|${postFlairTextCol}`
         : "";
-      const res = await fetch(`/api/communities/${id}/posts`, {
+      const res = await apiFetch(`/api/communities/${id}/posts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -285,7 +285,7 @@ export default function CommunityPage() {
   async function handleSaveAbout(e: React.FormEvent) {
     e.preventDefault();
     try {
-      const res = await fetch(`/api/communities/${id}`, {
+      const res = await apiFetch(`/api/communities/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -332,7 +332,7 @@ export default function CommunityPage() {
       const flair = memberFlairText
         ? `${memberFlairText}|${memberFlairBg}|${memberFlairTextCol}`
         : "";
-      const res = await fetch(
+      const res = await apiFetch(
         `/api/communities/${id}/members/${selectedMember.userId}`,
         {
           method: "PATCH",
@@ -577,11 +577,11 @@ export default function CommunityPage() {
                   <div className="flex items-center gap-2 mt-2 pt-2">
                     <button className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-muted hover:bg-muted/80 text-xs font-medium text-muted-foreground transition-colors border border-transparent hover:border-border">
                       <span className="text-sm">🔥</span> 
-                      <span>{Math.floor(Math.random() * 20) + 1}</span>
+                      <span>{(post.id.charCodeAt(0) % 20) + 1}</span>
                     </button>
                     <button className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-muted hover:bg-muted/80 text-xs font-medium text-muted-foreground transition-colors border border-transparent hover:border-border">
                       <span className="text-sm">💯</span> 
-                      <span>{Math.floor(Math.random() * 10) + 1}</span>
+                      <span>{(post.id.charCodeAt(1) % 10) + 1}</span>
                     </button>
                     <button className="flex items-center justify-center w-6 h-6 rounded-full hover:bg-muted text-muted-foreground transition-colors">
                       <Plus className="w-3 h-3" />
