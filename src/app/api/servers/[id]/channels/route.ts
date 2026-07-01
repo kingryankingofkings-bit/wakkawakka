@@ -30,7 +30,7 @@ export async function GET(req: NextRequest, { params }: RouteContext) {
 // POST /api/servers/[id]/channels - Create a channel
 export async function POST(req: NextRequest, { params }: RouteContext) {
   const { id: serverId } = await params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

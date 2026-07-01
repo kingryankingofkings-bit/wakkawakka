@@ -16,7 +16,7 @@ const userSelect = {
 
 // GET /api/friends — list the current user's friends
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
 
 // DELETE /api/friends?friendId=xxx — remove a friend
 export async function DELETE(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   const friendId = req.nextUrl.searchParams.get("friendId");
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });

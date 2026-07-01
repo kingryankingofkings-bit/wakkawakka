@@ -9,7 +9,7 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

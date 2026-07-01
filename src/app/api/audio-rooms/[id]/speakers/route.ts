@@ -12,7 +12,7 @@ interface RouteContext {
 
 // POST /api/audio-rooms/[id]/speakers - Promote a listener/user to speaker
 export async function POST(req: NextRequest, { params }: RouteContext) {
-  const currentUserId = getRequestUserId(req);
+  const currentUserId = await getRequestUserId(req);
   if (!currentUserId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
 
 // PATCH /api/audio-rooms/[id]/speakers - Mute/unmute speaker
 export async function PATCH(req: NextRequest, { params }: RouteContext) {
-  const currentUserId = getRequestUserId(req);
+  const currentUserId = await getRequestUserId(req);
   if (!currentUserId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -126,7 +126,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
 
 // DELETE /api/audio-rooms/[id]/speakers - Demote/remove speaker
 export async function DELETE(req: NextRequest, { params }: RouteContext) {
-  const currentUserId = getRequestUserId(req);
+  const currentUserId = await getRequestUserId(req);
   if (!currentUserId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

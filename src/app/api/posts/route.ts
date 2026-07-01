@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getRequestUserId } from "@/lib/currentUser";
 import { MOCK_POSTS, MOCK_USERS } from "@/lib/mockData";
+import { z } from "zod";
+import { validateRequest, optionalAuth } from "@/lib/apiValidation";
+import { apiInternalError } from "@/lib/apiResponse";
+import { createLogger } from "@/lib/logger";
 import {
   Post,
   PostType,
@@ -11,73 +15,33 @@ import {
   Theme,
 } from "@/types";
 
-async function seedDatabaseIfNeeded() {
-  const postCount = await prisma.post.count();
-  if (postCount > 0) return;
+const log = createLogger("PostsAPI");
 
-  // Create the mock users
-  for (const mockUser of MOCK_USERS) {
-    const existing = await prisma.user.findUnique({
-      where: { id: mockUser.id },
-    });
-    if (!existing) {
-      await prisma.user.create({
-        data: {
-          id: mockUser.id,
-          username: mockUser.username,
-          email: mockUser.email,
-          displayName: mockUser.displayName,
-          bio: mockUser.bio || null,
-          avatar: mockUser.avatar || null,
-          coverImage: mockUser.coverImage || null,
-          website: mockUser.website || null,
-          location: mockUser.location || null,
-          isVerified: mockUser.isVerified,
-          verificationTier: mockUser.verificationTier || "NONE",
-          isPremium: mockUser.isPremium,
-          isPrivate: mockUser.isPrivate,
-          twoFactorEnabled: mockUser.twoFactorEnabled,
-          theme: mockUser.theme || "SYSTEM",
-          accentColor: mockUser.accentColor || "#3b82f6",
-          language: mockUser.language || "en",
-        },
-      });
-    }
-  }
+// Zod validation schema for creating a post
+const createPostSchema = z.object({
+  content: z.string().default(""),
+  type: z.enum(["TEXT", "IMAGE", "VIDEO", "REEL", "STORY", "AUDIO", "LIVE"]).default("TEXT"),
+  visibility: z.enum(["PUBLIC", "FOLLOWERS", "PRIVATE"]).default("PUBLIC"),
+  mediaUrls: z.array(z.string().url()).optional().default([]),
+  hashtags: z.array(z.string()).optional().default([]),
+  collaborators: z.array(z.object({ id: z.string() })).optional().default([]),
+  isEphemeral: z.boolean().optional().default(false),
+  expiresAt: z.string().datetime().optional().nullable(),
+  scheduledAt: z.string().datetime().optional().nullable(),
+  btsUrl: z.string().url().optional().nullable(),
+  greenScreenBg: z.string().optional().nullable(),
+  labels: z.union([z.array(z.string()), z.string()]).optional(),
+  authorId: z.string().optional(),
+  author: z.object({
+    username: z.string().optional(),
+    email: z.string().email().optional(),
+    displayName: z.string().optional(),
+    avatar: z.string().optional(),
+  }).optional(),
+});
 
-  // Create the mock posts
-  for (const mockPost of MOCK_POSTS) {
-    const authorExists = await prisma.user.findUnique({
-      where: { id: mockPost.authorId },
-    });
-    if (authorExists) {
-      await prisma.post.create({
-        data: {
-          id: mockPost.id,
-          content: mockPost.content,
-          authorId: mockPost.authorId,
-          type: mockPost.type,
-          visibility: mockPost.visibility,
-          mediaUrls: JSON.stringify(mockPost.mediaUrls || []),
-          hashtags: JSON.stringify(mockPost.hashtags || []),
-          collaboratorIds: JSON.stringify(
-            mockPost.collaborators?.map((c) => c.id) || [],
-          ),
-          isEphemeral: mockPost.isEphemeral,
-          expiresAt: mockPost.expiresAt ? new Date(mockPost.expiresAt) : null,
-          likesCount: mockPost.likesCount,
-          commentsCount: mockPost.commentsCount,
-          sharesCount: mockPost.sharesCount,
-          viewsCount: mockPost.viewsCount,
-          isPinned: (mockPost as any).isPinned || false,
-          isArchived: (mockPost as any).isArchived || false,
-          createdAt: new Date(mockPost.createdAt),
-          updatedAt: new Date(mockPost.updatedAt),
-        },
-      });
-    }
-  }
-}
+// NOTE: Database seeding has been moved to `npm run db:seed`.
+// The GET handler no longer auto-seeds to prevent production hazards.
 
 function mapPrismaPostToPost(
   prismaPost: any,
@@ -169,9 +133,7 @@ export async function GET(req: NextRequest) {
     const feed = searchParams.get("feed");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
-    const activeUserId = getRequestUserId(req);
-
-    await seedDatabaseIfNeeded();
+    const activeUserId = await getRequestUserId(req);
 
     const whereClause: any = {};
     if (type) {
@@ -308,53 +270,56 @@ export async function GET(req: NextRequest) {
       meta: { total, page, limit, hasMore: skip + limit < total },
     });
   } catch (error) {
-    console.error("Error fetching posts:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch posts" },
-      { status: 500 },
-    );
+    log.error("Error fetching posts", { error });
+    return apiInternalError("Failed to fetch posts");
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const activeUserId = getRequestUserId(req);
-    const authorId = activeUserId || body.authorId || "current";
+
+    // Validate request body
+    const validation = validateRequest(createPostSchema, body);
+    if (!validation.success) return validation.response;
+    const validated = validation.data;
+
+    const activeUserId = await optionalAuth(req);
+    const authorId = activeUserId || validated.authorId || "current";
 
     let author = await prisma.user.findUnique({ where: { id: authorId } });
     if (!author) {
       author = await prisma.user.create({
         data: {
           id: authorId,
-          username: body.author?.username || `user_${authorId}`,
-          email: body.author?.email || `${authorId}@example.com`,
-          displayName: body.author?.displayName || `User ${authorId}`,
-          avatar: body.author?.avatar || null,
+          username: validated.author?.username || `user_${authorId}`,
+          email: validated.author?.email || `${authorId}@example.com`,
+          displayName: validated.author?.displayName || `User ${authorId}`,
+          avatar: validated.author?.avatar || null,
         },
       });
     }
 
     const newDbPost = await prisma.post.create({
       data: {
-        content: body.content || "",
+        content: validated.content,
         authorId: authorId,
-        type: body.type || "TEXT",
-        visibility: body.visibility || "PUBLIC",
-        mediaUrls: JSON.stringify(body.mediaUrls || []),
-        hashtags: JSON.stringify(body.hashtags || []),
+        type: validated.type,
+        visibility: validated.visibility,
+        mediaUrls: JSON.stringify(validated.mediaUrls),
+        hashtags: JSON.stringify(validated.hashtags),
         collaboratorIds: JSON.stringify(
-          body.collaborators?.map((c: any) => c.id) || [],
+          validated.collaborators?.map((c) => c.id) || [],
         ),
-        isEphemeral: body.isEphemeral || false,
-        expiresAt: body.expiresAt ? new Date(body.expiresAt) : null,
-        scheduledAt: body.scheduledAt ? new Date(body.scheduledAt) : null,
-        btsUrl: body.btsUrl || null,
-        greenScreenBg: body.greenScreenBg || null,
-        labels: body.labels
-          ? Array.isArray(body.labels)
-            ? JSON.stringify(body.labels)
-            : String(body.labels)
+        isEphemeral: validated.isEphemeral,
+        expiresAt: validated.expiresAt ? new Date(validated.expiresAt) : null,
+        scheduledAt: validated.scheduledAt ? new Date(validated.scheduledAt) : null,
+        btsUrl: validated.btsUrl || null,
+        greenScreenBg: validated.greenScreenBg || null,
+        labels: validated.labels
+          ? Array.isArray(validated.labels)
+            ? JSON.stringify(validated.labels)
+            : String(validated.labels)
           : "[]",
         likesCount: 0,
         commentsCount: 0,
@@ -369,10 +334,7 @@ export async function POST(req: NextRequest) {
     const data = mapPrismaPostToPost(newDbPost, authorId);
     return NextResponse.json({ data }, { status: 201 });
   } catch (error) {
-    console.error("Error creating post:", error);
-    return NextResponse.json(
-      { error: "Invalid request body or creation failed" },
-      { status: 400 },
-    );
+    log.error("Error creating post", { error });
+    return apiInternalError("Failed to create post");
   }
 }

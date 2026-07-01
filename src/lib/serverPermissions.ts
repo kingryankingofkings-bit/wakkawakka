@@ -1,4 +1,65 @@
 import { prisma } from "@/lib/prisma";
+import { z } from "zod";
+import { createLogger } from "@/lib/logger";
+
+// =============================================================================
+// WakkaWakka — Server Permission Checking
+// Server owner and members with ADMIN/ADMINISTRATOR role bypass all checks.
+// =============================================================================
+
+const log = createLogger("Permissions");
+
+/** Schema for a single permission overwrite entry stored as JSON. */
+const permissionOverwriteSchema = z.object({
+  type: z.enum(["MEMBER", "ROLE"]),
+  id: z.string(),
+  allow: z.array(z.string()).default([]),
+  deny: z.array(z.string()).default([]),
+});
+
+type PermissionOverwrite = z.infer<typeof permissionOverwriteSchema>;
+
+/**
+ * Safely parse a JSON permission overwrites string into typed objects.
+ * Returns an empty array on invalid input instead of crashing.
+ */
+function parseOverwrites(raw: string | null | undefined): PermissionOverwrite[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    const results: PermissionOverwrite[] = [];
+    for (const item of parsed) {
+      const result = permissionOverwriteSchema.safeParse(item);
+      if (result.success) {
+        results.push(result.data);
+      } else {
+        log.warn("Invalid permission overwrite entry skipped", {
+          data: { item, errors: result.error.issues },
+        });
+      }
+    }
+    return results;
+  } catch (err) {
+    log.warn("Failed to parse permission overwrites JSON", { error: err });
+    return [];
+  }
+}
+
+/**
+ * Safely parse a JSON role permissions string into an array of permission names.
+ */
+function parseRolePermissions(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((p): p is string => typeof p === "string");
+  } catch (err) {
+    log.warn("Failed to parse role permissions JSON", { error: err });
+    return [];
+  }
+}
 
 /**
  * Checks if a user has a specific permission in a server.
@@ -33,18 +94,12 @@ export async function checkPermission(
 
   if (!member) return false;
 
-  // 3. Aggregate all permissions
+  // 3. Aggregate all permissions from roles
   const permissions = new Set<string>();
 
   for (const memberRole of member.roles) {
-    try {
-      const rolePermissions: string[] = JSON.parse(
-        memberRole.role.permissions || "[]",
-      );
-      rolePermissions.forEach((p) => permissions.add(p));
-    } catch {
-      // Ignore JSON parse errors
-    }
+    const rolePermissions = parseRolePermissions(memberRole.role.permissions);
+    rolePermissions.forEach((p) => permissions.add(p));
   }
 
   // 4. Admin permission bypasses other checks
@@ -58,13 +113,7 @@ export async function checkPermission(
     });
 
     if (channel) {
-      let overwrites: any[] = [];
-      try {
-        overwrites = JSON.parse(channel.permissionOverwrites || "[]");
-      } catch {
-        // Ignore JSON parse errors
-      }
-
+      const overwrites = parseOverwrites(channel.permissionOverwrites);
       const memberRoleIds = member.roles.map((r) => r.role.id);
 
       // MEMBER overrides take highest precedence
@@ -76,10 +125,8 @@ export async function checkPermission(
       let hasMemberDeny = false;
       let hasMemberAllow = false;
       for (const ow of memberOverwrites) {
-        const allowArr = Array.isArray(ow.allow) ? ow.allow : [];
-        const denyArr = Array.isArray(ow.deny) ? ow.deny : [];
-        if (denyArr.includes(requiredPermission)) hasMemberDeny = true;
-        if (allowArr.includes(requiredPermission)) hasMemberAllow = true;
+        if (ow.deny.includes(requiredPermission)) hasMemberDeny = true;
+        if (ow.allow.includes(requiredPermission)) hasMemberAllow = true;
       }
 
       if (hasMemberDeny) return false;
@@ -93,10 +140,8 @@ export async function checkPermission(
       let hasRoleDeny = false;
       let hasRoleAllow = false;
       for (const ow of roleOverwrites) {
-        const allowArr = Array.isArray(ow.allow) ? ow.allow : [];
-        const denyArr = Array.isArray(ow.deny) ? ow.deny : [];
-        if (denyArr.includes(requiredPermission)) hasRoleDeny = true;
-        if (allowArr.includes(requiredPermission)) hasRoleAllow = true;
+        if (ow.deny.includes(requiredPermission)) hasRoleDeny = true;
+        if (ow.allow.includes(requiredPermission)) hasRoleAllow = true;
       }
 
       if (hasRoleDeny) return false;

@@ -8,7 +8,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const viewerId = getRequestUserId(req);
+  const viewerId = await getRequestUserId(req);
 
   try {
     const user = await prisma.user.findFirst({
@@ -49,7 +49,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const activeUserId = getRequestUserId(req);
+  const activeUserId = await getRequestUserId(req);
   if (activeUserId !== params.id) {
     // If not matching, verify if it's admin or allow if requested by self
     // In many frontend flows, id could be username or we want to allow users to update their own profile.

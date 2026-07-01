@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 // GET /api/professional/learning - Retrieve courses and user enrollments
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   const category = req.nextUrl.searchParams.get("category");
 
   try {
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
 
 // POST /api/professional/learning - Enroll in a learning course
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

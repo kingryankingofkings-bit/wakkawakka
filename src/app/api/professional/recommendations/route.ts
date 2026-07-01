@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
 
 // POST /api/professional/recommendations - Request or Write a recommendation
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -211,7 +211,7 @@ export async function POST(req: NextRequest) {
 
 // Helper to approve/reject
 async function handleUpdate(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

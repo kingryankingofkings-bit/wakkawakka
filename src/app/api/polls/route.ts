@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 // POST /api/polls — create a poll attached to a (new or existing) post
 // body: { postId?, question, options: string[], allowMultiple?, expiresAt?, content? }
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
 
 // GET /api/polls?postId=xxx — fetch a poll with current results + user's votes
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   const postId = req.nextUrl.searchParams.get("postId");
   if (!postId)
     return NextResponse.json({ error: "postId required" }, { status: 400 });

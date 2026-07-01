@@ -18,7 +18,7 @@ const userSelect = {
 // Heuristic: friends-of-friends first, then popular users, excluding existing
 // friends, pending requests, blocked users, and self.
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 

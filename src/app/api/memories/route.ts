@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 // GET /api/memories — retrieves memories for the authenticated user
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
 
 // POST /api/memories — creates a new saved memory
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

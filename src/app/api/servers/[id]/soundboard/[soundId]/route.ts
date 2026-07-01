@@ -13,7 +13,7 @@ interface RouteContext {
 
 // DELETE /api/servers/[id]/soundboard/[soundId] - Delete soundboard sound
 export async function DELETE(req: NextRequest, { params }: RouteContext) {
-  const currentUserId = getRequestUserId(req);
+  const currentUserId = await getRequestUserId(req);
   if (!currentUserId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

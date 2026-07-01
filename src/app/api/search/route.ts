@@ -107,7 +107,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const activeUserId = getRequestUserId(req);
+    const activeUserId = await getRequestUserId(req);
 
     // Save search history in DB
     if (activeUserId) {

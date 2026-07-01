@@ -1,18 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getRequestUserId } from "@/lib/currentUser";
+import { z } from "zod";
+import { requireAuth, validateRequest } from "@/lib/apiValidation";
+import {
+  apiSuccess,
+  apiInternalError,
+} from "@/lib/apiResponse";
+import { createLogger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
+const log = createLogger("ServersAPI");
+
+// Zod validation schema for creating a server
+const createServerSchema = z.object({
+  name: z.string().min(1, "Server name is required").max(100),
+  description: z.string().max(1000).optional().nullable(),
+  iconUrl: z.string().url().optional().nullable(),
+  isPublic: z.boolean().optional().default(false),
+});
+
 // GET /api/servers - List servers
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
   const { searchParams } = new URL(req.url);
   const query = searchParams.get("query") || "";
   const publicOnly = searchParams.get("publicOnly") === "true";
 
   try {
-    const where: any = {};
+    const where: {
+      isPublic?: boolean;
+      OR?: Array<{ name?: { contains: string }; description?: { contains: string } }>;
+    } = {};
 
     if (publicOnly) {
       where.isPublic = true;
@@ -48,30 +66,24 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ data: servers, servers });
   } catch (err) {
-    return NextResponse.json(
-      { error: "Failed to fetch servers", detail: String(err) },
-      { status: 500 },
-    );
+    log.error("Failed to fetch servers", { error: err });
+    return apiInternalError("Failed to fetch servers");
   }
 }
 
 // POST /api/servers - Create server
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await requireAuth(req);
+  if (auth.response) return auth.response;
+  const userId = auth.userId;
 
   try {
     const body = await req.json();
-    const { name, description, iconUrl, isPublic } = body;
 
-    if (!name) {
-      return NextResponse.json(
-        { error: "Server name is required" },
-        { status: 400 },
-      );
-    }
+    // Validate request body
+    const validation = validateRequest(createServerSchema, body);
+    if (!validation.success) return validation.response;
+    const { name, description, iconUrl, isPublic } = validation.data;
 
     // Generate a random 8-character invite code
     const inviteCode = Math.random()
@@ -143,15 +155,15 @@ export async function POST(req: NextRequest) {
       return { server, defaultChannel };
     });
 
-    return NextResponse.json({
-      data: result.server,
-      server: result.server,
-      defaultChannel: result.defaultChannel,
-    });
-  } catch (err) {
-    return NextResponse.json(
-      { error: "Failed to create server", detail: String(err) },
-      { status: 500 },
+    return apiSuccess(
+      {
+        ...result.server,
+        defaultChannel: result.defaultChannel,
+      },
+      201,
     );
+  } catch (err) {
+    log.error("Failed to create server", { error: err });
+    return apiInternalError("Failed to create server");
   }
 }

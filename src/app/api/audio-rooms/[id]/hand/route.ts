@@ -12,7 +12,7 @@ interface RouteContext {
 
 // PATCH /api/audio-rooms/[id]/hand - Raise/lower hand
 export async function PATCH(req: NextRequest, { params }: RouteContext) {
-  const currentUserId = getRequestUserId(req);
+  const currentUserId = await getRequestUserId(req);
   if (!currentUserId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

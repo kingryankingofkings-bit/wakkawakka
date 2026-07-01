@@ -9,7 +9,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const blockerId = getRequestUserId(req);
+  const blockerId = await getRequestUserId(req);
   if (!blockerId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
@@ -86,7 +86,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const blockerId = getRequestUserId(req);
+  const blockerId = await getRequestUserId(req);
   if (!blockerId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
@@ -121,7 +121,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const blockerId = getRequestUserId(req);
+  const blockerId = await getRequestUserId(req);
   if (!blockerId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 

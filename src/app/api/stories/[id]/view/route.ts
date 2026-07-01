@@ -8,7 +8,7 @@ export async function POST(
 ) {
   try {
     const { id: storyId } = params;
-    const activeUserId = getRequestUserId(req);
+    const activeUserId = await getRequestUserId(req);
     if (!activeUserId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

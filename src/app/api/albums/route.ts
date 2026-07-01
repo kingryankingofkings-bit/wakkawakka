@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 // GET /api/albums?ownerId=xxx — list a user's albums (defaults to current user)
 export async function GET(req: NextRequest) {
-  const current = getRequestUserId(req);
+  const current = await getRequestUserId(req);
   const ownerId = req.nextUrl.searchParams.get("ownerId") ?? current;
   if (!ownerId)
     return NextResponse.json({ error: "ownerId required" }, { status: 400 });
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
 // POST /api/albums — create an album, optionally with initial photo URLs
 // body: { name, description?, visibility?, photos?: string[] }
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 

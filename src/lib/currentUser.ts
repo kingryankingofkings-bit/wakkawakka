@@ -1,24 +1,79 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifyToken } from "@/lib/auth";
+import { createLogger } from "@/lib/logger";
+
+// =============================================================================
+// WakkaWakka — Current User Resolution
+// Resolves the acting user from JWT cookie/header with dev-only fallbacks.
+// =============================================================================
+
+const log = createLogger("CurrentUser");
 
 /**
- * Resolve the acting user for an API request.
+ * Resolve the acting user ID for an API request.
  *
- * The client is expected to send `x-user-id` (set by the auth store). We fall
- * back to a `userId` query param or JSON body field for convenience. This keeps
- * parity with the existing API routes, which trust a client-supplied id.
+ * Auth priority:
+ * 1. `auth-token` cookie (JWT — primary)
+ * 2. `Authorization: Bearer <token>` header
+ * 3. `x-user-id` header (dev-only — logged as deprecation warning)
+ * 4. `userId` query param (dev-only — logged as deprecation warning)
+ * 5. `bodyUserId` parameter (dev-only — logged as deprecation warning)
  *
  * Returns the user id string, or null if none could be resolved.
  */
-export function getRequestUserId(
+export async function getRequestUserId(
   req: NextRequest,
   bodyUserId?: string,
-): string | null {
+): Promise<string | null> {
+  // 1. Try auth-token cookie (primary secure path)
+  const cookieToken = req.cookies.get("auth-token")?.value;
+  if (cookieToken) {
+    const payload = await verifyToken(cookieToken);
+    const id =
+      (payload?.userId as string) ?? (payload?.id as string) ?? null;
+    if (id) return id;
+  }
+
+  // 2. Try Authorization Bearer header
+  const authHeader = req.headers.get("authorization");
+  if (authHeader?.startsWith("Bearer ")) {
+    const token = authHeader.slice(7);
+    const payload = await verifyToken(token);
+    const id =
+      (payload?.userId as string) ?? (payload?.id as string) ?? null;
+    if (id) return id;
+  }
+
+  // ── Dev-only fallbacks (disabled in production) ──────────────────────────
+  if (process.env.NODE_ENV === "production") {
+    return null;
+  }
+
   const header = req.headers.get("x-user-id");
-  if (header) return header;
+  if (header) {
+    log.warn("Auth via x-user-id header (dev-only, disabled in production)", {
+      data: { userId: header },
+    });
+    return header;
+  }
+
   const q = req.nextUrl.searchParams.get("userId");
-  if (q) return q;
-  return bodyUserId ?? null;
+  if (q) {
+    log.warn("Auth via userId query param (dev-only, disabled in production)", {
+      data: { userId: q },
+    });
+    return q;
+  }
+
+  if (bodyUserId) {
+    log.warn("Auth via body userId (dev-only, disabled in production)", {
+      data: { userId: bodyUserId },
+    });
+    return bodyUserId;
+  }
+
+  return null;
 }
 
 /**
@@ -26,7 +81,7 @@ export function getRequestUserId(
  * the user cannot be found or the database is unreachable.
  */
 export async function getRequestUser(req: NextRequest, bodyUserId?: string) {
-  const id = getRequestUserId(req, bodyUserId);
+  const id = await getRequestUserId(req, bodyUserId);
   if (!id) return null;
   try {
     return await prisma.user.findUnique({

@@ -10,7 +10,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string; requestId: string } },
 ) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 

@@ -8,7 +8,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const followerId = getRequestUserId(req);
+  const followerId = await getRequestUserId(req);
   if (!followerId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
@@ -103,7 +103,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const followerId = getRequestUserId(req);
+  const followerId = await getRequestUserId(req);
   if (!followerId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 

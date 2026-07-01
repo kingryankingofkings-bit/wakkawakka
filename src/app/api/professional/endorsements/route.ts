@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 // GET /api/professional/endorsements - List endorsements for a user
 export async function GET(req: NextRequest) {
-  const actingUserId = getRequestUserId(req);
+  const actingUserId = await getRequestUserId(req);
   const targetUserId = req.nextUrl.searchParams.get("userId") || req.nextUrl.searchParams.get("targetUserId") || actingUserId;
 
   if (!targetUserId) {
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
 
 // POST /api/professional/endorsements - Endorse a skill
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
 
 // DELETE /api/professional/endorsements - Remove an endorsement
 export async function DELETE(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

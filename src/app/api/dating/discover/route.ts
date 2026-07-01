@@ -5,7 +5,7 @@ import { getRequestUserId } from "@/lib/currentUser";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

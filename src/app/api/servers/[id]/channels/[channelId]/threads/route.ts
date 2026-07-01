@@ -11,7 +11,7 @@ interface RouteContext {
 // POST /api/servers/[id]/channels/[channelId]/threads - Start a thread
 export async function POST(req: NextRequest, { params }: RouteContext) {
   const { id: serverId, channelId } = await params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

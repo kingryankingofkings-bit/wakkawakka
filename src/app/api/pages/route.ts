@@ -24,7 +24,7 @@ function slugify(name: string): string {
 
 // GET /api/pages?filter=all|mine|following&category=
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   const filter = req.nextUrl.searchParams.get("filter") ?? "all";
   const category = req.nextUrl.searchParams.get("category");
 
@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
 
 // POST /api/pages — create a page
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 

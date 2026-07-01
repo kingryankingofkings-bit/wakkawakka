@@ -12,7 +12,7 @@ interface RouteContext {
 // PATCH /api/servers/[id]/roles/[roleId] - Update role details
 export async function PATCH(req: NextRequest, { params }: RouteContext) {
   const { id: serverId, roleId } = await params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -53,7 +53,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
 // DELETE /api/servers/[id]/roles/[roleId] - Delete role
 export async function DELETE(req: NextRequest, { params }: RouteContext) {
   const { id: serverId, roleId } = await params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

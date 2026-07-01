@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 // GET /api/cart - Fetches active user's cart including items and products
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
 
 // POST /api/cart - Adds a product to the cart (or increments quantity if exists)
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
 
 // PUT /api/cart - Modifies the quantity of a cart item
 export async function PUT(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -193,7 +193,7 @@ export async function PUT(req: NextRequest) {
 
 // DELETE /api/cart - Removes an item (or clears cart)
 export async function DELETE(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

@@ -17,7 +17,7 @@ const userSelect = {
 
 // GET /api/friends/requests?box=incoming|outgoing
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   const box = req.nextUrl.searchParams.get("box") ?? "incoming";
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
 
 // POST /api/friends/requests  { receiverId, message? } — send a friend request
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
 
 // PATCH /api/friends/requests  { requestId, action: 'accept'|'decline' }
 export async function PATCH(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 

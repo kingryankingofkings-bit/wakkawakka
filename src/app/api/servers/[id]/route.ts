@@ -12,7 +12,7 @@ interface RouteContext {
 // GET /api/servers/[id] - Fetch server details
 export async function GET(req: NextRequest, { params }: RouteContext) {
   const { id } = await params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
 
   try {
     const server = await prisma.server.findUnique({
@@ -80,7 +80,7 @@ export async function GET(req: NextRequest, { params }: RouteContext) {
 // PATCH /api/servers/[id] - Update server settings
 export async function PATCH(req: NextRequest, { params }: RouteContext) {
   const { id } = await params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -118,7 +118,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
 // DELETE /api/servers/[id] - Delete server
 export async function DELETE(req: NextRequest, { params }: RouteContext) {
   const { id } = await params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

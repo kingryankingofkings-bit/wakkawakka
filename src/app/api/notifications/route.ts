@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 // GET /api/notifications — list current user's notifications (newest first)
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
 
 // PATCH /api/notifications  { id? } — mark one (or all) as read
 export async function PATCH(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 

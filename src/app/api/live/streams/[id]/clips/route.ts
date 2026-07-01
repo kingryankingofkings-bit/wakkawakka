@@ -41,7 +41,7 @@ export async function GET(req: NextRequest, { params }: RouteContext) {
 // POST /api/live/streams/[id]/clips - Create a new clip
 export async function POST(req: NextRequest, { params }: RouteContext) {
   const { id: streamId } = params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
 
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });

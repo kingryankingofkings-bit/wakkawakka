@@ -12,7 +12,7 @@ interface RouteContext {
 // PATCH /api/servers/[id]/channels/[channelId] - Modify channel settings
 export async function PATCH(req: NextRequest, { params }: RouteContext) {
   const { id: serverId, channelId } = await params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -57,7 +57,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
 // DELETE /api/servers/[id]/channels/[channelId] - Delete channel
 export async function DELETE(req: NextRequest, { params }: RouteContext) {
   const { id: serverId, channelId } = await params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

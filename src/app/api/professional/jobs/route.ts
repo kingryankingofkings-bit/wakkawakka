@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
 
 // POST /api/professional/jobs - Create a job posting (Owner or Member only)
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

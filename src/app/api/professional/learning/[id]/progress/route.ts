@@ -12,7 +12,7 @@ interface RouteParams {
 
 // Helper function to handle progress update
 async function updateCourseProgress(req: NextRequest, { params }: RouteParams) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

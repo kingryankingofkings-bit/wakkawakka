@@ -59,7 +59,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
 // PUT /api/professional/companies/[id] - Update company profile (Owner only)
 export async function PUT(req: NextRequest, { params }: RouteParams) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

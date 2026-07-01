@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 // GET /api/developer/webhooks - Get subscriptions and delivery logs
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
 
 // POST /api/developer/webhooks - Register a new webhook
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
 
 // PUT /api/developer/webhooks - Toggle webhook active status
 export async function PUT(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

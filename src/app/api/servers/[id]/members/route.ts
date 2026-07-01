@@ -44,7 +44,7 @@ export async function GET(req: NextRequest, { params }: RouteContext) {
 // POST /api/servers/[id]/members - Join a server via invite code
 export async function POST(req: NextRequest, { params }: RouteContext) {
   const { id: serverId } = await params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -144,7 +144,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
 // PATCH /api/servers/[id]/members - Update nickname or roles
 export async function PATCH(req: NextRequest, { params }: RouteContext) {
   const { id: serverId } = await params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -298,7 +298,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
 // DELETE /api/servers/[id]/members - Leave or Kick/Ban a member
 export async function DELETE(req: NextRequest, { params }: RouteContext) {
   const { id: serverId } = await params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

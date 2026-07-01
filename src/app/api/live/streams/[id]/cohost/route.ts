@@ -12,7 +12,7 @@ interface RouteContext {
 
 export async function POST(req: NextRequest, { params }: RouteContext) {
   const { id: streamId } = params;
-  const requesterId = getRequestUserId(req);
+  const requesterId = await getRequestUserId(req);
 
   if (!requesterId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });

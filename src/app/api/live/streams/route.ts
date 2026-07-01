@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
 
 // POST /api/live/streams - Create or schedule a stream
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

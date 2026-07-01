@@ -12,7 +12,7 @@ interface RouteContext {
 
 // POST /api/audio-rooms/[id]/listeners - Join as listener
 export async function POST(req: NextRequest, { params }: RouteContext) {
-  const currentUserId = getRequestUserId(req);
+  const currentUserId = await getRequestUserId(req);
   if (!currentUserId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
 
 // DELETE /api/audio-rooms/[id]/listeners - Leave/remove listener
 export async function DELETE(req: NextRequest, { params }: RouteContext) {
-  const currentUserId = getRequestUserId(req);
+  const currentUserId = await getRequestUserId(req);
   if (!currentUserId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

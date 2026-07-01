@@ -46,7 +46,7 @@ async function seedCommunitiesIfNeeded() {
 
 // GET /api/communities - list all communities
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   const { searchParams } = new URL(req.url);
   const category = searchParams.get("category");
 
@@ -108,7 +108,7 @@ export async function GET(req: NextRequest) {
 
 // POST /api/communities - create a community
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 

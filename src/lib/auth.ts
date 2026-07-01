@@ -1,7 +1,28 @@
 import { cookies } from "next/headers";
+import { createLogger } from "@/lib/logger";
 
-const JWT_SECRET =
-  process.env.JWT_SECRET || "dev-secret-change-in-production-please";
+// =============================================================================
+// WakkaWakka — Authentication (JWT)
+// Uses HMAC-SHA256 with constant-time signature comparison.
+// =============================================================================
+
+const log = createLogger("Auth");
+
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret && process.env.NODE_ENV === "production") {
+    throw new Error(
+      "FATAL: JWT_SECRET is not set. Cannot run in production without it.",
+    );
+  }
+  if (!secret) {
+    log.warn(
+      "JWT_SECRET is not set — using insecure dev fallback. Set a proper secret before deploying.",
+    );
+    return "dev-only-secret-do-not-use-in-prod-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  }
+  return secret;
+}
 
 // Simple base64url encoding without external deps
 function base64url(data: string): string {
@@ -15,6 +36,7 @@ function base64url(data: string): string {
 export async function createToken(
   payload: Record<string, unknown>,
 ): Promise<string> {
+  const secret = getJwtSecret();
   const header = base64url(JSON.stringify({ alg: "HS256", typ: "JWT" }));
   const exp = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
   const body = base64url(
@@ -22,7 +44,7 @@ export async function createToken(
   );
   const crypto = await import("crypto");
   const sig = crypto
-    .createHmac("sha256", JWT_SECRET)
+    .createHmac("sha256", secret)
     .update(`${header}.${body}`)
     .digest("base64url");
   return `${header}.${body}.${sig}`;
@@ -35,12 +57,19 @@ export async function verifyToken(
     const parts = token.split(".");
     if (parts.length !== 3) return null;
     const [header, body, sig] = parts;
+    const secret = getJwtSecret();
     const crypto = await import("crypto");
     const expected = crypto
-      .createHmac("sha256", JWT_SECRET)
+      .createHmac("sha256", secret)
       .update(`${header}.${body}`)
       .digest("base64url");
-    if (sig !== expected) return null;
+
+    // Constant-time comparison to prevent timing attacks
+    const sigBuf = Buffer.from(sig, "base64url");
+    const expectedBuf = Buffer.from(expected, "base64url");
+    if (sigBuf.length !== expectedBuf.length) return null;
+    if (!crypto.timingSafeEqual(sigBuf, expectedBuf)) return null;
+
     const payload = JSON.parse(Buffer.from(body, "base64url").toString());
     if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
     return payload;

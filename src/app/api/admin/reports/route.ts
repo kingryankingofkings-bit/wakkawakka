@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getRequestUserId } from "@/lib/currentUser";
 
 async function verifyAdmin(req: NextRequest) {
-  const activeUserId = getRequestUserId(req);
+  const activeUserId = await getRequestUserId(req);
   if (!activeUserId) return false;
   const user = await prisma.user.findUnique({
     where: { id: activeUserId },

@@ -63,7 +63,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
 // PUT /api/professional/jobs/[id] - Edit job description or close posting (Poster or Company owner only)
 export async function PUT(req: NextRequest, { params }: RouteParams) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

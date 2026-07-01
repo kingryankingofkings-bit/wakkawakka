@@ -12,7 +12,7 @@ interface RouteParams {
 
 // POST /api/professional/jobs/[id]/apply - Submit a job application
 export async function POST(req: NextRequest, { params }: RouteParams) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
 
 // PATCH /api/professional/jobs/[id]/apply - Update application status (Employer review)
 export async function PATCH(req: NextRequest, { params }: RouteParams) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

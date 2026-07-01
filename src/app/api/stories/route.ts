@@ -4,7 +4,7 @@ import { getRequestUserId } from "@/lib/currentUser";
 
 export async function GET(req: NextRequest) {
   try {
-    const activeUserId = getRequestUserId(req);
+    const activeUserId = await getRequestUserId(req);
     if (!activeUserId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const activeUserId = getRequestUserId(req);
+    const activeUserId = await getRequestUserId(req);
     if (!activeUserId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

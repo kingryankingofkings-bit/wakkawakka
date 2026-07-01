@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 // GET /api/professional/profile - Fetch professional profile data
 export async function GET(req: NextRequest) {
-  const actingUserId = getRequestUserId(req);
+  const actingUserId = await getRequestUserId(req);
   const targetUserId = req.nextUrl.searchParams.get("userId") || actingUserId;
 
   if (!targetUserId) {
@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
 
 // PUT /api/professional/profile - Update professional profile data
 export async function PUT(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

@@ -50,7 +50,7 @@ const nextConfig = {
           { key: "Access-Control-Allow-Credentials", value: "true" },
           {
             key: "Access-Control-Allow-Origin",
-            value: process.env.NEXT_PUBLIC_APP_URL || "*",
+            value: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
           },
           {
             key: "Access-Control-Allow-Methods",
@@ -70,6 +70,27 @@ const nextConfig = {
           { key: "X-Frame-Options", value: "DENY" },
           { key: "X-XSS-Protection", value: "1; mode=block" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://apis.google.com https://www.gstatic.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com",
+              `img-src 'self' data: blob: https: http://localhost:3000`,
+              `connect-src 'self' ${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"} wss: ws: https://firebasestorage.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com`,
+              "frame-src 'self' https://accounts.google.com",
+              "media-src 'self' blob: data:",
+            ].join("; "),
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=31536000; includeSubDomains",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(self), microphone=(self), geolocation=(self)",
+          },
         ],
       },
     ];
@@ -82,10 +103,10 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 };
 

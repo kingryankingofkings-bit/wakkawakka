@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 // GET /api/professional/articles - List articles
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   const authorId = req.nextUrl.searchParams.get("authorId");
   const includeDrafts = req.nextUrl.searchParams.get("includeDrafts") === "true";
 
@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
 
 // POST /api/professional/articles - Create or publish an article
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

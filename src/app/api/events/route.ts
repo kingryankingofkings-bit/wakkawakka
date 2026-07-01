@@ -14,7 +14,7 @@ const creatorSelect = {
 
 // GET /api/events?filter=upcoming|going|hosting|past&communityId=xxx
 export async function GET(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   const filter = req.nextUrl.searchParams.get("filter") ?? "upcoming";
   const communityId = req.nextUrl.searchParams.get("communityId");
   const now = new Date();
@@ -91,7 +91,7 @@ export async function GET(req: NextRequest) {
 
 // POST /api/events — create an event
 export async function POST(req: NextRequest) {
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
   if (!userId)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 

@@ -10,7 +10,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  const userId = getRequestUserId(req);
+  const userId = await getRequestUserId(req);
 
   try {
     const post = await prisma.subredditPost.findUnique({
