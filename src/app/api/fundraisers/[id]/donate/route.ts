@@ -40,7 +40,7 @@ export async function POST(
 
     const result = await prisma.$transaction(async (tx) => {
       // 1. Create Donation Record
-      const donation = await tx.fundraiserDonation.create({
+      const _donation = await tx.fundraiserDonation.create({
         data: {
           fundraiserId: id,
           donorId: userId,

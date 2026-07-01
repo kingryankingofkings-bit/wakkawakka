@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   BookOpen, Star, Clock, Trophy, Users, PlayCircle,
-  ChevronLeft, CheckCircle2, Lock, Send, RefreshCw
+  ChevronLeft, CheckCircle2, Lock, RefreshCw
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -145,7 +145,7 @@ export default function CourseDetailPage() {
       <div className="max-w-2xl mx-auto p-8 text-center">
         <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
         <h2 className="text-xl font-bold mb-2">Course Not Found</h2>
-        <p className="text-muted-foreground mb-4">This course may have been removed or doesn't exist.</p>
+        <p className="text-muted-foreground mb-4">This course may have been removed or doesn&apos;t exist.</p>
         <Link href="/learning" className="text-primary hover:underline">← Back to Learning</Link>
       </div>
     );

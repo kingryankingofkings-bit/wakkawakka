@@ -5,7 +5,6 @@ import {
   Radio,
   Users,
   Gift,
-  Heart,
   ChevronLeft,
   Send,
   Plus,
@@ -278,7 +277,7 @@ function LivePageInner() {
   const refreshUserPoints = async () => {
     if (!user) return;
     try {
-      const res = await fetch(`/api/ads`); // Quick call to see if auth ok, or we can fetch a specific profile route
+      const _res = await fetch(`/api/ads`); // Quick call to see if auth ok, or we can fetch a specific profile route
       // Let's call /api/live/streams directly to trigger user points reload or inspect state
       // Actually we can get user's channelPoints balance if we had profile API.
       // Alternatively, we can let user state update with payouts returned by the APIs.

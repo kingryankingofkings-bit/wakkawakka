@@ -8,7 +8,6 @@ import {
   Sparkles,
   Clock,
   Send,
-  Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -354,7 +353,7 @@ export default function SchedulingPage() {
 
                     {/* Small scheduled posts indicators */}
                     <div className="w-full mt-2 space-y-1">
-                      {dayPosts.slice(0, 2).map((post, pIdx) => (
+                      {dayPosts.slice(0, 2).map((post, _pIdx) => (
                         <div
                           key={post.id}
                           className="text-[9px] font-medium leading-none px-1 py-0.5 rounded bg-primary/10 text-primary truncate w-full"

@@ -59,7 +59,7 @@ export async function PATCH(
     const body = await req.json();
 
     // Clean up fields that might be read-only or relations
-    const { id, createdAt, updatedAt, email, ...updates } = body;
+    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, email: _email, ...updates } = body;
 
     const user = await prisma.user.update({
       where: { id: params.id },

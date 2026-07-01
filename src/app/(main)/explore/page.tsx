@@ -7,7 +7,6 @@ import {
   Users,
   Hash,
   Compass,
-  Radio,
   Mic,
 } from "lucide-react";
 import { motion } from "framer-motion";

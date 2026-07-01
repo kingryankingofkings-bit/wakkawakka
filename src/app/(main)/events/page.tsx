@@ -8,7 +8,6 @@ import {
   Plus,
   Star,
   Check,
-  X,
   ChevronLeft,
   ChevronRight,
   Users,

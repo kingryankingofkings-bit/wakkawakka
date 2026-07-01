@@ -10,8 +10,7 @@ import { Briefcase, MapPin, DollarSign, Search, Plus, FileText, CheckCircle, Tag
 import toast from "react-hot-toast";
 
 export default function JobsPage() {
-  const authUser = useAuthStore((s) => s.user);
-  const { jobs, loading, fetchJobs, createJob, applyToJob, fetchCompanyBySlug, myApplications, fetchMyApplications } = useJobStore();
+  const { jobs, loading, fetchJobs, createJob, applyToJob, myApplications, fetchMyApplications } = useJobStore();
 
   // Search/Filters state
   const [query, setQuery] = useState("");

@@ -8,7 +8,6 @@ import {
   Trash2, 
   MapPin, 
   X, 
-  Eye, 
   Info, 
   Camera 
 } from "lucide-react";
@@ -26,7 +25,7 @@ interface Memory {
   tags: string[];
 }
 
-const MOCK_DEFAULT_MEMORIES: Memory[] = [
+const _MOCK_DEFAULT_MEMORIES: Memory[] = [
   {
     id: "mem-1",
     url: "https://picsum.photos/seed/sfmem1/1080/1920",
@@ -55,7 +54,7 @@ const MOCK_DEFAULT_MEMORIES: Memory[] = [
     location: "Oakland, CA",
     tags: ["dog-ears", "friends"],
   },
-];
+] as Memory[];
 
 export default function MemoriesPage() {
   const [memories, setMemories] = useState<Memory[]>([]);

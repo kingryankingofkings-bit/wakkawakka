@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useForumStore, SubforumPost } from "@/store/forumStore";
+import { useForumStore } from "@/store/forumStore";
 import { useAuthStore } from "@/store/authStore";
 import { CURRENT_USER } from "@/lib/mockData";
 import { Button } from "@/components/ui/Button";
@@ -16,7 +16,6 @@ import Link from "next/link";
 
 export default function SubforumCommunityView() {
   const { name } = useParams() as { name: string };
-  const router = useRouter();
   
   const {
     activeSubforum,

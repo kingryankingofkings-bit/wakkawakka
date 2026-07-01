@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Socket.io is set up in a custom server (server.ts)
 // This route handles Socket.io upgrade handshake for Next.js
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   return NextResponse.json(
     {
       message:

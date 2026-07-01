@@ -9,7 +9,6 @@ import { PostCard } from "@/components/feed/PostCard";
 import { SponsoredAd } from "@/components/ads/SponsoredAd";
 import { CreatePostCard } from "@/components/feed/CreatePostCard";
 import { CreatePostModal } from "@/components/feed/CreatePostModal";
-import { Modal } from "@/components/ui/Modal";
 import { useFeedStore } from "@/store/feedStore";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";

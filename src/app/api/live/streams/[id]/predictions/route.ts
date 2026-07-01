@@ -212,7 +212,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
 
       // Transaction: deduct user points, increment option points, create bet record
       try {
-        const [updatedUser, updatedOption, bet] = await prisma.$transaction([
+        const [updatedUser, _updatedOption, bet] = await prisma.$transaction([
           prisma.user.update({
             where: { id: userId },
             data: { channelPoints: { decrement: pointsToBet } },

@@ -6,8 +6,8 @@ import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Avatar } from "@/components/ui/Avatar";
 import { useAuthStore } from "@/store/authStore";
-import { formatRelativeTime, cn } from "@/lib/utils";
-import { Heart, X, User, Sparkles, Calendar, Check, Send } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Heart, X, User, Sparkles, Calendar, Send } from "lucide-react";
 import toast from "react-hot-toast";
 
 const MOCK_EVENTS = [

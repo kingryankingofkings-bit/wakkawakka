@@ -31,7 +31,7 @@ export async function PATCH(
     }
 
     // Try to find the follow request by Follow.id or by followerId + followingId
-    let follow = await prisma.follow.findFirst({
+    const follow = await prisma.follow.findFirst({
       where: {
         OR: [
           { id: params.id, followingId: userId },

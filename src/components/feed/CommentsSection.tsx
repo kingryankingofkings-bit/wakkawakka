@@ -21,7 +21,7 @@ interface CommentsSectionProps {
 }
 
 // Generate mock comments for a post
-function generateMockComments(postId: string): Comment[] {
+function _generateMockComments(postId: string): Comment[] {
   return [
     {
       id: `${postId}-c1`,

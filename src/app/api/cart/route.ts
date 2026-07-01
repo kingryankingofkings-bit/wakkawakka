@@ -150,7 +150,7 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    let cart = await prisma.cart.findUnique({ where: { userId } });
+    const cart = await prisma.cart.findUnique({ where: { userId } });
     if (!cart) {
       return NextResponse.json({ error: "Cart not found" }, { status: 404 });
     }

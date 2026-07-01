@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useForumStore, SubforumPost } from "@/store/forumStore";
+import { useForumStore } from "@/store/forumStore";
 import { useAuthStore } from "@/store/authStore";
 import { CURRENT_USER } from "@/lib/mockData";
 import { Button } from "@/components/ui/Button";
@@ -22,7 +22,6 @@ export default function ForumGlobalFeed() {
     fetchSubforums,
     createSubforum,
     joinSubforum,
-    leaveSubforum,
     votePost,
     giveAward,
     loading,

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useMapStore, FriendLocation } from "@/store/mapStore";
-import { useUIStore } from "@/store/uiStore";
 import { MapPin, Shield, ShieldOff, Navigation, Search, Info } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { useAuthStore } from "@/store/authStore";

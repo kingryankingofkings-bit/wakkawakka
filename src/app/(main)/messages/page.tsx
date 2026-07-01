@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MessageCircle, Search, Edit, Sliders, Plus } from "lucide-react";
+import { MessageCircle, Search, Edit, Plus } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";

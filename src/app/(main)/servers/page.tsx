@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Compass, Search, UserPlus, LogIn, Server } from "lucide-react";
 import { ServerListSidebar } from "@/components/servers/ServerListSidebar";
 import { useServerStore } from "@/store/serverStore";
-import { cn } from "@/lib/utils";
 
 export default function DiscoverServersPage() {
   const router = useRouter();

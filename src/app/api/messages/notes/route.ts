@@ -33,7 +33,7 @@ notesStore.set("mock-note-2", {
   createdAt: new Date(),
 });
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   // Clear notes older than 24 hours
   const now = Date.now();
   for (const [key, val] of notesStore.entries()) {

@@ -72,7 +72,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
     }
 
     // Execute transaction: deduct points, increment stream giftTotal, create gift log, create chat message
-    const [updatedUser, updatedStream, giftLog, chatMsg] =
+    const [updatedUser, _updatedStream, giftLog, chatMsg] =
       await prisma.$transaction([
         prisma.user.update({
           where: { id: userId },

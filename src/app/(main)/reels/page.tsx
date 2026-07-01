@@ -14,8 +14,8 @@ import {
   Send,
 } from "lucide-react";
 import { cn, formatCount } from "@/lib/utils";
-import { MOCK_POSTS, MOCK_USERS } from "@/lib/mockData";
-import { Post, User } from "@/types";
+import { MOCK_USERS } from "@/lib/mockData";
+import { User } from "@/types";
 import { apiFetch } from "@/lib/apiClient";
 
 /* ─── Mock reel data ─────────────────────────────────── */

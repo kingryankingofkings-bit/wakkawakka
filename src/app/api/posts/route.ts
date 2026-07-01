@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getRequestUserId } from "@/lib/currentUser";
-import { MOCK_POSTS, MOCK_USERS } from "@/lib/mockData";
 import { z } from "zod";
 import { validateRequest, optionalAuth } from "@/lib/apiValidation";
 import { apiInternalError } from "@/lib/apiResponse";

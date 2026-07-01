@@ -17,10 +17,10 @@ interface CommentNodeProps {
   comment: SubforumComment;
   isAMA: boolean;
   isSubforumMod: boolean;
-  onReplySubmit: (parentId: string, content: string) => Promise<void>;
-  onCommentVote: (commentId: string, type: "UPVOTE" | "DOWNVOTE") => void;
-  onCommentAward: (commentId: string) => void;
-  onCommentRemove: (commentId: string) => void;
+  onReplySubmit: (_parentId: string, _content: string) => Promise<void>;
+  onCommentVote: (_commentId: string, _type: "UPVOTE" | "DOWNVOTE") => void;
+  onCommentAward: (_commentId: string) => void;
+  onCommentRemove: (_commentId: string) => void;
   depth: number;
 }
 

@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import { Modal } from "@/components/ui/Modal";
-import { formatCurrency, formatCount, cn } from "@/lib/utils";
+import { formatCurrency, cn } from "@/lib/utils";
 import { MOCK_PRODUCTS, MOCK_USERS } from "@/lib/mockData";
 import { useCartStore } from "@/store/cartStore";
 import toast from "react-hot-toast";
@@ -320,8 +320,8 @@ export default function ShopPage() {
                       </span>
                       <Button
                         size="xs"
-                        onClick={(e) => {
-                          e.stopPropagation();
+                        onClick={(_e) => {
+                          _e.stopPropagation();
                           handleAddToCart(product);
                         }}
                         disabled={!product.inStock}
@@ -707,7 +707,7 @@ export default function ShopPage() {
 
               <div className="pt-3">
                 <button
-                  onClick={(e) => {
+                  onClick={(_e) => {
                     handleAddToCart(selectedProduct);
                     setShowDetailModal(false);
                   }}

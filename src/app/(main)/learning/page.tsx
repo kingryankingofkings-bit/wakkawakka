@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useLearningStore, LearningCourse, LearningEnrollment } from "@/store/professionalStore";
 import { Button } from "@/components/ui/Button";
-import { GraduationCap, Play, CheckCircle2, Award, Clock, BookOpen, AlertCircle, FileText, Lock, Plus } from "lucide-react";
+import { CheckCircle2, Award, Clock, BookOpen, AlertCircle, FileText, Lock, Plus } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { CURRENT_USER } from "@/lib/mockData";
 import toast from "react-hot-toast";
@@ -14,7 +14,6 @@ import { ProfessionalUpgradeModal } from "@/components/profile/professional-tab/
 export default function LearningPage() {
   const { courses, enrollments, loading, fetchCourses, enrollInCourse, updateProgress } = useLearningStore();
   const [activeTab, setActiveTab] = useState<"catalog" | "my-learning">("catalog");
-  const [selectedCourse, setSelectedCourse] = useState<LearningCourse | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   
   const authUser = useAuthStore((s) => s.user);
@@ -308,7 +307,7 @@ export default function LearningPage() {
   );
 }
 
-function CourseCard({ course, enrollments, handleEnroll, setActiveTab }: { course: LearningCourse, enrollments: LearningEnrollment[], handleEnroll: (id: string) => void, setActiveTab: (tab: any) => void }) {
+function CourseCard({ course, enrollments, handleEnroll, setActiveTab }: { course: LearningCourse, enrollments: LearningEnrollment[], handleEnroll: (_id: string) => void, setActiveTab: (_tab: any) => void }) {
   const enrollment = enrollments.find((e) => e.courseId === course.id);
   const [showWarning, setShowWarning] = useState(false);
 

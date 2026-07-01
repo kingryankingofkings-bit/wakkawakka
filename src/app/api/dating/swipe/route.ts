@@ -52,10 +52,10 @@ export async function POST(req: NextRequest) {
       }
     };
 
-    let myCrushes = parseList(myProfile.crushes);
-    let myMatches = parseList(myProfile.matches);
-    let targetCrushes = parseList(targetProfile.crushes);
-    let targetMatches = parseList(targetProfile.matches);
+    const myCrushes = parseList(myProfile.crushes);
+    const myMatches = parseList(myProfile.matches);
+    const targetCrushes = parseList(targetProfile.crushes);
+    const targetMatches = parseList(targetProfile.matches);
 
     // Add target to my crushes if not already
     if (!myCrushes.includes(targetUserId)) {

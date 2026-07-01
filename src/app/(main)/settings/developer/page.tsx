@@ -16,7 +16,6 @@ import {
   X,
   Megaphone,
   Activity,
-  ShieldCheck,
 } from "lucide-react";
 
 export default function DeveloperSettingsPage() {
