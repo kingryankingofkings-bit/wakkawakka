@@ -80,7 +80,7 @@ export function ShareModal({
     onShare?.();
   };
 
-  const handleShareTwitter = () => {
+  const handleShareMicroblog = () => {
     const url = `${typeof window !== "undefined" ? window.location.origin : ""}/post/${post.id}`;
     const text = encodeURIComponent(
       `Check out this post: ${post.content.slice(0, 80)}...`,
@@ -214,11 +214,11 @@ export function ShareModal({
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={handleShareTwitter}
+                  onClick={handleShareMicroblog}
                   className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-muted transition-all"
                 >
                   <div className="p-2 rounded-lg bg-muted">
-                    <Twitter className="w-4 h-4 text-muted-foreground" />
+                    <Twitter className="h-5 w-5 text-muted-foreground" />
                   </div>
                   <span className="text-sm font-medium">Share to X</span>
                 </motion.button>

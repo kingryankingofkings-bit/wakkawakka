@@ -52,7 +52,7 @@ export async function signInWithGithub() {
   return signInWithPopup(auth, githubProvider);
 }
 
-export async function signInWithTwitter() {
+export async function signInWithMicroblog() {
   return signInWithPopup(auth, twitterProvider);
 }
 

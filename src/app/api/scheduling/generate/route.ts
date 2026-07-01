@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
         `• • • • •\n` +
         `#${brandName.replace(/\s+/g, "")} #innovation #marketing #growth #${lowerTone}`;
     } else {
-      // Default to LinkedIn
+      // Default to Professional
       generatedContent =
         `💼 Professional Update from ${brandName} 💼\n\n` +
         `We are thrilled to announce a significant step forward: ${prompt}.\n\n` +

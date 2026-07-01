@@ -1,4 +1,4 @@
-export { WhatsAppFlow } from "./WhatsAppFlow";
-export { TelegramMiniApp } from "./TelegramMiniApp";
-export { DiscordActivity } from "./DiscordActivity";
+export { DirectChatFlow } from "./DirectChatFlow";
+export { SecureChatApp } from "./SecureChatApp";
+export { ServerActivity } from "./ServerActivity";
 export { AudioPlayer } from "./AudioPlayer";

@@ -14,7 +14,7 @@ export default function MainLayout({
   const pathname = usePathname();
   const isFullWidthWorkspace = pathname
     ? pathname.startsWith("/servers") ||
-      pathname.startsWith("/reddit") ||
+      pathname.startsWith("/forum") ||
       pathname.startsWith("/camera")
     : false;
 

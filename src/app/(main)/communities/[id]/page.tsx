@@ -1206,7 +1206,7 @@ export default function CommunityPage() {
               <label className="text-xs font-bold">Location</label>
               <input
                 type="text"
-                placeholder="e.g. Discord, Zoom or physical location"
+                placeholder="e.g. ServerLobby, Zoom or physical location"
                 value={eventForm.location}
                 onChange={(e) =>
                   setEventForm({ ...eventForm, location: e.target.value })

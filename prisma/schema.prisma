@@ -188,17 +188,17 @@ model User {
   learningEnrollments      LearningEnrollment[]
   articles                 Article[]               @relation("ArticleAuthor")
 
-  // Relations for Reddit-style Forum & Voting (Batch 9)
-  redditKarma              Int                     @default(0)
-  createdSubreddits        Subreddit[]             @relation("SubredditCreator")
-  subredditMemberships     SubredditMember[]
-  subredditPosts           SubredditPost[]
-  subredditComments        SubredditComment[]
-  redditVotes              RedditVote[]
-  sentAwards               RedditAward[]           @relation("AwardsSent")
-  receivedAwards           RedditAward[]           @relation("AwardsReceived")
-  modActions               RedditModAction[]       @relation("ModActionModerator")
-  targetModActions         RedditModAction[]       @relation("ModActionTargetUser")
+  // Relations for Forum-style Forum & Voting (Batch 9)
+  forumKarma              Int                     @default(0)
+  createdSubforums        Subforum[]             @relation("SubforumCreator")
+  subforumMemberships     SubforumMember[]
+  subforumPosts           SubforumPost[]
+  subforumComments        SubforumComment[]
+  forumVotes              ForumVote[]
+  sentAwards               ForumAward[]           @relation("AwardsSent")
+  receivedAwards           ForumAward[]           @relation("AwardsReceived")
+  modActions               ForumModAction[]       @relation("ModActionModerator")
+  targetModActions         ForumModAction[]       @relation("ModActionTargetUser")
 
   // Relations for Camera & AR (Batch 10)
   locationMap              UserLocation?
@@ -1550,7 +1550,7 @@ model DatingProfile {
 }
 
 // =============================================================================
-// Ad Placements (Support WhatsApp Status/Channel Ads)
+// Ad Placements (Support DirectChat Status/Channel Ads)
 // =============================================================================
 model AdPlacement {
   id        String   @id @default(cuid())
@@ -1965,16 +1965,16 @@ model Article {
 }
 
 // =============================================================================
-// Reddit-style Forum & Voting (Batch 9)
+// Forum-style Forum & Voting (Batch 9)
 // =============================================================================
 
-model Subreddit {
+model Subforum {
   id           String            @id @default(cuid())
   name         String            @unique
   slug         String            @unique
   description  String?
   creatorId    String
-  creator      User              @relation("SubredditCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  creator      User              @relation("SubforumCreator", fields: [creatorId], references: [id], onDelete: Cascade)
   rules        String?           // SQLite compatible
   memberCount  Int               @default(0)
   postCount    Int               @default(0)
@@ -1984,20 +1984,20 @@ model Subreddit {
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
 
-  members      SubredditMember[]
-  posts        SubredditPost[]
-  crossposts   RedditCrosspost[]
-  modActions   RedditModAction[]
+  members      SubforumMember[]
+  posts        SubforumPost[]
+  crossposts   ForumCrosspost[]
+  modActions   ForumModAction[]
 
   @@index([creatorId])
   @@index([slug])
   @@index([createdAt])
 }
 
-model SubredditMember {
+model SubforumMember {
   id          String    @id @default(cuid())
-  subredditId String
-  subreddit   Subreddit @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+  subforumId String
+  subforum   Subforum @relation(fields: [subforumId], references: [id], onDelete: Cascade)
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   role        String    @default("MEMBER") // MEMBER | MODERATOR | ADMIN
@@ -2006,13 +2006,13 @@ model SubredditMember {
   isBanned    Boolean   @default(false)
   isMuted     Boolean   @default(false)
 
-  @@unique([subredditId, userId])
-  @@index([subredditId])
+  @@unique([subforumId, userId])
+  @@index([subforumId])
   @@index([userId])
   @@index([role])
 }
 
-model SubredditPost {
+model SubforumPost {
   id              String            @id @default(cuid())
   title           String
   content         String?
@@ -2025,8 +2025,8 @@ model SubredditPost {
   score           Int               @default(0)      // upvotes - downvotes
   authorId        String
   author          User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  subredditId     String
-  subreddit       Subreddit         @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+  subforumId     String
+  subforum       Subforum         @relation(fields: [subforumId], references: [id], onDelete: Cascade)
   isSpoiler       Boolean           @default(false)
   isNSFW          Boolean           @default(false)
   isLocked        Boolean           @default(false)
@@ -2036,27 +2036,27 @@ model SubredditPost {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
-  comments        SubredditComment[]
-  crosspostsAsOriginal RedditCrosspost[] @relation("OriginalPost")
-  crosspostsAsCrosspost RedditCrosspost[] @relation("CrosspostedPost")
-  modActions      RedditModAction[]
+  comments        SubforumComment[]
+  crosspostsAsOriginal ForumCrosspost[] @relation("OriginalPost")
+  crosspostsAsCrosspost ForumCrosspost[] @relation("CrosspostedPost")
+  modActions      ForumModAction[]
 
   @@index([authorId])
-  @@index([subredditId])
+  @@index([subforumId])
   @@index([createdAt])
   @@index([score])
 }
 
-model SubredditComment {
+model SubforumComment {
   id          String             @id @default(cuid())
   content     String
   authorId    String
   author      User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
   postId      String
-  post        SubredditPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post        SubforumPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
   parentId    String?
-  parent      SubredditComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  replies     SubredditComment[] @relation("CommentReplies")
+  parent      SubforumComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     SubforumComment[] @relation("CommentReplies")
   upvotes     Int                @default(0)
   downvotes   Int                @default(0)
   score       Int                @default(0)
@@ -2065,7 +2065,7 @@ model SubredditComment {
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
 
-  modActions  RedditModAction[]
+  modActions  ForumModAction[]
 
   @@index([authorId])
   @@index([postId])
@@ -2073,11 +2073,11 @@ model SubredditComment {
   @@index([createdAt])
 }
 
-model RedditVote {
+model ForumVote {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  targetId    String   // Can represent SubredditPost.id or SubredditComment.id
+  targetId    String   // Can represent SubforumPost.id or SubforumComment.id
   type        String   // UPVOTE | DOWNVOTE
   targetType  String   // POST | COMMENT
   createdAt   DateTime @default(now())
@@ -2087,7 +2087,7 @@ model RedditVote {
   @@index([targetId, targetType])
 }
 
-model RedditAward {
+model ForumAward {
   id          String   @id @default(cuid())
   name        String
   icon        String
@@ -2105,38 +2105,38 @@ model RedditAward {
   @@index([targetId, targetType])
 }
 
-model RedditCrosspost {
+model ForumCrosspost {
   id                 String        @id @default(cuid())
   originalPostId     String
-  originalPost       SubredditPost @relation("OriginalPost", fields: [originalPostId], references: [id], onDelete: Cascade)
-  targetSubredditId  String
-  targetSubreddit    Subreddit     @relation(fields: [targetSubredditId], references: [id], onDelete: Cascade)
+  originalPost       SubforumPost @relation("OriginalPost", fields: [originalPostId], references: [id], onDelete: Cascade)
+  targetSubforumId  String
+  targetSubforum    Subforum     @relation(fields: [targetSubforumId], references: [id], onDelete: Cascade)
   crosspostedPostId  String
-  crosspostedPost    SubredditPost @relation("CrosspostedPost", fields: [crosspostedPostId], references: [id], onDelete: Cascade)
+  crosspostedPost    SubforumPost @relation("CrosspostedPost", fields: [crosspostedPostId], references: [id], onDelete: Cascade)
   createdAt          DateTime      @default(now())
 
-  @@unique([originalPostId, targetSubredditId])
+  @@unique([originalPostId, targetSubforumId])
   @@index([originalPostId])
-  @@index([targetSubredditId])
+  @@index([targetSubforumId])
 }
 
-model RedditModAction {
+model ForumModAction {
   id              String            @id @default(cuid())
-  subredditId     String
-  subreddit       Subreddit         @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+  subforumId     String
+  subforum       Subforum         @relation(fields: [subforumId], references: [id], onDelete: Cascade)
   moderatorId     String
   moderator       User              @relation("ModActionModerator", fields: [moderatorId], references: [id], onDelete: Cascade)
   action          String            // LOCK_POST, REMOVE_POST, REMOVE_COMMENT, BAN_USER, MUTE_USER
   targetUserId    String?
   targetUser      User?             @relation("ModActionTargetUser", fields: [targetUserId], references: [id], onDelete: SetNull)
   targetPostId    String?
-  targetPost      SubredditPost?    @relation(fields: [targetPostId], references: [id], onDelete: SetNull)
+  targetPost      SubforumPost?    @relation(fields: [targetPostId], references: [id], onDelete: SetNull)
   targetCommentId String?
-  targetComment   SubredditComment? @relation(fields: [targetCommentId], references: [id], onDelete: SetNull)
+  targetComment   SubforumComment? @relation(fields: [targetCommentId], references: [id], onDelete: SetNull)
   reason          String?
   createdAt       DateTime          @default(now())
 
-  @@index([subredditId])
+  @@index([subforumId])
   @@index([moderatorId])
 }
 

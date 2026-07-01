@@ -29,7 +29,7 @@ export default function CameraCapture() {
     addCapturedMediaUrl
   } = useCameraStore();
 
-  const { addPost, unlockBeRealFeed } = useFeedStore();
+  const { addPost, unlockDailySnapFeed } = useFeedStore();
   const { conversations, addMessage } = useMessageStore();
   const { userLocation } = useUIStore();
   const { user, updateUser } = useAuthStore();
@@ -68,7 +68,7 @@ export default function CameraCapture() {
         }
         setHasCameraPermission(true);
 
-        // If BeReal, start secondary stream for front camera
+        // If DailySnap, start secondary stream for front camera
         if (cameraMode === "BE_REAL") {
           try {
             const pipConstraints = {
@@ -184,10 +184,10 @@ export default function CameraCapture() {
           }),
         });
         if (!res.ok) {
-          throw new Error("Failed to post BeReal");
+          throw new Error("Failed to post DailySnap");
         }
         const responseData = await res.json();
-        unlockBeRealFeed();
+        unlockDailySnapFeed();
         addPost(responseData.data);
         addCapturedMediaUrl(mediaUrl);
       } else if (cameraMode === "DISAPPEARING") {
@@ -409,7 +409,7 @@ export default function CameraCapture() {
             className="w-full h-full object-cover" 
           />
 
-          {/* PIP Image Overlaid for BeReal preview */}
+          {/* PIP Image Overlaid for DailySnap preview */}
           {cameraMode === "BE_REAL" && capturedPipImage && (
             <div className="absolute top-4 left-4 w-28 aspect-[3/4] rounded-2xl overflow-hidden border-2 border-white shadow-2xl bg-neutral-900 z-30">
               <img 
@@ -481,7 +481,7 @@ export default function CameraCapture() {
         {capturedImage && (
           <div className="w-full max-w-sm bg-neutral-900/95 border border-neutral-800 rounded-3xl p-4 shadow-2xl flex flex-col gap-3">
             <h3 className="text-sm font-semibold text-center text-neutral-300">
-              {cameraMode === "BE_REAL" && "⚡ Share Daily BeReal"}
+              {cameraMode === "BE_REAL" && "⚡ Share Daily DailySnap"}
               {cameraMode === "NORMAL" && "📸 Share to Feed & Story"}
               {cameraMode === "DISAPPEARING" && "🔒 Send Disappearing Photo"}
             </h3>

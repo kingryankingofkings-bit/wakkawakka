@@ -141,7 +141,7 @@ export default function MemoriesPage() {
             Memories Vault
           </h1>
           <p className="text-sm text-neutral-400">
-            A secure archive of your stories, BeReals, and captured moments.
+            A secure archive of your stories, DailySnaps, and captured moments.
           </p>
         </div>
         <div className="text-xs bg-neutral-800/80 px-3 py-1.5 rounded-full border border-neutral-700/50 flex items-center gap-1.5">
@@ -229,7 +229,7 @@ export default function MemoriesPage() {
                 loading="lazy"
               />
 
-              {/* BeReal overlay selfie */}
+              {/* DailySnap overlay selfie */}
               {memory.mode === "BE_REAL" && memory.pipUrl && (
                 <div className="absolute top-2 left-2 w-10 aspect-[3/4] rounded-lg overflow-hidden border border-white shadow-md bg-neutral-900 z-10">
                   <img

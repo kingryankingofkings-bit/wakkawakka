@@ -38,7 +38,7 @@ const TONES = [
   "Bold",
   "Helpful",
 ];
-const PLATFORMS = ["X/Twitter", "Instagram", "LinkedIn"];
+const PLATFORMS = ["X/Microblog", "PhotoFeed", "Professional"];
 
 export default function SchedulingPage() {
   // Calendar State
@@ -55,7 +55,7 @@ export default function SchedulingPage() {
 
   // AI Post Generator State
   const [prompt, setPrompt] = useState("");
-  const [platform, setPlatform] = useState("LinkedIn");
+  const [platform, setPlatform] = useState("Professional");
   const [genTone, setGenTone] = useState("Professional");
   const [generatedCopy, setGeneratedCopy] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);

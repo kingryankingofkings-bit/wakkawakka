@@ -196,7 +196,7 @@ export const MOCK_POSTS: Post[] = [
   {
     id: "p1",
     content:
-      "Just finished my latest digital artwork — spent 40 hours on this piece! 🎨 What do you think? #DigitalArt #CreativeProcess #ArtOfInstagram",
+      "Just finished my latest digital artwork — spent 40 hours on this piece! 🎨 What do you think? #DigitalArt #CreativeProcess #ArtOfPhotoFeed",
     author: MOCK_USERS[0],
     authorId: "u1",
     mediaUrls: [
@@ -210,7 +210,7 @@ export const MOCK_POSTS: Post[] = [
     commentsCount: 347,
     sharesCount: 1203,
     viewsCount: 124500,
-    hashtags: ["DigitalArt", "CreativeProcess", "ArtOfInstagram"],
+    hashtags: ["DigitalArt", "CreativeProcess", "ArtOfPhotoFeed"],
     collaborators: [],
     userReaction: "LOVE",
     isBookmarked: true,

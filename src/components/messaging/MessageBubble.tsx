@@ -13,9 +13,9 @@ import { CURRENT_USER } from "@/lib/mockData";
 import type { Message } from "@/types";
 import toast from "react-hot-toast";
 import {
-  WhatsAppFlow,
-  TelegramMiniApp,
-  DiscordActivity,
+  DirectChatFlow,
+  SecureChatApp,
+  ServerActivity,
   AudioPlayer,
 } from "./embeds";
 
@@ -291,11 +291,11 @@ export function MessageBubble({
                 {displayContent && (
                   <div>
                     {displayContent.startsWith("[FLOW]:") ? (
-                      <WhatsAppFlow flowData={displayContent.substring(7)} />
+                      <DirectChatFlow flowData={displayContent.substring(7)} />
                     ) : displayContent.startsWith("[MINIAPP]:") ? (
-                      <TelegramMiniApp appData={displayContent.substring(10)} />
+                      <SecureChatApp appData={displayContent.substring(10)} />
                     ) : displayContent.startsWith("[ACTIVITY]:") ? (
-                      <DiscordActivity
+                      <ServerActivity
                         activityData={displayContent.substring(11)}
                       />
                     ) : (

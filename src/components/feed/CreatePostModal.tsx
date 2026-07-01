@@ -8,7 +8,6 @@ import {
   Globe,
   Users,
   Lock,
-  X,
   Music,
   Hash,
   AtSign,
@@ -17,8 +16,6 @@ import {
   ChevronDown,
   Smile,
   BarChart2,
-  PlusCircle,
-  MinusCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Modal } from "@/components/ui/Modal";
@@ -28,8 +25,15 @@ import { useFeedStore } from "@/store/feedStore";
 import { CURRENT_USER } from "@/lib/mockData";
 import { extractHashtags, cn } from "@/lib/utils";
 import toast from "react-hot-toast";
-import { Post, Visibility } from "@/types";
+import { Visibility } from "@/types";
 import { apiFetch } from "@/lib/apiClient";
+
+// Sub-components
+import { EmojiPicker } from "./create-post/EmojiPicker";
+import { PollCreator } from "./create-post/PollCreator";
+import { MediaPreviews } from "./create-post/MediaPreviews";
+import { PostScheduler } from "./create-post/PostScheduler";
+import { InnovationsKit } from "./create-post/InnovationsKit";
 
 const VISIBILITY_OPTIONS: {
   value: Visibility;
@@ -43,24 +47,6 @@ const VISIBILITY_OPTIONS: {
 
 const POST_TABS = ["Post", "Reel", "Story"] as const;
 
-const POPULAR_EMOJIS = [
-  "😀",
-  "😂",
-  "😍",
-  "👍",
-  "🔥",
-  "🎉",
-  "👏",
-  "🙌",
-  "✨",
-  "❤️",
-  "🤔",
-  "😎",
-  "💡",
-  "🚀",
-  "👀",
-];
-
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -71,9 +57,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const [content, setContent] = useState("");
   const [visibility, setVisibility] = useState<Visibility>("PUBLIC");
   const [showVisibility, setShowVisibility] = useState(false);
-  const [previews, setPreviews] = useState<{ url: string; altText: string }[]>(
-    [],
-  );
+  const [previews, setPreviews] = useState<{ url: string; altText: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [scheduledAt, setScheduledAt] = useState<Date | null>(null);
   const [showScheduler, setShowScheduler] = useState(false);
@@ -86,7 +70,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   // Emoji Picker State
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
-  // BeReal BTS & TikTok Green Screen States
+  // DailySnap BTS & ShortVideo Green Screen States
   const [btsUrl, setBtsUrl] = useState<string | null>(null);
   const [greenScreenBg, setGreenScreenBg] = useState<string | null>(null);
 
@@ -116,22 +100,6 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const handleEmojiClick = (emoji: string) => {
     setContent((prev) => prev + emoji);
     textareaRef.current?.focus();
-  };
-
-  const handleAddPollOption = () => {
-    if (pollOptions.length < 5) {
-      setPollOptions((prev) => [...prev, ""]);
-    }
-  };
-
-  const handleRemovePollOption = (index: number) => {
-    if (pollOptions.length > 2) {
-      setPollOptions((prev) => prev.filter((_, i) => i !== index));
-    }
-  };
-
-  const handlePollOptionChange = (index: number, val: string) => {
-    setPollOptions((prev) => prev.map((o, i) => (i === index ? val : o)));
   };
 
   async function handleSubmit() {
@@ -334,152 +302,22 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
           </span>
         </div>
 
-        {/* Inline Emoji Picker Panel */}
-        <AnimatePresence>
-          {showEmojiPicker && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="flex flex-wrap gap-2 p-2.5 bg-muted/50 border border-border rounded-xl">
-                {POPULAR_EMOJIS.map((emoji) => (
-                  <button
-                    key={emoji}
-                    onClick={() => handleEmojiClick(emoji)}
-                    className="text-lg p-1 hover:scale-125 transition-transform"
-                  >
-                    {emoji}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <EmojiPicker show={showEmojiPicker} onEmojiSelect={handleEmojiClick} />
 
-        {/* Dynamic Poll Creator Component */}
-        <AnimatePresence>
-          {showPollCreator && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-card border border-border rounded-xl p-4 space-y-3"
-            >
-              <div className="flex items-center justify-between border-b border-border pb-2 mb-1">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Create a Poll
-                </h4>
-                <button
-                  onClick={() => setShowPollCreator(false)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
+        <PollCreator
+          show={showPollCreator}
+          onClose={() => setShowPollCreator(false)}
+          question={pollQuestion}
+          onQuestionChange={setPollQuestion}
+          options={pollOptions}
+          onOptionsChange={setPollOptions}
+        />
 
-              <input
-                type="text"
-                placeholder="Ask a question..."
-                value={pollQuestion}
-                onChange={(e) => setPollQuestion(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg border border-border bg-muted/30 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-
-              <div className="space-y-2">
-                {pollOptions.map((opt, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      placeholder={`Option ${i + 1}`}
-                      value={opt}
-                      onChange={(e) =>
-                        handlePollOptionChange(i, e.target.value)
-                      }
-                      className="flex-1 h-9 px-3 rounded-lg border border-border bg-transparent text-sm focus:outline-none"
-                    />
-                    {pollOptions.length > 2 && (
-                      <button
-                        onClick={() => handleRemovePollOption(i)}
-                        className="text-muted-foreground hover:text-destructive transition-colors"
-                      >
-                        <MinusCircle className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {pollOptions.length < 5 && (
-                <button
-                  onClick={handleAddPollOption}
-                  className="flex items-center gap-1.5 text-xs text-primary font-semibold hover:text-primary/80 transition-colors pt-1"
-                >
-                  <PlusCircle className="h-4 w-4" />
-                  Add Option
-                </button>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Media previews */}
-        {previews.length > 0 && (
-          <div className="space-y-3">
-            {previews.map((preview, i) => (
-              <div
-                key={i}
-                className="flex gap-3 items-start bg-muted/30 border border-border p-2 rounded-xl"
-              >
-                <div className="relative rounded-lg overflow-hidden h-20 w-20 bg-muted shrink-0">
-                  {tab === "Reel" ||
-                  preview.url.endsWith(".mp4") ||
-                  preview.url.endsWith(".webm") ||
-                  (preview.url.startsWith("blob:") &&
-                    preview.url.includes("video")) ? (
-                    <video
-                      src={preview.url}
-                      className="h-full w-full object-cover"
-                      muted
-                      playsInline
-                    />
-                  ) : (
-                    <img
-                      src={preview.url}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  )}
-                  <button
-                    onClick={() =>
-                      setPreviews((p) => p.filter((_, j) => j !== i))
-                    }
-                    className="absolute top-1 right-1 h-5 w-5 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-                <div className="flex-1">
-                  <label className="text-[10px] font-bold uppercase text-muted-foreground">
-                    Alt Text (Accessibility)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Describe this image/video for screen readers..."
-                    value={preview.altText}
-                    onChange={(e) => {
-                      const updated = [...previews];
-                      updated[i] = { ...updated[i], altText: e.target.value };
-                      setPreviews(updated);
-                    }}
-                    className="w-full mt-1 h-8 px-2 border border-border bg-background text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <MediaPreviews
+          previews={previews}
+          onPreviewsChange={setPreviews}
+          tab={tab}
+        />
 
         {/* Dropzone */}
         {!showPollCreator && (
@@ -505,106 +343,19 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
           </div>
         )}
 
-        {/* Scheduler */}
-        <AnimatePresence>
-          {showScheduler && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="bg-card border border-border rounded-xl p-3 space-y-2"
-            >
-              <div className="flex items-center justify-between border-b border-border pb-1">
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Schedule Publication
-                </span>
-                <button
-                  onClick={() => setShowScheduler(false)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              <div className="flex gap-2 items-center">
-                <input
-                  type="datetime-local"
-                  value={
-                    scheduledAt
-                      ? new Date(
-                          scheduledAt.getTime() -
-                            scheduledAt.getTimezoneOffset() * 60000,
-                        )
-                          .toISOString()
-                          .slice(0, 16)
-                      : ""
-                  }
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      setScheduledAt(new Date(e.target.value));
-                    } else {
-                      setScheduledAt(null);
-                    }
-                  }}
-                  className="flex-1 h-9 px-3 rounded-lg border border-border bg-transparent text-sm focus:outline-none text-foreground"
-                />
-                {scheduledAt && (
-                  <button
-                    onClick={() => setScheduledAt(null)}
-                    className="text-xs text-destructive hover:underline"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <PostScheduler
+          show={showScheduler}
+          onClose={() => setShowScheduler(false)}
+          scheduledAt={scheduledAt}
+          onScheduledAtChange={setScheduledAt}
+        />
 
-        {/* Innovations Kit Panel */}
-        <div className="border border-border bg-muted/20 p-2.5 rounded-xl space-y-2 text-xs">
-          <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-wider">
-            Innovations Kit (BTS & Green Screen)
-          </p>
-          <div className="flex gap-2">
-            <button
-              onClick={() =>
-                setBtsUrl(
-                  btsUrl ? null : "https://www.w3schools.com/html/mov_bbb.mp4",
-                )
-              }
-              className={cn(
-                "px-2.5 py-1 rounded-lg border border-border font-semibold transition-all active:scale-95",
-                btsUrl
-                  ? "bg-primary text-white border-primary"
-                  : "bg-card text-muted-foreground hover:text-foreground",
-              )}
-            >
-              🎬 {btsUrl ? "BTS Attached" : "Attach 3s BTS snippet"}
-            </button>
-
-            <div className="flex items-center gap-1.5">
-              <span className="text-muted-foreground font-semibold">
-                Green Screen:
-              </span>
-              {["Beach Sunset", "Cyberpunk Neon", "Space Nebula"].map((bg) => (
-                <button
-                  key={bg}
-                  onClick={() =>
-                    setGreenScreenBg(greenScreenBg === bg ? null : bg)
-                  }
-                  className={cn(
-                    "px-2 py-0.5 rounded text-[10px] border border-border transition-all active:scale-95",
-                    greenScreenBg === bg
-                      ? "bg-green-500 text-white border-green-500"
-                      : "bg-card hover:bg-muted text-muted-foreground",
-                  )}
-                >
-                  {bg}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+        <InnovationsKit
+          btsUrl={btsUrl}
+          onBtsUrlChange={setBtsUrl}
+          greenScreenBg={greenScreenBg}
+          onGreenScreenBgChange={setGreenScreenBg}
+        />
 
         {/* Action bar */}
         <div className="flex items-center gap-2 pt-1 border-t border-border">

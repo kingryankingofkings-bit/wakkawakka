@@ -111,7 +111,7 @@ export default function MessagesPage() {
         </div>
       </div>
 
-      {/* WhatsApp sub-tabs */}
+      {/* DirectChat sub-tabs */}
       <div className="flex bg-muted rounded-2xl p-1 border border-border mx-4 my-2 shrink-0">
         {["chats", "status", "channels"].map((tab) => (
           <button
@@ -142,7 +142,7 @@ export default function MessagesPage() {
             />
           </div>
 
-          {/* Instagram Notes Bar */}
+          {/* PhotoFeed Notes Bar */}
           <div className="px-4 py-3 border-b border-border bg-muted/20 flex gap-4 overflow-x-auto scrollbar-hide items-center">
             {/* Post note trigger */}
             <div
@@ -316,7 +316,7 @@ export default function MessagesPage() {
             </div>
           </div>
 
-          {/* WhatsApp Status Placement Ad */}
+          {/* DirectChat Status Placement Ad */}
           <div className="border-t border-border pt-4">
             <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-2">
               Sponsored Status
@@ -366,7 +366,7 @@ export default function MessagesPage() {
             </div>
           </div>
 
-          {/* WhatsApp Channel Placement Ad */}
+          {/* DirectChat Channel Placement Ad */}
           <div className="border-t border-border pt-4">
             <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-2">
               Sponsored Channel Updates

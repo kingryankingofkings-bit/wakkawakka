@@ -48,7 +48,7 @@ import { CURRENT_USER } from "@/lib/mockData";
 const NAV_ITEMS = [
   { href: "/feed", icon: Home, label: "Feed" },
   { href: "/explore", icon: Compass, label: "Explore" },
-  { href: "/reddit", icon: MessageSquare, label: "Forums" },
+  { href: "/forum", icon: MessageSquare, label: "Forums" },
   { href: "/servers", icon: Server, label: "Servers" },
   { href: "/reels", icon: Film, label: "Reels" },
   { href: "/live", icon: Radio, label: "Live" },

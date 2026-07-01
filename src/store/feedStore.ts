@@ -23,9 +23,9 @@ interface FeedActions {
   setFeedType: (type: FeedType) => void;
   setLoading: (loading: boolean) => void;
   setHasMore: (hasMore: boolean) => void;
-  setBeRealLocked: (locked: boolean) => void;
-  setBeRealPosted: (posted: boolean) => void;
-  unlockBeRealFeed: () => void;
+  setDailySnapLocked: (locked: boolean) => void;
+  setDailySnapPosted: (posted: boolean) => void;
+  unlockDailySnapFeed: () => void;
 }
 
 type FeedStore = FeedState & FeedActions;
@@ -63,9 +63,9 @@ export const useFeedStore = create<FeedStore>((set) => ({
 
   setHasMore: (hasMore) => set({ hasMore }),
 
-  setBeRealLocked: (beRealLocked) => set({ beRealLocked }),
+  setDailySnapLocked: (beRealLocked) => set({ beRealLocked }),
 
-  setBeRealPosted: (posted) => set({ beRealPosted: posted, beRealLocked: !posted }),
+  setDailySnapPosted: (posted) => set({ beRealPosted: posted, beRealLocked: !posted }),
 
-  unlockBeRealFeed: () => set({ beRealLocked: false, beRealPosted: true }),
+  unlockDailySnapFeed: () => set({ beRealLocked: false, beRealPosted: true }),
 }));

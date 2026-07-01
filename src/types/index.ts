@@ -53,7 +53,7 @@ export interface User {
   postsCount: number;
   streakDays: number;
   channelPoints?: number;
-  redditKarma?: number;
+  forumKarma?: number;
   badges: Badge[];
   createdAt: string;
   updatedAt: string;
