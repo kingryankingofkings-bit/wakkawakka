@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Compass, Search, UserPlus, LogIn, Server } from "lucide-react";
 import { ServerListSidebar } from "@/components/servers/ServerListSidebar";
 import { useServerStore } from "@/store/serverStore";
+import { apiFetch } from "@/lib/apiClient";
 
 export default function DiscoverServersPage() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function DiscoverServersPage() {
 
   const fetchPublicServers = async (query = "") => {
     try {
-      const res = await fetch(`/api/servers?publicOnly=true&query=${query}`);
+      const res = await apiFetch(`/api/servers?publicOnly=true&query=${query}`);
       if (res.ok) {
         const data = await res.json();
         setPublicServers(data.data || []);
@@ -50,7 +51,7 @@ export default function DiscoverServersPage() {
       // Since we don't know the server ID from the invite code directly in this route,
       // let's fetch all servers to find the one matching inviteCode, or we can look it up.
       // Wait! We can search all servers to locate the ID first.
-      const searchRes = await fetch(`/api/servers?query=${inviteCode}`);
+      const searchRes = await apiFetch(`/api/servers?query=${inviteCode}`);
       if (!searchRes.ok) throw new Error("Invite check failed");
       const searchData = await searchRes.json();
       const serverMatch = (searchData.data || []).find(
@@ -64,7 +65,7 @@ export default function DiscoverServersPage() {
       }
 
       // Join the server
-      const joinRes = await fetch(`/api/servers/${serverMatch.id}/members`, {
+      const joinRes = await apiFetch(`/api/servers/${serverMatch.id}/members`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ inviteCode: inviteCode.toUpperCase() }),
@@ -91,7 +92,7 @@ export default function DiscoverServersPage() {
     inviteCodeStr: string,
   ) => {
     try {
-      const res = await fetch(`/api/servers/${serverId}/members`, {
+      const res = await apiFetch(`/api/servers/${serverId}/members`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ inviteCode: inviteCodeStr }),
@@ -99,10 +100,10 @@ export default function DiscoverServersPage() {
       if (res.ok) {
         const data = await res.json();
         // Refresh servers state and redirect
-        const serversRes = await fetch("/api/servers");
+        const serversRes = await apiFetch("/api/servers");
         if (serversRes.ok) {
-          const serversData = await serversRes.json();
-          useServerStore.getState().setServers(serversData.data || []);
+          const sData = await serversRes.json();
+          useServerStore.getState().setServers(sData.data || []);
         }
         router.push(`/servers/${serverId}`);
       }

@@ -28,19 +28,21 @@ export default function FeedPage() {
   );
 }
 
+import { useUIStore } from "@/store/uiStore";
+
 function FeedPageInner() {
   const { posts, feedType, setFeedType, setPosts } = useFeedStore();
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showNewPosts, setShowNewPosts] = useState(false);
   const [hideLabels, setHideLabels] = useState<string[]>([]);
+  const setActiveModal = useUIStore((s) => s.setActiveModal);
 
   const searchParams = useSearchParams();
 
   useEffect(() => {
     if (searchParams.get("create") === "1") {
-      setShowCreateModal(true);
+      setActiveModal("createPost");
     }
-  }, [searchParams]);
+  }, [searchParams, setActiveModal]);
 
   // Fetch actual posts from the API on mount and when feedType changes
   useEffect(() => {
@@ -170,7 +172,7 @@ function FeedPageInner() {
 
       {/* Create post quick composer */}
       <div className="border-b border-border">
-        <CreatePostCard onOpenModal={() => setShowCreateModal(true)} />
+        <CreatePostCard onOpenModal={() => setActiveModal("createPost")} />
       </div>
 
       {/* Posts feed */}
@@ -228,12 +230,6 @@ function FeedPageInner() {
           </div>
         )}
       </div>
-
-      {/* Create post modal */}
-      <CreatePostModal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-      />
     </div>
   );
 }

@@ -9,11 +9,19 @@ import { useServerStore } from "@/store/serverStore";
 import { cn } from "@/lib/utils";
 import { Modal } from "@/components/ui/Modal";
 
-export function ServerListSidebar() {
+import { apiFetch } from "@/lib/apiClient";
+
+export function ServerListSidebar({ className }: { className?: string }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { servers, activeServerId, setServers, addServer, setActiveServerId } =
-    useServerStore();
+  const {
+    servers,
+    setServers,
+    addServer,
+    activeServerId,
+    setActiveServerId,
+    removeServer,
+  } = useServerStore();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [serverName, setServerName] = useState("");
   const [serverDesc, setServerDesc] = useState("");
@@ -23,7 +31,7 @@ export function ServerListSidebar() {
     // Fetch user joined servers
     const fetchServers = async () => {
       try {
-        const res = await fetch("/api/servers");
+        const res = await apiFetch("/api/servers");
         if (res.ok) {
           const data = await res.json();
           setServers(data.data || []);
@@ -40,7 +48,7 @@ export function ServerListSidebar() {
     if (!serverName.trim()) return;
 
     try {
-      const res = await fetch("/api/servers", {
+      const res = await apiFetch("/api/servers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

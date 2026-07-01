@@ -46,6 +46,8 @@ import { useMessageStore } from "@/store/messageStore";
 import { signOut } from "@/lib/firebase";
 import { CURRENT_USER } from "@/lib/mockData";
 
+import { useUIStore } from "@/store/uiStore";
+
 const NAV_ITEMS = [
   { href: "/feed", icon: Home, label: "Feed" },
   { href: "/explore", icon: Compass, label: "Explore" },
@@ -111,13 +113,13 @@ export function Sidebar() {
 
       {/* Create post button */}
       <div className="px-3 pt-4">
-        <Link
-          href="/feed?create=1"
+        <button
+          onClick={() => useUIStore.getState().setActiveModal("createPost")}
           className="flex items-center justify-center gap-2 w-full h-10 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-all active:scale-95 shadow-md hover:shadow-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           <Plus className="h-4 w-4" />
           Create Post
-        </Link>
+        </button>
       </div>
 
       {/* Navigation */}

@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { RightPanel } from "@/components/layout/RightPanel";
+import { CreatePostModalWrapper } from "@/components/layout/CreatePostModalWrapper";
 import { cn } from "@/lib/utils";
 
 export default function MainLayout({
@@ -53,6 +54,9 @@ export default function MainLayout({
 
       {/* Mobile bottom nav */}
       {!isFullWidthWorkspace && <MobileNav />}
+
+      {/* Global Modals */}
+      <CreatePostModalWrapper />
     </div>
   );
 }

@@ -196,14 +196,17 @@ export function ProfileHeader({
       </div>
 
       {/* Avatar + Actions row */}
-      <div className="relative px-4 sm:px-8 pb-8">
-        <div className="flex items-end justify-between -mt-16 pb-3">
+      <div className="relative px-4 sm:px-8 pb-8 flex flex-col items-center text-center">
+        <div className="w-full flex items-end justify-between -mt-16 pb-3 relative">
+          {/* Spacer to keep Avatar perfectly centered using flex-1 */}
+          <div className="flex-1 hidden sm:block" />
+
           {/* Avatar */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className="relative z-10"
+            className="relative z-10 flex-1 sm:flex-none flex justify-center"
           >
             <div className="w-32 h-32 rounded-full ring-4 ring-background overflow-hidden bg-muted shadow-2xl relative">
               {user.avatar ? (
@@ -221,12 +224,13 @@ export function ProfileHeader({
               )}
             </div>
             {/* Online dot */}
-            <span className="absolute bottom-2 right-2 w-5 h-5 rounded-full bg-green-500 border-4 border-background shadow-sm" />
+            <span className="absolute bottom-2 right-2 sm:-mr-2 w-5 h-5 rounded-full bg-green-500 border-4 border-background shadow-sm" />
           </motion.div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2 mb-2 relative z-10">
-            {isOwnProfile ? (
+          <div className="flex-1 flex justify-end">
+            <div className="flex items-center gap-2 mb-2 relative z-10">
+              {isOwnProfile ? (
               <button
                 onClick={onEditProfile}
                 className="px-5 py-2.5 rounded-full bg-background/80 backdrop-blur-md border border-border text-sm font-bold hover:bg-muted transition-colors shadow-sm"
@@ -303,12 +307,13 @@ export function ProfileHeader({
                 </div>
               </>
             )}
+            </div>
           </div>
         </div>
 
         {/* Name + verification */}
-        <div className="mt-2 relative z-10">
-          <div className="flex items-center gap-2 flex-wrap">
+        <div className="mt-2 relative z-10 flex flex-col items-center">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
             <h1 className="text-2xl font-black leading-tight tracking-tight">
               {user.displayName}
             </h1>
@@ -321,13 +326,13 @@ export function ProfileHeader({
 
         {/* Bio */}
         {user.bio && (
-          <p className="mt-4 text-[15px] leading-relaxed max-w-2xl text-foreground/90 relative z-10">
+          <p className="mt-4 text-[15px] leading-relaxed max-w-2xl text-foreground/90 relative z-10 text-center">
             {user.bio}
           </p>
         )}
 
         {/* Meta row */}
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4 text-sm font-medium text-muted-foreground relative z-10">
+        <div className="flex flex-wrap justify-center items-center gap-x-5 gap-y-2 mt-4 text-sm font-medium text-muted-foreground relative z-10">
           {user.location && (
             <span className="flex items-center gap-1.5">
               <MapPin className="w-4 h-4" />
@@ -356,7 +361,7 @@ export function ProfileHeader({
         </div>
 
         {/* Stats row */}
-        <div className="flex items-center gap-6 mt-5 relative z-10">
+        <div className="flex justify-center items-center gap-6 mt-5 relative z-10">
           <div className="flex items-center gap-1.5">
             <span className="text-base font-black">
               {formatCount(user.postsCount)}
@@ -393,7 +398,7 @@ export function ProfileHeader({
 
         {/* Badges row */}
         {user.badges && user.badges.length > 0 && (
-          <div className="flex items-center gap-2 mt-5 overflow-x-auto no-scrollbar pb-1 relative z-10">
+          <div className="flex justify-center items-center gap-2 mt-5 overflow-x-auto no-scrollbar pb-1 relative z-10 w-full">
             {user.badges.map((badge) => (
               <div
                 key={badge.id}
