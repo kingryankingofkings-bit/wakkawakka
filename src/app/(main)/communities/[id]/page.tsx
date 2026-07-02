@@ -14,7 +14,6 @@ import {
   Edit3,
   MapPin,
 } from "lucide-react";
-import { PostInteractionBar } from "@/components/feed/PostInteractionBar";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
