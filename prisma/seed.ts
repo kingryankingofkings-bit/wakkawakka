@@ -69,68 +69,93 @@ async function main() {
   await prisma.badge.deleteMany();
   await prisma.analytics.deleteMany();
   await prisma.searchHistory.deleteMany();
-  await prisma.user.deleteMany();
+  await prisma.profile.deleteMany();
+  await prisma.account.deleteMany();
 
-  console.log("Seeding users...");
+  console.log("Seeding accounts and profiles...");
   const passwordHash = await bcrypt.hash("SecurePassword123", 12);
 
-  const admin = await prisma.user.create({
+  const adminAccount = await prisma.account.create({
     data: {
-      username: "admin",
       email: "admin@wakkawakka.com",
-      displayName: "Wakka Admin",
-      bio: "Platform administrator and moderator.",
       passwordHash,
-      isAdmin: true,
-      isVerified: true,
-      verificationTier: "PLATINUM",
       emailVerified: true,
-      channelPoints: 10000,
+      profiles: {
+        create: {
+          username: "admin",
+          displayName: "Wakka Admin",
+          bio: "Platform administrator and moderator.",
+          isAdmin: true,
+          isVerified: true,
+          verificationTier: "PLATINUM",
+          type: "PROFESSIONAL",
+        },
+      },
     },
+    include: { profiles: true },
   });
+  const admin = adminAccount.profiles[0];
 
-  const wakkadev = await prisma.user.create({
+  const wakkadevAccount = await prisma.account.create({
     data: {
-      username: "wakkadev",
       email: "wakkadev@wakkawakka.com",
-      displayName: "Wakka Dev",
-      bio: "Senior TypeScript Developer. Building real-time social tools.",
       passwordHash,
-      isVerified: true,
-      verificationTier: "GOLD",
       emailVerified: true,
-      profileSoundtrack: "lofi_chill_beat",
-      profileSoundtrackVisible: true,
-      channelPoints: 5000,
+      profiles: {
+        create: {
+          username: "wakkadev",
+          displayName: "Wakka Dev",
+          bio: "Senior TypeScript Developer. Building real-time social tools.",
+          isVerified: true,
+          verificationTier: "GOLD",
+          profileSoundtrack: "lofi_chill_beat",
+          profileSoundtrackVisible: true,
+          type: "STREAMING",
+        },
+      },
     },
+    include: { profiles: true },
   });
+  const wakkadev = wakkadevAccount.profiles[0];
 
-  const alicedev = await prisma.user.create({
+  const alicedevAccount = await prisma.account.create({
     data: {
-      username: "alicedev",
       email: "alice@wakkawakka.com",
-      displayName: "Alice Developer",
-      bio: "Front-end design enthusiast & UI specialist. Profiles are private!",
       passwordHash,
-      isPrivate: true,
-      isVerified: true,
-      verificationTier: "BLUE",
       emailVerified: true,
-      channelPoints: 7500,
+      profiles: {
+        create: {
+          username: "alicedev",
+          displayName: "Alice Developer",
+          bio: "Front-end design enthusiast & UI specialist. Profiles are private!",
+          isPrivate: true,
+          isVerified: true,
+          verificationTier: "BLUE",
+          type: "PERSONAL",
+        },
+      },
     },
+    include: { profiles: true },
   });
+  const alicedev = alicedevAccount.profiles[0];
 
-  const bobdev = await prisma.user.create({
+  const bobdevAccount = await prisma.account.create({
     data: {
-      username: "bobdev",
       email: "bob@wakkawakka.com",
-      displayName: "Bob Developer",
-      bio: "Fullstack builder testing boundaries.",
       passwordHash,
       emailVerified: true,
-      channelPoints: 3000,
+      profiles: {
+        create: {
+          username: "bobdev",
+          displayName: "Bob Developer",
+          bio: "Fullstack builder testing boundaries.",
+          type: "PERSONAL",
+        },
+      },
     },
+    include: { profiles: true },
   });
+  const bobdev = bobdevAccount.profiles[0];
 
   console.log("Seeding follows, blocks, and friends...");
   // Follows
