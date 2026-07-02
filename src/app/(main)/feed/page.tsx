@@ -8,10 +8,10 @@ import { StoriesRow } from "@/components/feed/StoriesRow";
 import { PostCard } from "@/components/feed/PostCard";
 import { SponsoredAd } from "@/components/ads/SponsoredAd";
 import { CreatePostCard } from "@/components/feed/CreatePostCard";
-import { CreatePostModal } from "@/components/feed/CreatePostModal";
 import { ContentFeedConsole } from "@/components/feed/ContentFeedConsole";
 import { useFeedStore } from "@/store/feedStore";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/Button";
 import { useSearchParams } from "next/navigation";
 import { apiFetch } from "@/lib/apiClient";
 
