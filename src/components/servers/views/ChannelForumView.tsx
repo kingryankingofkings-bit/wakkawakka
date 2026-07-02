@@ -8,7 +8,7 @@ import { MessageSquarePlus, MessageSquare, X } from "lucide-react";
 export function ChannelForumView({
   serverId,
   channelId,
-  _createChannel,
+  createChannel,
 }: {
   serverId: string;
   channelId: string;

@@ -14,6 +14,6 @@ const CameraCapture = dynamic(() => import("./CameraCapture"), {
   ),
 });
 
-export default function CameraGateway({ _ssrMobile = false }: { ssrMobile?: boolean }) {
+export default function CameraGateway({ ssrMobile = false }: { ssrMobile?: boolean }) {
   return <CameraCapture />;
 }

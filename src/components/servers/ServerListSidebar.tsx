@@ -11,7 +11,7 @@ import { Modal } from "@/components/ui/Modal";
 
 import { apiFetch } from "@/lib/apiClient";
 
-export function ServerListSidebar({ _className }: { className?: string }) {
+export function ServerListSidebar({ className }: { className?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const {
@@ -20,7 +20,7 @@ export function ServerListSidebar({ _className }: { className?: string }) {
     addServer,
     activeServerId,
     setActiveServerId,
-    _removeServer,
+    removeServer,
   } = useServerStore();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [serverName, setServerName] = useState("");

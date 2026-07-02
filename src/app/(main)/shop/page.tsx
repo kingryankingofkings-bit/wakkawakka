@@ -9,7 +9,7 @@ import {
   Star,
   Plus,
   ChevronRight,
-  _X,
+  X,
   CreditCard,
   ShieldCheck,
   CheckCircle,

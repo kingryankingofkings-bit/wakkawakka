@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { _Post, ReactionType } from "@/types";
+import { Post, ReactionType } from "@/types";
 import { useFeedStore } from "@/store/feedStore";
 import toast from "react-hot-toast";
 import { apiFetch } from "@/lib/apiClient";

@@ -9,7 +9,7 @@ import {
   Compass,
   Mic,
 } from "lucide-react";
-import { _motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Input } from "@/components/ui/Input";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";

@@ -7,7 +7,7 @@ import {
   Brain,
   Video,
   Smile,
-  _Mic,
+  Mic,
   Fingerprint
 } from "lucide-react";
 import { cn } from "@/lib/utils";

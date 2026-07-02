@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { _z, ZodSchema } from "zod";
+import { z, ZodSchema } from "zod";
 import {
   apiBadRequest,
   apiUnauthorized,

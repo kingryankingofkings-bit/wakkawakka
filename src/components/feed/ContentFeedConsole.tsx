@@ -11,7 +11,7 @@ import {
   Bell,
   Focus,
   BrainCircuit,
-  _Lock
+  Lock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 

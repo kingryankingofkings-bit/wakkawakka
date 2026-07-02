@@ -3,7 +3,7 @@
 import { useServer } from "@/hooks/useServer";
 import { useSocket } from "@/hooks/useSocket";
 import { Avatar } from "@/components/ui/Avatar";
-import { _cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface MemberListSidebarProps {
   serverId: string;

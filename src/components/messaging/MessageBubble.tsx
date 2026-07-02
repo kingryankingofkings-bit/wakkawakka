@@ -1,4 +1,4 @@
-import React, { _useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
@@ -9,7 +9,7 @@ import {
   Shield,
 } from "lucide-react";
 import { cn, formatRelativeTime } from "@/lib/utils";
-import { _CURRENT_USER } from "@/lib/mockData";
+import { CURRENT_USER } from "@/lib/mockData";
 import type { Message } from "@/types";
 import _toast from "react-hot-toast";
 import {

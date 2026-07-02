@@ -3,18 +3,18 @@
 import { useState, useEffect } from "react";
 import {
   TrendingUp,
-  _TrendingDown,
+  TrendingDown,
   Eye,
   Users,
   FileDown,
   DollarSign,
   Gift,
-  _Star,
+  Star,
   Award,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { _Avatar } from "@/components/ui/Avatar";
+import { Avatar } from "@/components/ui/Avatar";
 import { formatCount, formatCurrency, cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
 import toast from "react-hot-toast";
@@ -365,7 +365,7 @@ export default function AnalyticsPage() {
                   trend: 22.4,
                   icon: Award,
                 },
-              ].map(({ label, value, _trend, icon: Icon }) => (
+              ].map(({ label, value, trend, icon: Icon }) => (
                 <Card key={label} padding="md">
                   <div className="flex items-start justify-between mb-2">
                     <p className="text-xs text-muted-foreground">{label}</p>

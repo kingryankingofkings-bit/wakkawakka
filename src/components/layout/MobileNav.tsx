@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Compass, _Film, MessageCircle, Bell, Plus } from "lucide-react";
+import { Home, Compass, Film, MessageCircle, Bell, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNotificationStore } from "@/store/notificationStore";
 import { useMessageStore } from "@/store/messageStore";

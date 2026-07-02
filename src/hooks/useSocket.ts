@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { Socket } from "socket.io-client";
-import type { _Message, Notification } from "@/types";
+import type { Message, Notification } from "@/types";
 import { CURRENT_USER } from "@/lib/mockData";
 import { useMessageStore } from "@/store/messageStore";
 import { useNotificationStore } from "@/store/notificationStore";
