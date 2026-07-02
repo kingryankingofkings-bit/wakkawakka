@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/Card";
 import { formatCount, cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthStore } from "@/store/authStore";
 import { useSocket } from "@/hooks/useSocket";
 
 function SpeakerAvatar({
@@ -67,7 +67,7 @@ export default function AudioRoomsPage() {
 function AudioRoomsInner() {
   const searchParams = useSearchParams();
   const roomId = searchParams.get("room");
-  const { user: currentUser } = useAuth();
+  const { activeProfile: currentUser } = useAuthStore();
   const { socket } = useSocket();
 
   const [rooms, setRooms] = useState<any[]>([]);

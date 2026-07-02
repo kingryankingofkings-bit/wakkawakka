@@ -62,7 +62,8 @@ const TIERS: {
 ];
 
 export function ProfessionalUpgradeModal({ onClose }: ProfessionalUpgradeModalProps) {
-  const { activeProfile: user, updateUser } = useAuthStore();
+  const user = useAuthStore((s) => s.activeProfile);
+  const updateActiveProfile = useAuthStore((s) => s.updateActiveProfile);
   const [step, setStep] = useState<"TIER_SELECTION" | "ID_VERIFICATION">("TIER_SELECTION");
   const [selectedTier, setSelectedTier] = useState<ProfessionalTier | null>(null);
   const [_loading, setLoading] = useState(false);
@@ -90,7 +91,7 @@ export function ProfessionalUpgradeModal({ onClose }: ProfessionalUpgradeModalPr
         toast.success(`Subscribed to ${selectedTier} plan!`);
         toast.success("ID Verification Submitted & Approved!");
         
-        updateUser({
+        updateActiveProfile({
           professionalTier: selectedTier,
           idVerificationStatus: "VERIFIED",
           isVerified: true,

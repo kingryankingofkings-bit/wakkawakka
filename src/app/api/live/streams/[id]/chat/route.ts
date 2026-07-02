@@ -106,7 +106,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
 
       if (trimmedMsg.startsWith("/raid ")) {
         const targetUsername = trimmedMsg.replace("/raid ", "").trim();
-        const targetUser = await prisma.profile.findUnique({
+        const targetUser = await prisma.profile.findFirst({
           where: { username: targetUsername },
         });
 
@@ -168,7 +168,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
 
       if (trimmedMsg.startsWith("/host ")) {
         const targetUsername = trimmedMsg.replace("/host ", "").trim();
-        const targetUser = await prisma.profile.findUnique({
+        const targetUser = await prisma.profile.findFirst({
           where: { username: targetUsername },
         });
 

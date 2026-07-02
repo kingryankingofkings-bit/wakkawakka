@@ -18,13 +18,13 @@ export default function LearningPage() {
   
   const authUser = useAuthStore((s) => s.activeProfile);
   const activeProfile = authUser || CURRENT_USER;
-  const isVerified = user.isVerified; // Authentic 'W'
+  const isVerified = activeProfile.isVerified; // Authentic 'W'
   
   // Mocking usage and age for demo
-  const accountAgeMonths = (user as any).accountAgeMonths || 4; // Mocking < 6 months
-  const tier = user.professionalTier || "NONE";
-  const freeUsage = user.freeCoursesCreatedThisMonth || 0;
-  const paidUsage = user.paidCoursesCreatedThisMonth || 0;
+  const accountAgeMonths = (activeProfile as any).accountAgeMonths || 4; // Mocking < 6 months
+  const tier = activeProfile.professionalTier || "NONE";
+  const freeUsage = activeProfile.freeCoursesCreatedThisMonth || 0;
+  const paidUsage = activeProfile.paidCoursesCreatedThisMonth || 0;
 
   // Determine limits based on tier
   const freeLimit = tier === "NONE" ? 0 : tier === "SIMPLE" ? 10 : tier === "BETTER" ? 15 : Infinity;

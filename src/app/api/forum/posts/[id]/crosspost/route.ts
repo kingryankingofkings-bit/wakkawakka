@@ -115,7 +115,7 @@ export async function POST(
       });
 
       // 5. Update user karma
-      await tx.user.update({
+      await tx.profile.update({
         where: { id: userId },
         data: {
           forumKarma: {

@@ -32,7 +32,8 @@ export default function CameraCapture() {
   const { addPost, unlockDailySnapFeed } = useFeedStore();
   const { conversations, addMessage } = useMessageStore();
   const { userLocation } = useUIStore();
-  const { activeProfile: user, updateUser } = useAuthStore();
+  const { activeProfile: user } = useAuthStore();
+  const updateActiveProfile = useAuthStore((s) => s.updateActiveProfile);
 
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [pipStream, setPipStream] = useState<MediaStream | null>(null);
@@ -297,7 +298,7 @@ export default function CameraCapture() {
           const streakData = await streakRes.json();
           const streakValue = streakData.data?.currentStreak;
           if (typeof streakValue === "number") {
-            updateUser({ streakDays: streakValue });
+            updateActiveProfile({ streakDays: streakValue });
           }
         }
       } catch (err) {

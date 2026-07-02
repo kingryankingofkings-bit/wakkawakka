@@ -7,7 +7,7 @@ async function main() {
   console.log("Upserting mock users...");
   
   for (const mockUser of MOCK_USERS) {
-    const email = mockUser.email || `${mockUser.username}@example.com`;
+    const email = (mockUser as any).email || `${mockUser.username}@example.com`;
     const account = await prisma.account.upsert({
       where: { email },
       update: {},

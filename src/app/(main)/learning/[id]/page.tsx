@@ -43,7 +43,7 @@ export default function CourseDetailPage() {
             setCourse(json.data);
             // Check enrollment from enrollments list
             const myEnroll = json.data.enrollments?.find(
-              (e: any) => e.userId === user.id
+              (e: any) => e.userId === activeProfile.id
             );
             if (myEnroll) {
               setIsEnrolled(true);
@@ -59,7 +59,7 @@ export default function CourseDetailPage() {
     }
     load();
     return () => { active = false; };
-  }, [id, user.id]);
+  }, [id, activeProfile.id]);
 
   async function handleEnroll() {
     setEnrolling(true);

@@ -151,7 +151,7 @@ export async function POST(
       });
 
       // Update author karma (comment creator gets 1 karma)
-      await tx.user.update({
+      await tx.profile.update({
         where: { id: userId },
         data: {
           forumKarma: {

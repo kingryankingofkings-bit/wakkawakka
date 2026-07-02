@@ -26,7 +26,7 @@ import {
 import Image from "next/image";
 import { cn, getInitials } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
-import { User as UserType } from "@/types";
+import { Profile as UserType } from "@/types";
 import toast from "react-hot-toast";
 
 const ACCENT_COLORS = [
@@ -103,14 +103,14 @@ const editProfileSchema = z.object({
 type EditProfileFormData = z.infer<typeof editProfileSchema>;
 
 interface EditProfileModalProps {
-  user: UserType;
+  activeProfile: UserType;
   onClose: () => void;
 }
 
 type TabSection = "basic" | "theme" | "widgets";
 
 export function EditProfileModal({ activeProfile: user, onClose }: EditProfileModalProps) {
-  const updateUser = useAuthStore((s) => s.updateUser);
+  const updateActiveProfile = useAuthStore((s) => s.updateActiveProfile);
   const [activeSection, setActiveSection] = useState<TabSection>("basic");
   const [avatarPreview, setAvatarPreview] = useState<string>(user.avatar ?? "");
   const [coverPreview, setCoverPreview] = useState<string>(
@@ -164,13 +164,6 @@ export function EditProfileModal({ activeProfile: user, onClose }: EditProfileMo
   } = useForm<EditProfileFormData>({
     resolver: zodResolver(editProfileSchema),
     defaultValues: {
-      displayName: user.displayName,
-      username: user.username,
-      bio: user.bio ?? "",
-      website: user.website ?? "",
-      location: user.location ?? "",
-      birthdate: user.birthdate ?? "",
-      language: user.language ?? "en",
       accentColor: user.accentColor ?? "blue",
       profileTheme: user.profileTheme ?? "none",
       profileSoundtrack: user.profileSoundtrack ?? "",
@@ -227,7 +220,7 @@ export function EditProfileModal({ activeProfile: user, onClose }: EditProfileMo
 
       if (res.ok) {
         const json = await res.json();
-        updateUser(json.data);
+        updateActiveProfile(json.data);
         toast.success("Profile customized successfully!");
         onClose();
       } else {

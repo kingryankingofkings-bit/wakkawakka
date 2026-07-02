@@ -188,7 +188,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
       {/* Profile Customizer Modal */}
       {customizerOpen && isOwnProfile && (
         <ProfileCustomizerModal
-          user={profileUser}
+          activeProfile={profileUser}
           onClose={() => setCustomizerOpen(false)}
         />
       )}
@@ -380,7 +380,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
       {/* Edit Profile Modal */}
       {editOpen && (
         <EditProfileModal
-          user={profileUser}
+          activeProfile={profileUser}
           onClose={() => setEditOpen(false)}
         />
       )}

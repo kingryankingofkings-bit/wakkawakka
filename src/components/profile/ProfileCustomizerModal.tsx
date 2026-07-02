@@ -32,12 +32,12 @@ const PROFILE_THEMES = [
 type Panel = "theme" | "accent" | "soundtrack" | "css";
 
 interface ProfileCustomizerModalProps {
-  user: User;
+  activeProfile: User;
   onClose: () => void;
 }
 
 export function ProfileCustomizerModal({ activeProfile: user, onClose }: ProfileCustomizerModalProps) {
-  const updateUser = useAuthStore((s) => s.updateUser);
+  const updateActiveProfile = useAuthStore((s) => s.updateActiveProfile);
   const [activePanel, setActivePanel] = useState<Panel>("theme");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -64,7 +64,7 @@ export function ProfileCustomizerModal({ activeProfile: user, onClose }: Profile
 
       if (res.ok) {
         const _data = await res.json();
-        updateUser({
+        updateActiveProfile({
           profileTheme: selectedTheme,
           accentColor: selectedAccent,
           profileSoundtrack: soundtrackUrl || undefined,
@@ -75,7 +75,7 @@ export function ProfileCustomizerModal({ activeProfile: user, onClose }: Profile
         onClose();
       } else {
         // Optimistic local update even if API is mocked
-        updateUser({
+        updateActiveProfile({
           profileTheme: selectedTheme,
           accentColor: selectedAccent,
           profileSoundtrack: soundtrackUrl || undefined,
@@ -86,7 +86,7 @@ export function ProfileCustomizerModal({ activeProfile: user, onClose }: Profile
         onClose();
       }
     } catch {
-      updateUser({
+      updateActiveProfile({
         profileTheme: selectedTheme,
         accentColor: selectedAccent,
         profileSoundtrack: soundtrackUrl || undefined,

@@ -61,7 +61,7 @@ export default function MemoriesPage() {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [activeMemory, setActiveMemory] = useState<Memory | null>(null);
-  const { user } = useAuthStore();
+  const { activeProfile: user } = useAuthStore();
 
   // Initialize and load memories from backend API
   useEffect(() => {

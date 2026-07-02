@@ -54,7 +54,7 @@ export default function LivePage() {
 function LivePageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { activeProfile: user, updateUser } = useAuthStore();
+  const { activeProfile: user, updateActiveProfile } = useAuthStore();
 
   const [activeStatusTab, setActiveStatusTab] = useState<
     "live" | "scheduled" | "recorded"
@@ -418,7 +418,7 @@ function LivePageInner() {
       if (res.ok) {
         const data = await res.json();
         // Update user state points locally
-        updateUser({ channelPoints: data.newBalance });
+        updateActiveProfile({ channelPoints: data.newBalance });
         toast.success(`Sent ${gift.name}!`);
         setShowGifts(false);
 
@@ -507,7 +507,7 @@ function LivePageInner() {
 
       if (res.ok) {
         const data = await res.json();
-        updateUser({ channelPoints: data.newBalance });
+        updateActiveProfile({ channelPoints: data.newBalance });
         toast.success(`Bet placed on option!`);
 
         // Refresh local details
@@ -570,7 +570,7 @@ function LivePageInner() {
         const data = await res.json();
         setPrediction(null);
         toast.success("Prediction resolved!");
-        updateUser({ channelPoints: data.newBalance });
+        updateActiveProfile({ channelPoints: data.newBalance });
 
         socketRef.current?.emit("live-prediction", {
           streamId: viewing.id,
@@ -600,7 +600,7 @@ function LivePageInner() {
         const data = await res.json();
         setPrediction(null);
         toast.success("Prediction cancelled");
-        updateUser({ channelPoints: data.newBalance });
+        updateActiveProfile({ channelPoints: data.newBalance });
 
         socketRef.current?.emit("live-prediction", {
           streamId: viewing.id,

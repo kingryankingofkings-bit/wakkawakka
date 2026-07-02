@@ -32,7 +32,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: "Audio room not found" }, { status: 404 });
     }
 
-    const isAlreadySpeaker = room.speakers.some((s) => s.activeProfileId === currentUserId);
+    const isAlreadySpeaker = room.speakers.some((s) => s.userId === currentUserId);
     const isAlreadyListener = room.listeners.some((l) => l.userId === currentUserId);
 
     if (isAlreadyListener) {

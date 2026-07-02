@@ -129,7 +129,7 @@ export async function POST(
       });
 
       // Update User (author) forumKarma
-      const updatedAuthor = await tx.user.update({
+      const updatedAuthor = await tx.profile.update({
         where: { id: comment.authorId },
         data: {
           forumKarma: { increment: karmaDelta },

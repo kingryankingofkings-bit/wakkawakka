@@ -78,7 +78,6 @@ function mapPrismaPostToPost(
     author: {
       id: prismaPost.author.id,
       username: prismaPost.author.username,
-      email: prismaPost.author.email,
       displayName: prismaPost.author.displayName,
       bio: prismaPost.author.bio || undefined,
       avatar: prismaPost.author.avatar || undefined,
@@ -94,7 +93,6 @@ function mapPrismaPostToPost(
       averageCourseRating: prismaPost.author.averageCourseRating || 0,
       isPremium: prismaPost.author.isPremium,
       isPrivate: prismaPost.author.isPrivate,
-      twoFactorEnabled: prismaPost.author.twoFactorEnabled,
       theme: (prismaPost.author.theme || "system") as Theme,
       accentColor: prismaPost.author.accentColor || "#3b82f6",
       language: prismaPost.author.language || "en",
@@ -103,6 +101,8 @@ function mapPrismaPostToPost(
       postsCount: 0,
       streakDays: 0,
       badges: [],
+      type: "DEFAULT",
+      accountId: prismaPost.authorId,
       createdAt: prismaPost.author.createdAt.toISOString(),
       updatedAt: prismaPost.author.updatedAt.toISOString(),
     },
@@ -301,8 +301,9 @@ export async function POST(req: NextRequest) {
       author = await prisma.profile.create({
         data: {
           id: authorId,
+          type: "DEFAULT",
+          accountId: authorId,
           username: validated.author?.username || `user_${authorId}`,
-          email: validated.author?.email || `${authorId}@example.com`,
           displayName: validated.author?.displayName || `User ${authorId}`,
           avatar: validated.author?.avatar || null,
         },

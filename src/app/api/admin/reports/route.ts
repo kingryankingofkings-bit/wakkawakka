@@ -121,7 +121,7 @@ export async function PATCH(req: NextRequest) {
           }
 
           if (targetUserId) {
-            await tx.user.update({
+            await tx.profile.update({
               where: { id: targetUserId },
               data: {
                 isBanned: true,

@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
     // 4. Fetch coordinates updated in the last 24 hours where shareLocation = true
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-    const locations = await prisma.profileLocation.findMany({
+    const locations = await prisma.userLocation.findMany({
       where: {
         userId: { in: activeFriendIds },
         shareLocation: true,

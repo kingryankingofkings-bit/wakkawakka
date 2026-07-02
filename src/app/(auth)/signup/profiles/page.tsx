@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
-import { User, AtSign, Loader2, CheckCircle2, Monitor, Users2, Venues, GraduationCap, Briefcase } from "lucide-react";
+import { User, AtSign, Loader2, CheckCircle2, Monitor, Users2, Building, GraduationCap, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 

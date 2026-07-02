@@ -114,12 +114,13 @@ export default function SettingsPage() {
   const [activeSection, setActiveSection] =
     useState<SettingsSection>("account");
   const activeProfile = useAuthStore((s) => s.activeProfile) || CURRENT_USER;
-  const updateUser = useAuthStore((s) => s.updateUser);
+  const account = useAuthStore((s) => s.account);
+  const updateActiveProfile = useAuthStore((s) => s.updateActiveProfile);
 
   // Toggles state
   const [toggles, setToggles] = useState({
     privateAccount: activeProfile.isPrivate || false,
-    twoFactor: activeProfile.twoFactorEnabled || false,
+    twoFactor: account?.twoFactorEnabled || false,
     showOnlineStatus: true,
     allowTagging: true,
     showEmail: false,
@@ -207,7 +208,7 @@ export default function SettingsPage() {
   function setToggle(key: keyof typeof toggles, value: boolean) {
     setToggles((prev) => ({ ...prev, [key]: value }));
     if (key === "privateAccount") {
-      updateUser({ isPrivate: value });
+      updateActiveProfile({ isPrivate: value });
     }
     toast.success("Settings saved");
   }
@@ -230,7 +231,7 @@ export default function SettingsPage() {
       setShow2FAWizard(true);
     } else {
       setToggles((prev) => ({ ...prev, twoFactor: false }));
-      updateUser({ twoFactorEnabled: false });
+      // Account update for 2FA goes here in reality
       toast.success("Two-factor authentication disabled");
     }
   };
@@ -246,7 +247,7 @@ export default function SettingsPage() {
 
   const handleFinish2FA = () => {
     setToggles((prev) => ({ ...prev, twoFactor: true }));
-    updateUser({ twoFactorEnabled: true });
+    // Account update for 2FA goes here in reality
     setShow2FAWizard(false);
     toast.success("2FA successfully enabled!");
   };
@@ -301,7 +302,7 @@ export default function SettingsPage() {
                     Change
                   </Button>
                 </SettingRow>
-                <SettingRow label="Email" description={activeProfile.email || "No email"}>
+                <SettingRow label="Email" description={account?.email || "No email"}>
                   <Button variant="ghost" size="sm">
                     Update
                   </Button>
@@ -633,7 +634,7 @@ export default function SettingsPage() {
                         key={opt.value}
                         onClick={() => {
                           setTheme(opt.value);
-                          updateUser({ theme: opt.value });
+                          updateActiveProfile({ theme: opt.value as "light" | "dark" | "system" });
                           toast.success(`${opt.label} theme applied`);
                         }}
                         className={cn(
@@ -673,7 +674,7 @@ export default function SettingsPage() {
                           key={color}
                           onClick={() => {
                             setAccentColor(color);
-                            updateUser({ accentColor: color });
+                            updateActiveProfile({ accentColor: color });
                             toast.success(`${color} accent applied`);
                           }}
                           className={cn(
@@ -1020,14 +1021,14 @@ export default function SettingsPage() {
                   </h3>
                   <div className="flex items-center gap-2 bg-muted rounded-xl p-3">
                     <code className="text-sm flex-1 text-primary">
-                      @{user.username}@wakka.social
+                      @{activeProfile.username}@wakka.social
                     </code>
                     <Button
                       size="xs"
                       variant="outline"
                       onClick={() => {
                         navigator.clipboard.writeText(
-                          `@${user.username}@wakka.social`,
+                          `@${activeProfile.username}@wakka.social`,
                         );
                         toast.success("Copied!");
                       }}
@@ -1249,7 +1250,7 @@ export default function SettingsPage() {
 
       {showEditProfile && (
         <EditProfileModal
-          user={user}
+          activeProfile={activeProfile}
           onClose={() => setShowEditProfile(false)}
         />
       )}

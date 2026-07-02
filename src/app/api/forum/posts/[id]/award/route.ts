@@ -47,7 +47,7 @@ export async function POST(
     // Atomic transaction
     const award = await prisma.$transaction(async (tx) => {
       // 1. Deduct points from sender
-      await tx.user.update({
+      await tx.profile.update({
         where: { id: userId },
         data: {
           channelPoints: {
@@ -59,7 +59,7 @@ export async function POST(
       // 2. Add karma to receiver (receiver gets a flat bonus, or price as karma)
       // Let's increment by a portion or the full price as karma. Let's do a proportional amount, e.g. price / 10 (min 1)
       const karmaBonus = Math.max(1, Math.floor(price / 10));
-      await tx.user.update({
+      await tx.profile.update({
         where: { id: post.authorId },
         data: {
           forumKarma: {

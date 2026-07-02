@@ -23,26 +23,42 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    const user = await prisma.profile.upsert({
+    const account = await prisma.account.upsert({
       where: { email },
       update: {
         passwordHash,
-        isAdmin: true,
-        isVerified: true,
-        verificationTier: "PLATINUM",
         emailVerified: true,
       },
       create: {
         email,
         passwordHash,
-        username: username ?? email.split("@")[0],
-        displayName: displayName ?? username ?? email.split("@")[0],
-        isAdmin: true,
-        isVerified: true,
-        verificationTier: "PLATINUM",
         emailVerified: true,
       },
     });
+
+    let user = await prisma.profile.findFirst({ where: { accountId: account.id } });
+    if (!user) {
+      user = await prisma.profile.create({
+        data: {
+          accountId: account.id,
+          type: "DEFAULT",
+          username: username ?? email.split("@")[0],
+          displayName: displayName ?? username ?? email.split("@")[0],
+          isAdmin: true,
+          isVerified: true,
+          verificationTier: "PLATINUM",
+        },
+      });
+    } else {
+      user = await prisma.profile.update({
+        where: { id: user.id },
+        data: {
+          isAdmin: true,
+          isVerified: true,
+          verificationTier: "PLATINUM",
+        },
+      });
+    }
 
     return NextResponse.json({
       success: true,

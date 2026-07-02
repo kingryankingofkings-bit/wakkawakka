@@ -14,7 +14,7 @@ export default function SnapMapPage() {
     fetchFriendsLocations,
     updateUserLocation
   } = useMapStore();
-  const { user } = useAuthStore();
+  const { activeProfile: user } = useAuthStore();
   const [selectedFriend, setSelectedFriend] = useState<FriendLocation | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
