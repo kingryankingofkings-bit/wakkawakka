@@ -2,12 +2,12 @@ import { useServerStore } from "@/store/serverStore";
 import { useAuthStore } from "@/store/authStore";
 
 export function useServerPermissions(serverId: string) {
-  const store = useServerStore();
+  const servers = useServerStore((s) => s.servers);
+  const serverMembers = useServerStore((s) => s.members[serverId]) || [];
   const currentUser = useAuthStore((s) => s.user);
 
-  const server = store.servers.find((s) => s.id === serverId);
-  const members = store.members[serverId] || [];
-  const member = members.find((m) => m.userId === currentUser?.id);
+  const server = servers.find((s) => s.id === serverId);
+  const member = serverMembers.find((m) => m.userId === currentUser?.id);
 
   const isOwner = server?.ownerId === currentUser?.id;
 
@@ -15,7 +15,7 @@ export function useServerPermissions(serverId: string) {
     if (isOwner) return true;
     if (!member) return false;
 
-    return member.roles.some((mr) => {
+    return member.roles.some((mr: any) => {
       const perms = mr.role.permissions || [];
       return (
         perms.includes("ADMIN") ||

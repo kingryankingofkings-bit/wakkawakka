@@ -4,20 +4,25 @@ import { useSocket } from "@/hooks/useSocket";
 import { useAuthStore } from "@/store/authStore";
 
 export function useVoice(channelId?: string) {
-  const store = useServerStore();
+  const activeServerId = useServerStore((s) => s.activeServerId);
+  const voiceState = useServerStore((s) => s.voice);
+  const setVoiceConnectedUsers = useServerStore((s) => s.setVoiceConnectedUsers);
+  const joinVoice = useServerStore((s) => s.joinVoice);
+  const leaveVoiceStore = useServerStore((s) => s.leaveVoice);
+  const setMute = useServerStore((s) => s.setMute);
+  
   const { socket } = useSocket();
-  const voiceState = store.voice;
   const currentUser = useAuthStore((s) => s.user);
 
   useEffect(() => {
     if (!socket || !voiceState.channelId) return;
 
     const handleUserJoined = (data: any) => {
-      store.setVoiceConnectedUsers([...voiceState.connectedUsers, data.userId]);
+      setVoiceConnectedUsers([...voiceState.connectedUsers, data.userId]);
     };
 
     const handleUserLeft = (data: any) => {
-      store.setVoiceConnectedUsers(
+      setVoiceConnectedUsers(
         voiceState.connectedUsers.filter((id) => id !== data.userId),
       );
     };
@@ -41,17 +46,17 @@ export function useVoice(channelId?: string) {
       socket.off("voice-user-state-changed", handleStateChanged);
       socket.off("soundboard-played", handleSoundboard);
     };
-  }, [socket, voiceState.channelId, voiceState.connectedUsers, store]);
+  }, [socket, voiceState.channelId, voiceState.connectedUsers, setVoiceConnectedUsers]);
 
   const join = useCallback(() => {
-    if (!channelId || !socket || !currentUser || !store.activeServerId) return;
-    store.joinVoice(store.activeServerId, channelId, currentUser.id);
+    if (!channelId || !socket || !currentUser || !activeServerId) return;
+    joinVoice(activeServerId, channelId, currentUser.id);
     socket.emit("join-voice", {
-      serverId: store.activeServerId,
+      serverId: activeServerId,
       channelId,
       userId: currentUser.id,
     });
-  }, [channelId, socket, currentUser, store]);
+  }, [channelId, socket, currentUser, activeServerId, joinVoice]);
 
   const leave = useCallback(() => {
     if (!socket || !voiceState.channelId || !currentUser) return;
@@ -59,12 +64,12 @@ export function useVoice(channelId?: string) {
       channelId: voiceState.channelId,
       userId: currentUser.id,
     });
-    store.leaveVoice(currentUser.id);
-  }, [socket, voiceState.channelId, currentUser, store]);
+    leaveVoiceStore(currentUser.id);
+  }, [socket, voiceState.channelId, currentUser, leaveVoiceStore]);
 
   const toggleMute = useCallback(() => {
     const nextMute = !voiceState.isMuted;
-    store.setMute(nextMute);
+    setMute(nextMute);
     socket?.emit("voice-state-update", {
       channelId: voiceState.channelId,
       userId: currentUser?.id,
@@ -72,7 +77,7 @@ export function useVoice(channelId?: string) {
       isDeafened: voiceState.isDeafened,
       isScreenSharing: voiceState.isScreenSharing,
     });
-  }, [socket, voiceState, currentUser, store]);
+  }, [socket, voiceState, currentUser, setMute]);
 
   const playSound = useCallback(
     (soundUrl: string) => {

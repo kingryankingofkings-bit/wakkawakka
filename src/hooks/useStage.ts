@@ -4,19 +4,24 @@ import { useSocket } from "@/hooks/useSocket";
 import { useAuthStore } from "@/store/authStore";
 
 export function useStage(channelId: string) {
-  const store = useServerStore();
+  const activeServerId = useServerStore((s) => s.activeServerId);
+  const stage = useServerStore((s) => s.stage);
+  const setStageQueue = useServerStore((s) => s.setStageQueue);
+  const joinStage = useServerStore((s) => s.joinStage);
+  const updateStageUserRole = useServerStore((s) => s.updateStageUserRole);
+  const leaveStageStore = useServerStore((s) => s.leaveStage);
+  
   const { socket } = useSocket();
-  const stage = store.stage;
   const currentUser = useAuthStore((s) => s.user);
 
   const fetchStageQueue = useCallback(async () => {
-    if (!store.activeServerId || !channelId) return;
+    if (!activeServerId || !channelId) return;
     const res = await fetch(
-      `/api/servers/${store.activeServerId}/channels/${channelId}/stage`,
+      `/api/servers/${activeServerId}/channels/${channelId}/stage`,
     );
     if (res.ok) {
       const data = await res.json();
-      store.setStageQueue({
+      setStageQueue({
         speakers: (data.speakers || []).map((m: any) => m.userId),
         listeners: (data.listeners || []).map((m: any) => m.userId),
         requestedToSpeak: (data.requestedToSpeak || []).map(
@@ -24,14 +29,14 @@ export function useStage(channelId: string) {
         ),
       });
     }
-  }, [channelId, store]);
+  }, [channelId, activeServerId, setStageQueue]);
 
   useEffect(() => {
-    if (!socket || !channelId || !currentUser || !store.activeServerId) return;
+    if (!socket || !channelId || !currentUser || !activeServerId) return;
 
-    store.joinStage(store.activeServerId, channelId, false, currentUser.id);
+    joinStage(activeServerId, channelId, false, currentUser.id);
     socket.emit("join-stage", {
-      serverId: store.activeServerId,
+      serverId: activeServerId,
       channelId,
       userId: currentUser.id,
     });
@@ -46,7 +51,7 @@ export function useStage(channelId: string) {
       else if (data.action === "DEMOTE") role = "LISTENER";
       else if (data.action === "REQUESTED") role = "REQUESTED";
 
-      store.updateStageUserRole(data.targetUserId, role);
+      updateStageUserRole(data.targetUserId, role);
     };
 
     socket.on("stage-user-joined", handleJoined);
@@ -54,17 +59,17 @@ export function useStage(channelId: string) {
 
     return () => {
       socket.emit("leave-stage", { channelId, userId: currentUser.id });
-      store.leaveStage(currentUser.id);
+      leaveStageStore(currentUser.id);
       socket.off("stage-user-joined", handleJoined);
       socket.off("stage-speaker-action", handleAction);
     };
-  }, [socket, channelId, currentUser, store, fetchStageQueue]);
+  }, [socket, channelId, currentUser, activeServerId, joinStage, fetchStageQueue, updateStageUserRole, leaveStageStore]);
 
   const requestToSpeak = useCallback(() => {
     if (!socket || !currentUser) return;
     socket.emit("stage-request-speak", { channelId, userId: currentUser.id });
-    store.updateStageUserRole(currentUser.id, "REQUESTED");
-  }, [socket, channelId, currentUser, store]);
+    updateStageUserRole(currentUser.id, "REQUESTED");
+  }, [socket, channelId, currentUser, updateStageUserRole]);
 
   const moderateUser = useCallback(
     (targetUserId: string, action: "PROMOTE" | "DEMOTE" | "REMOVE") => {
@@ -76,9 +81,9 @@ export function useStage(channelId: string) {
       });
       let role: "SPEAKER" | "LISTENER" | "REQUESTED" = "LISTENER";
       if (action === "PROMOTE") role = "SPEAKER";
-      store.updateStageUserRole(targetUserId, role);
+      updateStageUserRole(targetUserId, role);
     },
-    [socket, channelId, store],
+    [socket, channelId, updateStageUserRole],
   );
 
   return {

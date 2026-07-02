@@ -4,25 +4,29 @@ import { useSocket } from "@/hooks/useSocket";
 import { useAuthStore } from "@/store/authStore";
 
 export function useChannel(channelId: string) {
-  const store = useServerStore();
+  const activeServerId = useServerStore((s) => s.activeServerId);
+  const messages = useServerStore((s) => s.messages[channelId]) || [];
+  const setMessages = useServerStore((s) => s.setMessages);
+  const addMessage = useServerStore((s) => s.addMessage);
+  const removeMessage = useServerStore((s) => s.removeMessage);
+
   const { socket } = useSocket();
   const currentUser = useAuthStore((s) => s.user);
-  const messages = store.messages[channelId] || [];
   const [typingUsers, setTypingUsers] = useState<Record<string, string>>({}); // userId -> displayName
 
   // Fetch initial messages
   useEffect(() => {
     const fetchMsgs = async () => {
       const res = await fetch(
-        `/api/servers/${store.activeServerId}/channels/${channelId}/messages`,
+        `/api/servers/${activeServerId}/channels/${channelId}/messages`,
       );
       if (res.ok) {
         const data = await res.json();
-        store.setMessages(channelId, data.messages);
+        setMessages(channelId, data.messages);
       }
     };
-    if (channelId && store.activeServerId) fetchMsgs();
-  }, [channelId, store]);
+    if (channelId && activeServerId) fetchMsgs();
+  }, [channelId, activeServerId, setMessages]);
 
   // Subscribe to channel sockets
   useEffect(() => {
@@ -30,10 +34,10 @@ export function useChannel(channelId: string) {
     socket.emit("join-server-channel", channelId);
 
     const handleNewMessage = (msg: any) => {
-      store.addMessage(channelId, msg);
+      addMessage(channelId, msg);
     };
     const handleMessageDeleted = (msgId: string) => {
-      store.removeMessage(channelId, msgId);
+      removeMessage(channelId, msgId);
     };
 
     const handleTyping = (data: any) => {
@@ -64,13 +68,13 @@ export function useChannel(channelId: string) {
       socket.off("server-typing", handleTyping);
       socket.off("server-stop-typing", handleStopTyping);
     };
-  }, [socket, channelId, currentUser, store]);
+  }, [socket, channelId, currentUser, addMessage, removeMessage]);
 
   const sendMessage = useCallback(
     async (content: string, attachments?: string[]) => {
-      if (!store.activeServerId || !channelId) return;
+      if (!activeServerId || !channelId) return;
       const res = await fetch(
-        `/api/servers/${store.activeServerId}/channels/${channelId}/messages`,
+        `/api/servers/${activeServerId}/channels/${channelId}/messages`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -79,7 +83,7 @@ export function useChannel(channelId: string) {
       );
       if (res.ok) {
         const data = await res.json();
-        store.addMessage(channelId, data.message);
+        addMessage(channelId, data.message);
         if (socket) {
           socket.emit("send-server-message", {
             channelId,
@@ -88,7 +92,7 @@ export function useChannel(channelId: string) {
         }
       }
     },
-    [channelId, socket, store],
+    [channelId, socket, activeServerId, addMessage],
   );
 
   return {
