@@ -5,7 +5,7 @@ import { getRequestUserId } from "@/lib/currentUser";
 async function verifyAdmin(req: NextRequest) {
   const activeUserId = await getRequestUserId(req);
   if (!activeUserId) return false;
-  const user = await prisma.user.findUnique({
+  const user = await prisma.profile.findUnique({
     where: { id: activeUserId },
     select: { isAdmin: true },
   });

@@ -4,7 +4,7 @@ import { useAuthStore } from "@/store/authStore";
 export function useServerPermissions(serverId: string) {
   const servers = useServerStore((s) => s.servers);
   const serverMembers = useServerStore((s) => s.members[serverId]) || [];
-  const currentUser = useAuthStore((s) => s.user);
+  const currentUser = useAuthStore((s) => s.activeProfile);
 
   const server = servers.find((s) => s.id === serverId);
   const member = serverMembers.find((m) => m.userId === currentUser?.id);

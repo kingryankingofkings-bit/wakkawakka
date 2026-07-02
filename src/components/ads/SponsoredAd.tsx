@@ -8,7 +8,7 @@ export function SponsoredAd({ placement }: { placement?: string }) {
   const [hasTrackedImpression, setHasTrackedImpression] = useState(false);
 
   useEffect(() => {
-    const userId = useAuthStore.getState().user?.id;
+    const userId = useAuthStore.getState().activeProfile?.id;
     const headers: Record<string, string> = {};
     if (userId) headers["x-user-id"] = userId;
     if (placement) headers["x-ad-placement"] = placement;

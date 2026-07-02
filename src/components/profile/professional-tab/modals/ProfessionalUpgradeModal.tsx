@@ -62,7 +62,7 @@ const TIERS: {
 ];
 
 export function ProfessionalUpgradeModal({ onClose }: ProfessionalUpgradeModalProps) {
-  const { user, updateUser } = useAuthStore();
+  const { activeProfile: user, updateUser } = useAuthStore();
   const [step, setStep] = useState<"TIER_SELECTION" | "ID_VERIFICATION">("TIER_SELECTION");
   const [selectedTier, setSelectedTier] = useState<ProfessionalTier | null>(null);
   const [_loading, setLoading] = useState(false);

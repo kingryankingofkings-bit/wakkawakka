@@ -12,7 +12,7 @@ export function useStage(channelId: string) {
   const leaveStageStore = useServerStore((s) => s.leaveStage);
   
   const { socket } = useSocket();
-  const currentUser = useAuthStore((s) => s.user);
+  const currentUser = useAuthStore((s) => s.activeProfile);
 
   const fetchStageQueue = useCallback(async () => {
     if (!activeServerId || !channelId) return;

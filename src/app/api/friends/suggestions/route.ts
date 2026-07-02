@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
 
     // top up with popular users if we have few suggestions
     if (rankedIds.length < 8) {
-      const popular = await prisma.user.findMany({
+      const popular = await prisma.profile.findMany({
         where: { id: { notIn: [...excluded, ...rankedIds] }, isActive: true },
         orderBy: { createdAt: "desc" },
         take: 12 - rankedIds.length,
@@ -91,7 +91,7 @@ export async function GET(req: NextRequest) {
       rankedIds = [...rankedIds, ...popular.map((u: any) => u.id)];
     }
 
-    const users = await prisma.user.findMany({
+    const users = await prisma.profile.findMany({
       where: { id: { in: rankedIds } },
       select: userSelect,
     });

@@ -48,7 +48,7 @@ export default function DeveloperSettingsPage() {
   // Fetch Data
   const fetchData = async () => {
     setIsLoading(true);
-    const userId = useAuthStore.getState().user?.id;
+    const userId = useAuthStore.getState().activeProfile?.id;
     const headers: Record<string, string> = userId
       ? { "x-user-id": userId }
       : {};
@@ -83,7 +83,7 @@ export default function DeveloperSettingsPage() {
       return;
     }
 
-    const userId = useAuthStore.getState().user?.id;
+    const userId = useAuthStore.getState().activeProfile?.id;
     try {
       const res = await fetch("/api/ads", {
         method: "POST",
@@ -137,7 +137,7 @@ export default function DeveloperSettingsPage() {
       return;
     }
 
-    const userId = useAuthStore.getState().user?.id;
+    const userId = useAuthStore.getState().activeProfile?.id;
     try {
       const res = await fetch("/api/developer/webhooks", {
         method: "POST",
@@ -167,7 +167,7 @@ export default function DeveloperSettingsPage() {
 
   // Toggle Webhook Active Status
   const handleToggleWebhook = async (id: string, currentStatus: boolean) => {
-    const userId = useAuthStore.getState().user?.id;
+    const userId = useAuthStore.getState().activeProfile?.id;
     try {
       const res = await fetch("/api/developer/webhooks", {
         method: "PUT",

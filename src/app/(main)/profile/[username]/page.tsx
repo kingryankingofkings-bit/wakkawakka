@@ -85,7 +85,7 @@ const DEFAULT_ALBUMS: Album[] = [
 
 export default function ProfilePage({ params }: ProfilePageProps) {
   const { username } = params;
-  const authUser = useAuthStore((s) => s.user);
+  const authUser = useAuthStore((s) => s.activeProfile);
   const currentUser = authUser ?? CURRENT_USER;
 
   const baseProfileUser =

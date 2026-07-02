@@ -34,7 +34,7 @@ export async function POST(
       return NextResponse.json({ error: "Comment not found" }, { status: 404 });
     }
 
-    const sender = await prisma.user.findUnique({ where: { id: userId } });
+    const sender = await prisma.profile.findUnique({ where: { id: userId } });
     if (!sender) {
       return NextResponse.json({ error: "Sender user not found" }, { status: 404 });
     }

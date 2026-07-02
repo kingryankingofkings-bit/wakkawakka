@@ -55,8 +55,8 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const user = useAuthStore((s) => s.user);
-  const accentName = user?.accentColor || "blue";
+  const activeProfile = useAuthStore((s) => s.activeProfile);
+  const accentName = activeProfile?.accentColor || "blue";
   const hsl =
     ACCENT_HSL[accentName as keyof typeof ACCENT_HSL] ||
     (accentName.startsWith("#") ? hexToHsl(accentName) : ACCENT_HSL.blue);

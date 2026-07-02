@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { RightPanel } from "@/components/layout/RightPanel";
 import { CreatePostModalWrapper } from "@/components/layout/CreatePostModalWrapper";
@@ -9,8 +8,10 @@ import { cn } from "@/lib/utils";
 
 export default function MainLayout({
   children,
+  sidebar,
 }: {
   children: React.ReactNode;
+  sidebar: React.ReactNode;
 }) {
   const pathname = usePathname();
   const isFullWidthWorkspace = pathname
@@ -21,9 +22,9 @@ export default function MainLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Desktop sidebar */}
+      {/* Desktop sidebar via Parallel Route */}
       <div className="hidden md:block">
-        <Sidebar />
+        {sidebar}
       </div>
 
       {/* Main content area */}

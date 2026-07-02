@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
 
       // Create notification for writer
       try {
-        const requester = await prisma.user.findUnique({
+        const requester = await prisma.profile.findUnique({
           where: { id: userId },
           select: { displayName: true, username: true },
         });
@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
 
       // Notify receiver
       try {
-        const writer = await prisma.user.findUnique({
+        const writer = await prisma.profile.findUnique({
           where: { id: userId },
           select: { displayName: true, username: true },
         });

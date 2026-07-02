@@ -113,13 +113,13 @@ function SettingRow({
 export default function SettingsPage() {
   const [activeSection, setActiveSection] =
     useState<SettingsSection>("account");
-  const user = useAuthStore((s) => s.user) || CURRENT_USER;
+  const activeProfile = useAuthStore((s) => s.activeProfile) || CURRENT_USER;
   const updateUser = useAuthStore((s) => s.updateUser);
 
   // Toggles state
   const [toggles, setToggles] = useState({
-    privateAccount: user.isPrivate,
-    twoFactor: user.twoFactorEnabled,
+    privateAccount: activeProfile.isPrivate || false,
+    twoFactor: activeProfile.twoFactorEnabled || false,
     showOnlineStatus: true,
     allowTagging: true,
     showEmail: false,
@@ -143,7 +143,7 @@ export default function SettingsPage() {
   });
 
   const { theme, setTheme } = useTheme();
-  const [accentColor, setAccentColor] = useState(user.accentColor || "blue");
+  const [accentColor, setAccentColor] = useState(activeProfile.accentColor || "blue");
   const [dmPermission, setDmPermission] = useState<
     "EVERYONE" | "FOLLOWERS" | "NONE"
   >("EVERYONE");
@@ -291,17 +291,17 @@ export default function SettingsPage() {
                 </p>
               </div>
               <div className="rounded-2xl border border-border bg-card p-4 divide-y divide-border">
-                <SettingRow label="Display Name" description={user.displayName}>
+                <SettingRow label="Display Name" description={activeProfile.displayName}>
                   <Button variant="ghost" size="sm" onClick={() => setShowEditProfile(true)}>
                     Edit
                   </Button>
                 </SettingRow>
-                <SettingRow label="Username" description={`@${user.username}`}>
+                <SettingRow label="Username" description={`@${activeProfile.username}`}>
                   <Button variant="ghost" size="sm" onClick={() => setShowEditProfile(true)}>
                     Change
                   </Button>
                 </SettingRow>
-                <SettingRow label="Email" description={user.email}>
+                <SettingRow label="Email" description={activeProfile.email || "No email"}>
                   <Button variant="ghost" size="sm">
                     Update
                   </Button>

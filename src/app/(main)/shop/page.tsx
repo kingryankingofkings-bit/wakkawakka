@@ -143,7 +143,7 @@ export default function ShopPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-user-id": useAuthStore.getState().user?.id || "",
+          "x-user-id": useAuthStore.getState().activeProfile?.id || "",
         },
         body: JSON.stringify({
           shippingAddress: "Digital Delivery to " + cardName,

@@ -35,7 +35,7 @@ export async function POST(
     }
 
     // Sender and receiver must be different users (optional, but let's allow it unless prohibited)
-    const sender = await prisma.user.findUnique({ where: { id: userId } });
+    const sender = await prisma.profile.findUnique({ where: { id: userId } });
     if (!sender) {
       return NextResponse.json({ error: "Sender user not found" }, { status: 404 });
     }

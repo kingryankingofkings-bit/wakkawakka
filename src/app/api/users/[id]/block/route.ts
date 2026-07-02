@@ -22,7 +22,7 @@ export async function POST(
   }
 
   try {
-    const targetUser = await prisma.user.findUnique({
+    const targetUser = await prisma.profile.findUnique({
       where: { id: blockedId },
     });
     if (!targetUser) {

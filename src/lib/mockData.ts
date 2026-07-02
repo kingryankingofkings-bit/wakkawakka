@@ -635,7 +635,23 @@ export const MOCK_HASHTAGS: Hashtag[] = [
   { id: "h8", name: "Fitness", postCount: 11200000, isTrending: false },
 ];
 
-export const CURRENT_USER = MOCK_USERS[4];
+export const MOCK_ACCOUNT = {
+  id: "acc_1",
+  email: "marcus@example.com",
+  firebaseUid: "firebase_user_1",
+  twoFactorEnabled: false,
+  emailVerified: true,
+  createdAt: "2024-01-01T00:00:00.000Z",
+  updatedAt: "2024-01-01T00:00:00.000Z",
+};
+
+export const MOCK_PROFILES = MOCK_USERS.map((user, i) => ({
+  ...user,
+  accountId: MOCK_ACCOUNT.id,
+  type: i === 0 ? "PROFESSIONAL" : i === 1 ? "STREAMING" : "SOCIALIZING",
+}));
+
+export const CURRENT_USER = MOCK_PROFILES[4];
 
 import { Course } from "@/types";
 

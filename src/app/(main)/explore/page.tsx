@@ -82,7 +82,7 @@ const INTEREST_CATEGORIES: readonly InterestCategory[] = [
 ] as const;
 
 export default function ExplorePage() {
-  const authUser = useAuthStore((s) => s.user);
+  const authUser = useAuthStore((s) => s.activeProfile);
   const currentUser = authUser ?? CURRENT_USER;
   const { posts, setPosts } = useFeedStore();
   const [query, setQuery] = useState("");

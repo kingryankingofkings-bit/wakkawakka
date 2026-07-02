@@ -61,7 +61,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
 
     // Create a notification for the job poster
     try {
-      const applicant = await prisma.user.findUnique({
+      const applicant = await prisma.profile.findUnique({
         where: { id: userId },
         select: { displayName: true, username: true },
       });

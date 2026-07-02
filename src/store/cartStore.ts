@@ -29,7 +29,7 @@ interface CartActions {
 type CartStore = CartState & CartActions;
 
 const getHeaders = () => {
-  const userId = useAuthStore.getState().user?.id;
+  const userId = useAuthStore.getState().activeProfile?.id;
   return {
     "Content-Type": "application/json",
     ...(userId ? { "x-user-id": userId } : {}),
@@ -42,7 +42,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
   isLoading: false,
 
   fetchCart: async () => {
-    const userId = useAuthStore.getState().user?.id;
+    const userId = useAuthStore.getState().activeProfile?.id;
     if (!userId) return;
 
     set({ isLoading: true });

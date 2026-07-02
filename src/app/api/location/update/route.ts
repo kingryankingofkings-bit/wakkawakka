@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Upsert UserLocation
-    const userLocation = await prisma.userLocation.upsert({
+    const userLocation = await prisma.profileLocation.upsert({
       where: { userId },
       create: {
         userId,

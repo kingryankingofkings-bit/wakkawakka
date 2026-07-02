@@ -29,7 +29,7 @@ interface ChannelListSidebarProps {
 
 export function ChannelListSidebar({ serverId }: ChannelListSidebarProps) {
   const router = useRouter();
-  const currentUser = useAuthStore((s) => s.user);
+  const currentUser = useAuthStore((s) => s.activeProfile);
   const {
     server,
     channels,

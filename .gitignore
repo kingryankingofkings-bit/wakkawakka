@@ -38,3 +38,6 @@ prisma/dev.db-journal
 .vercel
 
 .next_challenger/
+
+# Agents and Customizations
+.agents/

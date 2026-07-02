@@ -18,8 +18,8 @@ export default function CourseDetailPage() {
   const params = useParams();
   const id = params?.id as string;
 
-  const authUser = useAuthStore((s) => s.user);
-  const user = authUser || CURRENT_USER;
+  const authUser = useAuthStore((s) => s.activeProfile);
+  const activeProfile = authUser || CURRENT_USER;
 
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);

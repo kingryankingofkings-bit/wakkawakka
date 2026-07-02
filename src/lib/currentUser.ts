@@ -50,6 +50,15 @@ export async function getRequestUserId(
   //   return null;
   // }
 
+  const headerProfileId = req.headers.get("x-profile-id");
+  if (headerProfileId) {
+    log.warn(
+      "Using x-profile-id header for auth — this is disabled in real production",
+      { data: { userId: headerProfileId } },
+    );
+    return headerProfileId;
+  }
+
   const headerUserId = req.headers.get("x-user-id");
   if (headerUserId) {
     log.warn(
@@ -78,14 +87,14 @@ export async function getRequestUserId(
 }
 
 /**
- * Resolve the acting user record (id + a few display fields). Returns null when
- * the user cannot be found or the database is unreachable.
+ * Resolve the acting profile record (id + a few display fields). Returns null when
+ * the profile cannot be found or the database is unreachable.
  */
 export async function getRequestUser(req: NextRequest, bodyUserId?: string) {
   const id = await getRequestUserId(req, bodyUserId);
   if (!id) return null;
   try {
-    return await prisma.user.findUnique({
+    return await prisma.profile.findUnique({
       where: { id },
       select: {
         id: true,

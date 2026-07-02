@@ -39,7 +39,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
     }
 
     if (userId) {
-      const targetUser = await prisma.user.findUnique({
+      const targetUser = await prisma.profile.findUnique({
         where: { id: userId },
       });
       if (!targetUser) {

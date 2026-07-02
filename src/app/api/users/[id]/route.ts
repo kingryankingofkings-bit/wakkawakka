@@ -11,7 +11,7 @@ export async function GET(
   const viewerId = await getRequestUserId(req);
 
   try {
-    const user = await prisma.user.findFirst({
+    const user = await prisma.profile.findFirst({
       where: {
         OR: [{ id: params.id }, { username: params.id }],
       },
@@ -61,7 +61,7 @@ export async function PATCH(
     // Clean up fields that might be read-only or relations
     const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, email: _email, ...updates } = body;
 
-    const user = await prisma.user.update({
+    const user = await prisma.profile.update({
       where: { id: params.id },
       data: updates,
     });

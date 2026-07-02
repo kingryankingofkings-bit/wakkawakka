@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Find other users
-    const discoverableUsers = await prisma.user.findMany({
+    const discoverableUsers = await prisma.profile.findMany({
       where: {
         id: { notIn: excludeIds },
       },

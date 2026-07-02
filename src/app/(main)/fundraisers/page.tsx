@@ -62,7 +62,7 @@ export default function FundraisersPage() {
       return;
     }
 
-    const userId = useAuthStore.getState().user?.id;
+    const userId = useAuthStore.getState().activeProfile?.id;
     try {
       const res = await fetch("/api/fundraisers", {
         method: "POST",
@@ -105,7 +105,7 @@ export default function FundraisersPage() {
     }
 
     setDonationStep("processing");
-    const userId = useAuthStore.getState().user?.id;
+    const userId = useAuthStore.getState().activeProfile?.id;
 
     try {
       const res = await fetch(

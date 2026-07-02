@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const user = await prisma.profile.findUnique({ where: { id: userId } });
     // In our prototype, all users can manage this or we can check isAdmin
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });

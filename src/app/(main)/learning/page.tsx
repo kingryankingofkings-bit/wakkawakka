@@ -16,8 +16,8 @@ export default function LearningPage() {
   const [activeTab, setActiveTab] = useState<"catalog" | "my-learning">("catalog");
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   
-  const authUser = useAuthStore((s) => s.user);
-  const user = authUser || CURRENT_USER;
+  const authUser = useAuthStore((s) => s.activeProfile);
+  const activeProfile = authUser || CURRENT_USER;
   const isVerified = user.isVerified; // Authentic 'W'
   
   // Mocking usage and age for demo

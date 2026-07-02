@@ -296,9 +296,9 @@ export async function POST(req: NextRequest) {
     const activeUserId = await optionalAuth(req);
     const authorId = activeUserId || validated.authorId || "current";
 
-    let author = await prisma.user.findUnique({ where: { id: authorId } });
+    let author = await prisma.profile.findUnique({ where: { id: authorId } });
     if (!author) {
-      author = await prisma.user.create({
+      author = await prisma.profile.create({
         data: {
           id: authorId,
           username: validated.author?.username || `user_${authorId}`,

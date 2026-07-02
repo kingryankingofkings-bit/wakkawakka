@@ -27,7 +27,7 @@ export default function ForumGlobalFeed() {
     loading,
   } = useForumStore();
 
-  const authUser = useAuthStore((s) => s.user) ?? CURRENT_USER;
+  const authUser = useAuthStore((s) => s.activeProfile) ?? CURRENT_USER;
 
   const [sort, setSort] = useState("hot");
   const [searchQuery, setSearchQuery] = useState("");

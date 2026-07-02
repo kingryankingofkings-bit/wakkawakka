@@ -199,7 +199,7 @@ export default function AnalyticsPage() {
     setIsLoading(true);
     fetch(`/api/creator/analytics?range=${range}`, {
       headers: {
-        "x-user-id": useAuthStore.getState().user?.id || "",
+        "x-user-id": useAuthStore.getState().activeProfile?.id || "",
       },
     })
       .then((res) => res.json())

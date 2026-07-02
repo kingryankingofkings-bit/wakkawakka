@@ -58,7 +58,7 @@ export default function MessagesPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-user-id": useAuthStore.getState().user?.id || "current",
+          "x-user-id": useAuthStore.getState().activeProfile?.id || "current",
         },
         body: JSON.stringify({ note: newNote }),
       });

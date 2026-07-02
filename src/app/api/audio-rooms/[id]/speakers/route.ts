@@ -42,7 +42,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: "Forbidden: Only the host can promote speakers" }, { status: 403 });
     }
 
-    const isAlreadySpeaker = room.speakers.some((s) => s.userId === userId);
+    const isAlreadySpeaker = room.speakers.some((s) => s.activeProfileId === userId);
     if (isAlreadySpeaker) {
       return NextResponse.json({ error: "User is already a speaker" }, { status: 400 });
     }

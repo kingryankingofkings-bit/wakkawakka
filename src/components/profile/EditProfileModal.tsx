@@ -109,7 +109,7 @@ interface EditProfileModalProps {
 
 type TabSection = "basic" | "theme" | "widgets";
 
-export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
+export function EditProfileModal({ activeProfile: user, onClose }: EditProfileModalProps) {
   const updateUser = useAuthStore((s) => s.updateUser);
   const [activeSection, setActiveSection] = useState<TabSection>("basic");
   const [avatarPreview, setAvatarPreview] = useState<string>(user.avatar ?? "");

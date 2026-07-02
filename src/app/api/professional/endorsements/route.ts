@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
 
     // Create a notification for the target user
     try {
-      const endorser = await prisma.user.findUnique({
+      const endorser = await prisma.profile.findUnique({
         where: { id: userId },
         select: { displayName: true, username: true },
       });

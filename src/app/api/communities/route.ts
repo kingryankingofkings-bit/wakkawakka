@@ -12,7 +12,7 @@ async function seedCommunitiesIfNeeded() {
   // Let's seed communities from MOCK_COMMUNITIES
   for (const c of MOCK_COMMUNITIES) {
     // Check if creator exists or use a default creator
-    const creatorExists = await prisma.user.findUnique({
+    const creatorExists = await prisma.profile.findUnique({
       where: { id: c.creatorId },
     });
     const creatorId = creatorExists ? c.creatorId : "u1"; // fallback

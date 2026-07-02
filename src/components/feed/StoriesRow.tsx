@@ -14,7 +14,7 @@ export function StoriesRow() {
   const [stories, setStories] = useState<Story[]>([]);
   const [viewingIndex, setViewingIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const currentUser = useAuthStore((s) => s.user);
+  const currentUser = useAuthStore((s) => s.activeProfile);
 
   const activeUser = currentUser || CURRENT_USER;
 

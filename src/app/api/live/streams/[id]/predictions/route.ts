@@ -177,7 +177,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       }
 
       // Check user points balance
-      const user = await prisma.user.findUnique({
+      const user = await prisma.profile.findUnique({
         where: { id: userId },
         select: { channelPoints: true },
       });
@@ -213,7 +213,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       // Transaction: deduct user points, increment option points, create bet record
       try {
         const [updatedUser, _updatedOption, bet] = await prisma.$transaction([
-          prisma.user.update({
+          prisma.profile.update({
             where: { id: userId },
             data: { channelPoints: { decrement: pointsToBet } },
           }),
@@ -347,7 +347,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
           const payoutShare = Math.floor((b.points / W) * L);
           const totalPayout = b.points + payoutShare;
 
-          return prisma.user.update({
+          return prisma.profile.update({
             where: { id: b.userId },
             data: {
               channelPoints: {
@@ -376,7 +376,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       } else {
         // If there are no winning bets, refund all points to bettors
         const refundUpdates = prediction.bets.map((b) => {
-          return prisma.user.update({
+          return prisma.profile.update({
             where: { id: b.userId },
             data: {
               channelPoints: {
@@ -405,7 +405,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       }
 
       // Get updated balance for host just to return it
-      const hostUser = await prisma.user.findUnique({
+      const hostUser = await prisma.profile.findUnique({
         where: { id: userId },
         select: { channelPoints: true },
       });
@@ -446,7 +446,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
 
       // Refund everyone in a single transaction
       const refundUpdates = prediction.bets.map((b) => {
-        return prisma.user.update({
+        return prisma.profile.update({
           where: { id: b.userId },
           data: {
             channelPoints: {
@@ -471,7 +471,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
         transactionResults[transactionResults.length - 1];
 
       // Get updated balance for host
-      const hostUser = await prisma.user.findUnique({
+      const hostUser = await prisma.profile.findUnique({
         where: { id: userId },
         select: { channelPoints: true },
       });

@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.profile.findUnique({
       where: { id: targetUserId },
       select: {
         id: true,
@@ -87,7 +87,7 @@ export async function PUT(req: NextRequest) {
       updateData.skills = typeof skills === "string" ? skills : JSON.stringify(skills);
     }
 
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await prisma.profile.update({
       where: { id: userId },
       data: updateData,
       select: {

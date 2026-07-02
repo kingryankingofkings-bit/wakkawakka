@@ -31,7 +31,7 @@ export default function SubforumCommunityView() {
     loading,
   } = useForumStore();
 
-  const authUser = useAuthStore((s) => s.user) ?? CURRENT_USER;
+  const authUser = useAuthStore((s) => s.activeProfile) ?? CURRENT_USER;
 
   // Initialize socket syncing for subforum room
   useForumSocket(undefined, activeSubforum?.id);

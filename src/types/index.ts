@@ -25,10 +25,22 @@ export type SubscriptionStatus = "ACTIVE" | "CANCELLED" | "EXPIRED";
 export type ProfessionalTier = "NONE" | "SIMPLE" | "BETTER" | "BEST" | "PURE";
 export type IDVerificationStatus = "UNVERIFIED" | "PENDING" | "VERIFIED";
 
-export interface User {
+export interface Account {
+  id: string;
+  email: string;
+  firebaseUid?: string;
+  twoFactorEnabled: boolean;
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  profiles?: Profile[];
+}
+
+export interface Profile {
   id: string;
   username: string;
-  email: string;
+  type: string;
+  accountId: string;
   displayName: string;
   bio?: string;
   avatar?: string;
@@ -46,7 +58,6 @@ export interface User {
   isPremium: boolean;
   isPrivate: boolean;
   isAdmin?: boolean;
-  twoFactorEnabled: boolean;
   theme: Theme;
   accentColor: string;
   language: string;
@@ -69,6 +80,9 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
+
+// Temporary alias to avoid breaking all UI components that still reference User
+export type User = Profile;
 
 export interface Post {
   id: string;

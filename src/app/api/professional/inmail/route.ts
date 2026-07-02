@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Verify premium status of sender
-    const sender = await prisma.user.findUnique({
+    const sender = await prisma.profile.findUnique({
       where: { id: userId },
       select: { isPremium: true, inmailQuota: true, displayName: true, username: true },
     });
@@ -190,7 +190,7 @@ export async function POST(req: NextRequest) {
           },
         },
       }),
-      prisma.user.update({
+      prisma.profile.update({
         where: { id: userId },
         data: { inmailQuota: { decrement: 1 } },
       }),

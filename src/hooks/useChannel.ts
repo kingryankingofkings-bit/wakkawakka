@@ -11,7 +11,7 @@ export function useChannel(channelId: string) {
   const removeMessage = useServerStore((s) => s.removeMessage);
 
   const { socket } = useSocket();
-  const currentUser = useAuthStore((s) => s.user);
+  const currentUser = useAuthStore((s) => s.activeProfile);
   const [typingUsers, setTypingUsers] = useState<Record<string, string>>({}); // userId -> displayName
 
   // Fetch initial messages

@@ -26,7 +26,7 @@ interface ProfessionalTabProps {
 }
 
 export function ProfessionalTab({ profileUserId, isOwnProfile }: ProfessionalTabProps) {
-  const authUser = useAuthStore((s) => s.user);
+  const authUser = useAuthStore((s) => s.activeProfile);
   
   // Stores
   const {

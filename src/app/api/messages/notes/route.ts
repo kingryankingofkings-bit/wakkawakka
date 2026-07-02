@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user details
-    const user = await prisma.user.findUnique({
+    const user = await prisma.profile.findUnique({
       where: { id: userId },
       select: { displayName: true, username: true, avatar: true },
     });

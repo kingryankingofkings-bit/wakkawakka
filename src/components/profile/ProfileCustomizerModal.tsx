@@ -36,7 +36,7 @@ interface ProfileCustomizerModalProps {
   onClose: () => void;
 }
 
-export function ProfileCustomizerModal({ user, onClose }: ProfileCustomizerModalProps) {
+export function ProfileCustomizerModal({ activeProfile: user, onClose }: ProfileCustomizerModalProps) {
   const updateUser = useAuthStore((s) => s.updateUser);
   const [activePanel, setActivePanel] = useState<Panel>("theme");
   const [isSaving, setIsSaving] = useState(false);

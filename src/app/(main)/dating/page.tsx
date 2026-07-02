@@ -60,7 +60,7 @@ export default function DatingPage() {
 
   // Load Data
   const loadDatingData = async () => {
-    const userId = useAuthStore.getState().user?.id;
+    const userId = useAuthStore.getState().activeProfile?.id;
     const headers: Record<string, string> = userId
       ? { "x-user-id": userId }
       : {};
@@ -114,7 +114,7 @@ export default function DatingPage() {
   // Update Profile
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    const userId = useAuthStore.getState().user?.id;
+    const userId = useAuthStore.getState().activeProfile?.id;
     try {
       const res = await fetch("/api/dating/profile", {
         method: "POST",
@@ -138,7 +138,7 @@ export default function DatingPage() {
     if (currentIndex >= discoverList.length) return;
     const currentCard = discoverList[currentIndex];
 
-    const userId = useAuthStore.getState().user?.id;
+    const userId = useAuthStore.getState().activeProfile?.id;
     try {
       const res = await fetch("/api/dating/swipe", {
         method: "POST",
@@ -171,7 +171,7 @@ export default function DatingPage() {
     if (!crushUsername) return;
 
     // Find the user by username to get their ID
-    const userId = useAuthStore.getState().user?.id;
+    const userId = useAuthStore.getState().activeProfile?.id;
     const headers: Record<string, string> = userId
       ? { "x-user-id": userId }
       : {};
@@ -269,8 +269,8 @@ export default function DatingPage() {
             </div>
             <div className="flex justify-center gap-3">
               <Avatar
-                src={useAuthStore.getState().user?.avatar}
-                name={useAuthStore.getState().user?.displayName || ""}
+                src={useAuthStore.getState().activeProfile?.avatar}
+                name={useAuthStore.getState().activeProfile?.displayName || ""}
                 size="lg"
               />
               <Avatar

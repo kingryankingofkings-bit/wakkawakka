@@ -12,9 +12,9 @@ export async function apiFetch(
   input: string,
   init: RequestInit = {},
 ): Promise<Response> {
-  const user = useAuthStore.getState().user ?? CURRENT_USER;
+  const activeProfile = useAuthStore.getState().activeProfile ?? CURRENT_USER;
   const headers = new Headers(init.headers);
-  if (user?.id) headers.set("x-user-id", user.id);
+  if (activeProfile?.id) headers.set("x-profile-id", activeProfile.id);
   if (init.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }

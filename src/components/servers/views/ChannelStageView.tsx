@@ -22,7 +22,7 @@ export function ChannelStageView({
     moderateUser,
     fetchStageQueue,
   } = useStage(channelId);
-  const currentUser = useAuthStore((s) => s.user);
+  const currentUser = useAuthStore((s) => s.activeProfile);
 
   useEffect(() => {
     fetchStageQueue();

@@ -21,7 +21,7 @@ export async function POST(
   }
 
   try {
-    const targetUser = await prisma.user.findUnique({
+    const targetUser = await prisma.profile.findUnique({
       where: { id: followingId },
     });
     if (!targetUser) {
@@ -68,7 +68,7 @@ export async function POST(
     });
 
     // Generate follow notification
-    const followerUser = await prisma.user.findUnique({
+    const followerUser = await prisma.profile.findUnique({
       where: { id: followerId },
       select: { username: true },
     });

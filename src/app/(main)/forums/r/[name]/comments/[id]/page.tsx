@@ -197,7 +197,7 @@ export default function ForumPostDetails() {
     clearActiveData,
   } = useForumStore();
 
-  const authUser = useAuthStore((s) => s.user) ?? CURRENT_USER;
+  const authUser = useAuthStore((s) => s.activeProfile) ?? CURRENT_USER;
 
   // Real-time socket sync
   useForumSocket(id, undefined);

@@ -19,7 +19,7 @@ export function EditPostModal({ isOpen, onClose, post }: EditPostModalProps) {
   const [content, setContent] = useState(post.content);
   const [isSaving, setIsSaving] = useState(false);
   const updatePost = useFeedStore((s) => s.updatePost);
-  const user = useAuthStore((s) => s.user);
+  const activeProfile = useAuthStore((s) => s.activeProfile);
 
   const handleSave = async () => {
     if (!content.trim()) {
@@ -41,13 +41,13 @@ export function EditPostModal({ isOpen, onClose, post }: EditPostModalProps) {
     }
   };
 
-  if (!user) return null;
+  if (!activeProfile) return null;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Edit post">
       <div className="p-4 space-y-4">
         <div className="flex gap-4">
-          <Avatar src={user.avatar} name={user.displayName} size="md" />
+          <Avatar src={activeProfile.avatar || undefined} name={activeProfile.displayName} size="md" />
           <div className="flex-1">
             <textarea
               value={content}

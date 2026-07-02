@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -48,7 +49,9 @@ import { CURRENT_USER } from "@/lib/mockData";
 
 import { useUIStore } from "@/store/uiStore";
 
-const NAV_ITEMS = [
+type NavItem = { href: string; icon: any; label: string; badge?: string };
+
+const ALL_NAV_ITEMS: NavItem[] = [
   { href: "/feed", icon: Home, label: "Feed" },
   { href: "/explore", icon: Compass, label: "Explore" },
   { href: "/forums", icon: MessageSquare, label: "Forums" },
@@ -60,12 +63,7 @@ const NAV_ITEMS = [
   { href: "/learning", icon: GraduationCap, label: "Learning" },
   { href: "/articles", icon: Newspaper, label: "Articles" },
   { href: "/messages", icon: MessageCircle, label: "Messages", badge: "dm" },
-  {
-    href: "/notifications",
-    icon: Bell,
-    label: "Notifications",
-    badge: "notif",
-  },
+  { href: "/notifications", icon: Bell, label: "Notifications", badge: "notif" },
   { href: "/friends", icon: UserPlus, label: "Friends" },
   { href: "/events", icon: Calendar, label: "Events" },
   { href: "/brand-pages", icon: Flag, label: "Pages" },
@@ -81,13 +79,40 @@ const NAV_ITEMS = [
   { href: "/scheduling", icon: Calendar, label: "Scheduling" },
 ];
 
+function getNavItemsForProfile(type?: string): NavItem[] {
+  const t = type || "PERSONAL";
+  // Filter based on persona
+  return ALL_NAV_ITEMS.filter((item) => {
+    // Common items for all profiles
+    if (["/feed", "/notifications", "/messages", "/settings", "/bookmarks"].includes(item.href)) return true;
+    
+    if (t === "STREAMING") {
+      return ["/live", "/reels", "/audio-rooms", "/camera", "/explore"].includes(item.href);
+    }
+    if (t === "PROFESSIONAL") {
+      return ["/jobs", "/articles", "/learning", "/events", "/analytics", "/brand-pages"].includes(item.href);
+    }
+    if (t === "LEARNING") {
+      return ["/learning", "/articles", "/forums", "/events"].includes(item.href);
+    }
+    if (t === "SOCIALIZING" || t === "PERSONAL") {
+      return ["/explore", "/friends", "/communities", "/map", "/memories", "/marketplace", "/events"].includes(item.href);
+    }
+    if (t === "ANONYMOUS") {
+      return ["/forums", "/explore", "/audio-rooms"].includes(item.href);
+    }
+    return true; // Fallback
+  });
+}
+
 export function Sidebar() {
   const pathname = usePathname();
-  const user = useAuthStore((s) => s.user) || CURRENT_USER;
+  const activeProfile = useAuthStore((s) => s.activeProfile) || CURRENT_USER;
   const unreadCount = useNotificationStore((s) => s.unreadCount);
   const conversations = useMessageStore((s) => s.conversations);
   const dmUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
   const { theme, setTheme } = useTheme();
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   async function handleLogout() {
     try {
@@ -124,7 +149,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
-        {NAV_ITEMS.map(({ href, icon: Icon, label, badge }) => {
+        {getNavItemsForProfile(activeProfile?.type).map(({ href, icon: Icon, label, badge }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/");
           const badgeCount =
             badge === "dm" ? dmUnread : badge === "notif" ? unreadCount : 0;
@@ -164,7 +189,7 @@ export function Sidebar() {
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
             <Link
-              href={`/profile/${user?.username}`}
+              href={`/profile/${activeProfile?.username}`}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                 pathname.startsWith("/profile")
@@ -193,7 +218,7 @@ export function Sidebar() {
               Settings
             </Link>
           </motion.div>
-          {user?.isAdmin && (
+          {activeProfile?.isAdmin && (
             <motion.div
               whileHover={{ x: 4 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -247,26 +272,70 @@ export function Sidebar() {
         </button>
       </div>
 
-      {/* User footer */}
-      <div className="border-t border-border p-3">
-        <div className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-muted transition-colors group">
-          <Avatar src={user?.avatar} name={user?.displayName} size="sm" />
+      {/* User footer with Profile Switcher */}
+      <div className="border-t border-border p-3 relative">
+        <AnimatePresence>
+          {isProfileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="absolute bottom-full left-3 w-56 mb-2 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50"
+            >
+              <div className="p-2 border-b border-border">
+                <p className="text-xs font-semibold text-muted-foreground px-2 py-1">Switch Profile</p>
+              </div>
+              <div className="p-1 max-h-60 overflow-y-auto">
+                {useAuthStore.getState().profiles?.map((profile) => (
+                  <button
+                    key={profile.id}
+                    onClick={() => {
+                      useAuthStore.getState().setActiveProfile(profile);
+                      setIsProfileMenuOpen(false);
+                    }}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-2 py-2 rounded-lg text-left text-sm hover:bg-muted transition-colors",
+                      activeProfile?.id === profile.id && "bg-primary/10 text-primary"
+                    )}
+                  >
+                    <Avatar src={profile.avatar} name={profile.displayName} size="sm" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{profile.displayName}</p>
+                      <p className="text-xs opacity-80 truncate">{profile.type}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <div className="p-1 border-t border-border">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-left text-sm text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Log out
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <button
+          onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+          className="w-full flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-left"
+        >
+          <Avatar src={activeProfile?.avatar} name={activeProfile?.displayName} size="sm" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold truncate">
-              {user?.displayName}
+              {activeProfile?.displayName}
             </p>
-            <p className="text-xs text-muted-foreground truncate">
-              @{user?.username}
+            <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
+              @{activeProfile?.username}
+              <span className="inline-block px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] uppercase font-bold tracking-wider">
+                {activeProfile?.type || 'PERSONAL'}
+              </span>
             </p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-destructive/10 hover:text-destructive text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            title="Log out"
-          >
-            <LogOut className="h-4 w-4" />
-          </button>
-        </div>
+        </button>
       </div>
     </aside>
   );

@@ -1,19 +1,24 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { User } from "@/types";
-import { CURRENT_USER } from "@/lib/mockData";
+import type { Account, Profile } from "@/types";
+import { MOCK_ACCOUNT, MOCK_PROFILES } from "@/lib/mockData";
 
 interface AuthState {
-  user: User | null;
+  account: Account | null;
+  profiles: Profile[];
+  activeProfile: Profile | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   token: string | null;
 }
 
 interface AuthActions {
-  setUser: (_user: User | null) => void;
+  setAccount: (_account: Account | null) => void;
+  setProfiles: (_profiles: Profile[]) => void;
+  setActiveProfile: (_profile: Profile | null) => void;
+  addProfile: (_profile: Profile) => void;
   logout: () => void;
-  updateUser: (_updates: Partial<User>) => void;
+  updateActiveProfile: (_updates: Partial<Profile>) => void;
   setLoading: (_isLoading: boolean) => void;
   setToken: (_token: string | null) => void;
   incrementStreak: () => void;
@@ -26,48 +31,64 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
       // Initial state
-      user: CURRENT_USER,
+      account: MOCK_ACCOUNT,
+      profiles: MOCK_PROFILES,
+      activeProfile: MOCK_PROFILES[4],
       isLoading: true,
       isAuthenticated: true,
       token: "mock-token-123",
 
       // Actions
-      setUser: (user) =>
+      setAccount: (account) =>
         set({
-          user,
-          isAuthenticated: !!user,
+          account,
+          isAuthenticated: !!account,
           isLoading: false,
         }),
 
+      setProfiles: (profiles) => set({ profiles }),
+      
+      setActiveProfile: (activeProfile) => set({ activeProfile }),
+
+      addProfile: (profile) => set({ profiles: [...get().profiles, profile] }),
+
       logout: () =>
         set({
-          user: null,
+          account: null,
+          profiles: [],
+          activeProfile: null,
           isAuthenticated: false,
           token: null,
           isLoading: false,
         }),
 
-      updateUser: (updates) => {
-        const current = get().user;
+      updateActiveProfile: (updates) => {
+        const current = get().activeProfile;
         if (!current) return;
+        const updated = { ...current, ...updates };
         set({
-          user: { ...current, ...updates },
+          activeProfile: updated,
+          profiles: get().profiles.map(p => p.id === updated.id ? updated : p),
         });
       },
 
       incrementStreak: () => {
-        const current = get().user;
+        const current = get().activeProfile;
         if (!current) return;
+        const updated = { ...current, streakDays: current.streakDays + 1 };
         set({
-          user: { ...current, streakDays: current.streakDays + 1 },
+          activeProfile: updated,
+          profiles: get().profiles.map(p => p.id === updated.id ? updated : p),
         });
       },
 
       resetStreak: () => {
-        const current = get().user;
+        const current = get().activeProfile;
         if (!current) return;
+        const updated = { ...current, streakDays: 0 };
         set({
-          user: { ...current, streakDays: 0 },
+          activeProfile: updated,
+          profiles: get().profiles.map(p => p.id === updated.id ? updated : p),
         });
       },
 
@@ -78,9 +99,11 @@ export const useAuthStore = create<AuthStore>()(
     {
       name: "wakka-auth",
       storage: createJSONStorage(() => localStorage),
-      // Only persist user and token, not transient loading state
+      // Only persist account, token, and profiles
       partialize: (state) => ({
-        user: state.user,
+        account: state.account,
+        profiles: state.profiles,
+        activeProfile: state.activeProfile,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),

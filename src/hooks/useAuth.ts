@@ -2,48 +2,31 @@
 
 import { useCallback, useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
-import { CURRENT_USER } from "@/lib/mockData";
-import type { User } from "@/types";
+import { MOCK_ACCOUNT, MOCK_PROFILES } from "@/lib/mockData";
+import type { Account, Profile } from "@/types";
 
 const HAS_FIREBASE_CONFIG =
   typeof process !== "undefined" &&
   !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
-  process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== "demo-api-key";
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== "demo-api-key" &&
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== "your_firebase_api_key";
 
 // ----- helpers ---------------------------------------------------------------
 
-function firebaseUserToAppUser(fbUser: {
+function firebaseUserToAccount(fbUser: {
   uid: string;
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
-}): User {
+}): Account {
   return {
     id: fbUser.uid,
-    username: (fbUser.email ?? fbUser.uid).split("@")[0] ?? fbUser.uid,
     email: fbUser.email ?? "",
-    displayName: fbUser.displayName ?? "User",
-    avatar: fbUser.photoURL ?? undefined,
-    isVerified: false,
-    verificationTier: "NONE",
-    isPremium: false,
-    isPrivate: false,
+    firebaseUid: fbUser.uid,
     twoFactorEnabled: false,
-    theme: "system",
-    accentColor: "blue",
-    language: "en",
-    followersCount: 0,
-    followingCount: 0,
-    postsCount: 0,
-    streakDays: 0,
-    badges: [],
+    emailVerified: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    professionalTier: "NONE",
-    idVerificationStatus: "UNVERIFIED",
-    freeCoursesCreatedThisMonth: 0,
-    paidCoursesCreatedThisMonth: 0,
-    averageCourseRating: 0,
   };
 }
 
@@ -51,10 +34,15 @@ function firebaseUserToAppUser(fbUser: {
 
 export function useAuth() {
   const {
-    user,
+    account,
+    profiles,
+    activeProfile,
     isLoading,
     isAuthenticated,
-    setUser,
+    setAccount,
+    setProfiles,
+    addProfile,
+    setActiveProfile,
     logout: storeLogout,
     setLoading,
   } = useAuthStore();
@@ -69,17 +57,19 @@ export function useAuth() {
         const { onAuthChange } = await import("@/lib/firebase");
         unsubscribe = onAuthChange((fbUser) => {
           if (fbUser) {
-            setUser(firebaseUserToAppUser(fbUser));
+            setAccount(firebaseUserToAccount(fbUser));
           } else {
             storeLogout();
           }
         });
       })();
     } else {
-      // Mock auth — use CURRENT_USER from mockData
-      const stored = useAuthStore.getState().user;
+      // Mock auth
+      const stored = useAuthStore.getState().account;
       if (!stored) {
-        setUser(CURRENT_USER);
+        setAccount(MOCK_ACCOUNT);
+        setProfiles(MOCK_PROFILES);
+        setActiveProfile(MOCK_PROFILES[4]);
       } else {
         setLoading(false);
       }
@@ -99,50 +89,92 @@ export function useAuth() {
         if (HAS_FIREBASE_CONFIG) {
           const { signInWithEmail } = await import("@/lib/firebase");
           const result = await signInWithEmail(email, password);
-          setUser(firebaseUserToAppUser(result.user));
+          setAccount(firebaseUserToAccount(result.user));
         } else {
-          // Mock login — accept any credentials, log in as CURRENT_USER
+          // Mock login
           await new Promise((r) => setTimeout(r, 600));
-          setUser(CURRENT_USER);
+          setAccount(MOCK_ACCOUNT);
+          setProfiles(MOCK_PROFILES);
+          setActiveProfile(MOCK_PROFILES[4]);
         }
       } catch (err) {
         setLoading(false);
         throw err;
       }
     },
-    [setUser, setLoading],
+    [setAccount, setProfiles, setActiveProfile, setLoading],
   );
 
-  // Register
-  const register = useCallback(
-    async (
-      email: string,
-      password: string,
-      displayName: string,
-    ): Promise<void> => {
+  // Register Account (Step 1)
+  const registerAccount = useCallback(
+    async (email: string, password: string): Promise<void> => {
       setLoading(true);
       try {
         if (HAS_FIREBASE_CONFIG) {
           const { signUpWithEmail } = await import("@/lib/firebase");
-          const result = await signUpWithEmail(email, password, displayName);
-          setUser(firebaseUserToAppUser(result.user));
+          const result = await signUpWithEmail(email, password, "New User");
+          setAccount(firebaseUserToAccount(result.user));
         } else {
-          // Mock register
+          // Mock register account
           await new Promise((r) => setTimeout(r, 800));
-          const mockNewUser: User = {
-            ...CURRENT_USER,
+          const mockNewAccount: Account = {
+            ...MOCK_ACCOUNT,
+            id: `acc_${Date.now()}`,
             email,
-            displayName,
-            username: displayName.toLowerCase().replace(/\s+/g, "_"),
           };
-          setUser(mockNewUser);
+          setAccount(mockNewAccount);
+          setProfiles([]);
+          setActiveProfile(null);
         }
       } catch (err) {
         setLoading(false);
         throw err;
       }
     },
-    [setUser, setLoading],
+    [setAccount, setProfiles, setActiveProfile, setLoading],
+  );
+
+  // Register Profile (Step 2)
+  const registerProfile = useCallback(
+    async (type: string, displayName: string, username: string): Promise<void> => {
+      setLoading(true);
+      try {
+        // Mock register profile
+        await new Promise((r) => setTimeout(r, 500));
+        
+        const currentAccount = useAuthStore.getState().account;
+        if (!currentAccount) throw new Error("No account found to attach profile to");
+
+        const newProfile: Profile = {
+          ...MOCK_PROFILES[0], // Base template
+          id: `prof_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+          accountId: currentAccount.id,
+          type,
+          displayName,
+          username,
+        };
+
+        addProfile(newProfile);
+        setActiveProfile(newProfile);
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        throw err;
+      }
+    },
+    [addProfile, setActiveProfile, setLoading],
+  );
+
+  // Switch Profile
+  const switchProfile = useCallback(
+    (profileId: string) => {
+      const state = useAuthStore.getState();
+      const profile = state.profiles.find((p) => p.id === profileId);
+      if (profile) {
+        setActiveProfile(profile);
+      }
+    },
+    [setActiveProfile]
   );
 
   // Logout
@@ -158,11 +190,15 @@ export function useAuth() {
   }, [storeLogout]);
 
   return {
-    user,
+    account,
+    profiles,
+    activeProfile,
     isLoading,
     isAuthenticated,
     login,
     logout,
-    register,
+    registerAccount,
+    registerProfile,
+    switchProfile,
   };
 }

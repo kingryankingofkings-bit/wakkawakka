@@ -54,7 +54,7 @@ export default function LivePage() {
 function LivePageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, updateUser } = useAuthStore();
+  const { activeProfile: user, updateUser } = useAuthStore();
 
   const [activeStatusTab, setActiveStatusTab] = useState<
     "live" | "scheduled" | "recorded"

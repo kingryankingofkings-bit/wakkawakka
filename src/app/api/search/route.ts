@@ -141,7 +141,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Query Users
-    const dbUsers = await prisma.user.findMany({
+    const dbUsers = await prisma.profile.findMany({
       where: {
         id: blockedUserIds.length > 0 ? { notIn: blockedUserIds } : undefined,
         OR: [

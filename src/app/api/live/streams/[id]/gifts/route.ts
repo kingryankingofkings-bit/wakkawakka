@@ -47,7 +47,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
     const totalCost = numAmount * numQuantity;
 
     // Get sender and check balance
-    const user = await prisma.user.findUnique({
+    const user = await prisma.profile.findUnique({
       where: { id: userId },
       select: { channelPoints: true, displayName: true },
     });
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
     // Execute transaction: deduct points, increment stream giftTotal, create gift log, create chat message
     const [updatedUser, _updatedStream, giftLog, chatMsg] =
       await prisma.$transaction([
-        prisma.user.update({
+        prisma.profile.update({
           where: { id: userId },
           data: {
             channelPoints: {

@@ -12,7 +12,7 @@ export function useVoice(channelId?: string) {
   const setMute = useServerStore((s) => s.setMute);
   
   const { socket } = useSocket();
-  const currentUser = useAuthStore((s) => s.user);
+  const currentUser = useAuthStore((s) => s.activeProfile);
 
   useEffect(() => {
     if (!socket || !voiceState.channelId) return;
