@@ -87,16 +87,16 @@ function getNavItemsForProfile(type?: string): NavItem[] {
     if (["/feed", "/notifications", "/messages", "/settings", "/bookmarks"].includes(item.href)) return true;
     
     if (t === "STREAMING") {
-      return ["/live", "/reels", "/audio-rooms", "/camera", "/explore"].includes(item.href);
+      return ["/live", "/reels", "/audio-rooms", "/camera", "/explore", "/servers", "/music"].includes(item.href);
     }
     if (t === "PROFESSIONAL") {
-      return ["/jobs", "/articles", "/learning", "/events", "/analytics", "/brand-pages"].includes(item.href);
+      return ["/jobs", "/articles", "/learning", "/events", "/analytics", "/brand-pages", "/shop", "/scheduling"].includes(item.href);
     }
     if (t === "LEARNING") {
       return ["/learning", "/articles", "/forums", "/events"].includes(item.href);
     }
     if (t === "SOCIALIZING" || t === "PERSONAL") {
-      return ["/explore", "/friends", "/communities", "/map", "/memories", "/marketplace", "/events"].includes(item.href);
+      return ["/explore", "/friends", "/communities", "/map", "/memories", "/marketplace", "/events", "/servers", "/music", "/shop"].includes(item.href);
     }
     if (t === "ANONYMOUS") {
       return ["/forums", "/explore", "/audio-rooms"].includes(item.href);
