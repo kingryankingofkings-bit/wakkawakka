@@ -5,14 +5,14 @@ import { AlertCircle } from "lucide-react";
 
 interface InMailModalProps {
   inMailOpen: boolean;
-  setInMailOpen: (open: boolean) => void;
+  setInMailOpen: (_open: boolean) => void;
   profileUserId: string;
   inMailSubject: string;
-  setInMailSubject: (subject: string) => void;
+  setInMailSubject: (_subject: string) => void;
   inMailBody: string;
-  setInMailBody: (body: string) => void;
+  setInMailBody: (_body: string) => void;
   inMailSending: boolean;
-  handleSendInMail: (e: React.FormEvent) => void;
+  handleSendInMail: (_e: React.FormEvent) => void;
 }
 
 export function InMailModal({

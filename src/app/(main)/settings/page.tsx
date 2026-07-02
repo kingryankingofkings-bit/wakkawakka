@@ -66,7 +66,7 @@ function Toggle({
   onChange,
 }: {
   checked: boolean;
-  onChange: (v: boolean) => void;
+  onChange: (_v: boolean) => void;
 }) {
   return (
     <button

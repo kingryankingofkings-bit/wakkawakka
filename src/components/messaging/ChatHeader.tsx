@@ -24,7 +24,7 @@ interface ChatHeaderProps {
   showSidebar: boolean;
   onToggleSidebar: () => void;
   searchQuery: string;
-  onSearchQueryChange: (query: string) => void;
+  onSearchQueryChange: (_query: string) => void;
 }
 
 export function ChatHeader({

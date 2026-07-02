@@ -17,11 +17,11 @@ import type { Message } from "@/types";
 
 interface ChatInputBarProps {
   inputValue: string;
-  onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onAppendText: (text: string) => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  onInputChange: (_e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onAppendText: (_text: string) => void;
+  onKeyDown: (_e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   onSend: () => void;
-  onFileAttach: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFileAttach: (_e: React.ChangeEvent<HTMLInputElement>) => void;
   replyTo: Message | null;
   onCancelReply: () => void;
   e2eeEnabled: boolean;

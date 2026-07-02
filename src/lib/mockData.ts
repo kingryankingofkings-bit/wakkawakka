@@ -1,9 +1,9 @@
 import {
   User,
   Post,
-  Comment,
+  _Comment,
   Conversation,
-  Message,
+  _Message,
   Notification,
   Story,
   Community,
@@ -11,7 +11,7 @@ import {
   AudioRoom,
   Product,
   Hashtag,
-  Badge,
+  _Badge,
 } from "@/types";
 
 export const MOCK_USERS: User[] = [

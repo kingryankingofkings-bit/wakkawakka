@@ -10,7 +10,7 @@ interface RouteContext {
 
 // GET /api/servers/[id]/channels/[channelId]/messages - Fetch messages
 export async function GET(req: NextRequest, { params }: RouteContext) {
-  const { id: serverId, channelId } = await params;
+  const { id: _serverId, channelId } = await params;
   const { searchParams } = new URL(req.url);
   const limit = parseInt(searchParams.get("limit") || "50");
   const cursor = searchParams.get("cursor") || undefined;

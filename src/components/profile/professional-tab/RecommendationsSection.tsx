@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/Button";
 interface RecommendationsSectionProps {
   recommendations: any[];
   isOwnProfile: boolean;
-  setRequestRecOpen: (open: boolean) => void;
-  handleApproveRec: (id: string) => void;
+  setRequestRecOpen: (_open: boolean) => void;
+  handleApproveRec: (_id: string) => void;
 }
 
 export function RecommendationsSection({

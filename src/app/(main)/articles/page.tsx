@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useProfessionalStore, Article } from "@/store/professionalStore";
+import { useProfessionalStore, _Article } from "@/store/professionalStore";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Newspaper, Send, FileText, BookOpen, Clock, Heart, Eye } from "lucide-react";
+import { _Newspaper, _Send, _FileText, _BookOpen, _Clock, Heart, Eye } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 

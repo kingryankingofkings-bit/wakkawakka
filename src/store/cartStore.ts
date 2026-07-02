@@ -17,9 +17,9 @@ interface CartState {
 
 interface CartActions {
   fetchCart: () => Promise<void>;
-  addItem: (product: Product, quantity?: number) => Promise<void>;
-  removeItem: (productId: string) => Promise<void>;
-  updateQuantity: (productId: string, quantity: number) => Promise<void>;
+  addItem: (_product: Product, _quantity?: number) => Promise<void>;
+  removeItem: (_productId: string) => Promise<void>;
+  updateQuantity: (_productId: string, _quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
   toggleCart: () => void;
   openCart: () => void;

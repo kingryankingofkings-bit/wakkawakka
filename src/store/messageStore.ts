@@ -9,12 +9,12 @@ interface MessageState {
 }
 
 interface MessageActions {
-  setConversations: (conversations: Conversation[]) => void;
-  setActiveConversation: (id: string | null) => void;
-  addMessage: (message: Message) => void;
-  markConversationRead: (conversationId: string) => void;
-  addConversation: (conversation: Conversation) => void;
-  viewDisappearingMessage: (conversationId: string, messageId: string) => void;
+  setConversations: (_conversations: Conversation[]) => void;
+  setActiveConversation: (_id: string | null) => void;
+  addMessage: (_message: Message) => void;
+  markConversationRead: (_conversationId: string) => void;
+  addConversation: (_conversation: Conversation) => void;
+  viewDisappearingMessage: (_conversationId: string, _messageId: string) => void;
 }
 
 type MessageStore = MessageState & MessageActions;

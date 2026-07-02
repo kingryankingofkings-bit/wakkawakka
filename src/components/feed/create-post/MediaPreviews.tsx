@@ -7,7 +7,7 @@ interface PreviewItem {
 
 interface MediaPreviewsProps {
   previews: PreviewItem[];
-  onPreviewsChange: (previews: PreviewItem[]) => void;
+  onPreviewsChange: (_previews: PreviewItem[]) => void;
   tab: "Post" | "Reel" | "Story";
 }
 

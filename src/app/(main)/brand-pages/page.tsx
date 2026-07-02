@@ -14,7 +14,7 @@ import {
   BarChart3,
   Edit3,
 } from "lucide-react";
-import Link from "next/link";
+import _Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
@@ -55,7 +55,7 @@ const FILTERS = [
 ] as const;
 
 // SVG Line Chart Helpers
-const CHART_DATA = [1200, 1900, 1500, 2800, 2200, 3400, 3100];
+const _CHART_DATA = [1200, 1900, 1500, 2800, 2200, 3400, 3100];
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function PagesPage() {

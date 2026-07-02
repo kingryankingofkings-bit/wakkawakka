@@ -7,7 +7,7 @@ import { cn, formatCount } from "@/lib/utils";
 interface ThreadVotingProps {
   initialScore: number;
   initialUserVote?: "up" | "down" | null;
-  onVote?: (newScore: number, voteType: "up" | "down" | null) => void;
+  onVote?: (_newScore: number, _voteType: "up" | "down" | null) => void;
   className?: string;
   horizontal?: boolean;
 }

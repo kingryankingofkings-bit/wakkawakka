@@ -2,9 +2,9 @@ import { cn } from "@/lib/utils";
 
 interface InnovationsKitProps {
   btsUrl: string | null;
-  onBtsUrlChange: (url: string | null) => void;
+  onBtsUrlChange: (_url: string | null) => void;
   greenScreenBg: string | null;
-  onGreenScreenBgChange: (bg: string | null) => void;
+  onGreenScreenBgChange: (_bg: string | null) => void;
 }
 
 export function InnovationsKit({

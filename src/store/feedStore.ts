@@ -16,15 +16,15 @@ interface FeedState {
 }
 
 interface FeedActions {
-  setPosts: (posts: Post[]) => void;
-  addPost: (post: Post) => void;
-  updatePost: (id: string, updates: Partial<Post>) => void;
-  removePost: (id: string) => void;
-  setFeedType: (type: FeedType) => void;
-  setLoading: (loading: boolean) => void;
-  setHasMore: (hasMore: boolean) => void;
-  setDailySnapLocked: (locked: boolean) => void;
-  setDailySnapPosted: (posted: boolean) => void;
+  setPosts: (_posts: Post[]) => void;
+  addPost: (_post: Post) => void;
+  updatePost: (_id: string, _updates: Partial<Post>) => void;
+  removePost: (_id: string) => void;
+  setFeedType: (_type: FeedType) => void;
+  setLoading: (_loading: boolean) => void;
+  setHasMore: (_hasMore: boolean) => void;
+  setDailySnapLocked: (_locked: boolean) => void;
+  setDailySnapPosted: (_posted: boolean) => void;
   unlockDailySnapFeed: () => void;
 }
 

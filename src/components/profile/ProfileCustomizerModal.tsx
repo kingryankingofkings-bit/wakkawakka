@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Palette, Music, Code2, Check, ChevronRight, Wand2 } from "lucide-react";
+import { X, Palette, Music, Code2, Check, _ChevronRight, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
 import { User } from "@/types";
@@ -63,7 +63,7 @@ export function ProfileCustomizerModal({ user, onClose }: ProfileCustomizerModal
       });
 
       if (res.ok) {
-        const data = await res.json();
+        const _data = await res.json();
         updateUser({
           profileTheme: selectedTheme,
           accentColor: selectedAccent,

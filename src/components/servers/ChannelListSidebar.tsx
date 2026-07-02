@@ -39,7 +39,7 @@ export function ChannelListSidebar({ serverId }: ChannelListSidebarProps) {
     setActiveChannelId,
   } = useServer(serverId);
   const { hasPermission } = useServerPermissions(serverId);
-  const { isMuted, isDeafened, toggleMute } = useVoice();
+  const { isMuted, _isDeafened, toggleMute } = useVoice();
 
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);

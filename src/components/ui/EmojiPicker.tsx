@@ -10,7 +10,7 @@ const EMOJI_LIST = [
 ];
 
 interface EmojiPickerProps {
-  onSelect: (emoji: string) => void;
+  onSelect: (_emoji: string) => void;
   onClose: () => void;
 }
 

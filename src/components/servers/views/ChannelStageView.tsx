@@ -7,7 +7,7 @@ import { useAuthStore } from "@/store/authStore";
 import { Avatar } from "@/components/ui/Avatar";
 
 export function ChannelStageView({
-  serverId,
+  _serverId,
   channelId,
   hasMod,
 }: {

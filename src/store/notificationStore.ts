@@ -9,8 +9,8 @@ interface NotificationState {
 }
 
 interface NotificationActions {
-  addNotification: (notification: Notification) => void;
-  markAsRead: (id: string) => void;
+  addNotification: (_notification: Notification) => void;
+  markAsRead: (_id: string) => void;
   markAllAsRead: () => void;
   clearAll: () => void;
 }

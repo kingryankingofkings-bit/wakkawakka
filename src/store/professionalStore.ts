@@ -157,16 +157,16 @@ interface JobState {
 }
 
 interface JobActions {
-  fetchJobs: (filters?: { query?: string; search?: string; type?: string; workplaceType?: string }) => Promise<void>;
-  fetchJobById: (id: string) => Promise<void>;
-  createJob: (jobData: any) => Promise<void>;
-  applyToJob: (jobId: string, resumeUrl: string, coverLetter?: string) => Promise<void>;
+  fetchJobs: (_filters?: { query?: string; search?: string; type?: string; workplaceType?: string }) => Promise<void>;
+  fetchJobById: (_id: string) => Promise<void>;
+  createJob: (_jobData: any) => Promise<void>;
+  applyToJob: (_jobId: string, _resumeUrl: string, _coverLetter?: string) => Promise<void>;
   fetchMyApplications: () => Promise<void>;
-  fetchCompanyBySlug: (slug: string) => Promise<void>;
-  createCompany: (companyData: any) => Promise<void>;
+  fetchCompanyBySlug: (_slug: string) => Promise<void>;
+  createCompany: (_companyData: any) => Promise<void>;
 }
 
-export const useJobStore = create<JobState & JobActions>((set, get) => ({
+export const useJobStore = create<JobState & JobActions>((set, _get) => ({
   jobs: [],
   myApplications: [],
   companies: [],
@@ -292,9 +292,9 @@ interface LearningState {
 }
 
 interface LearningActions {
-  fetchCourses: (category?: string) => Promise<void>;
-  enrollInCourse: (courseId: string) => Promise<void>;
-  updateProgress: (courseId: string, progressPercentage: number, completedModules?: string[]) => Promise<void>;
+  fetchCourses: (_category?: string) => Promise<void>;
+  enrollInCourse: (_courseId: string) => Promise<void>;
+  updateProgress: (_courseId: string, _progressPercentage: number, _completedModules?: string[]) => Promise<void>;
 }
 
 export const useLearningStore = create<LearningState & LearningActions>((set) => ({
@@ -373,13 +373,13 @@ interface InMailState {
 
 interface InMailActions {
   fetchConversations: () => Promise<void>;
-  setActiveConversation: (id: string | null) => void;
-  sendInMail: (receiverId: string, subject: string, content: string) => Promise<void>;
-  addInMailMessage: (message: InMailMessage) => void;
-  fetchMessages: (conversationId: string) => Promise<void>;
+  setActiveConversation: (_id: string | null) => void;
+  sendInMail: (_receiverId: string, _subject: string, _content: string) => Promise<void>;
+  addInMailMessage: (_message: InMailMessage) => void;
+  fetchMessages: (_conversationId: string) => Promise<void>;
 }
 
-export const useInMailStore = create<InMailState & InMailActions>((set, get) => ({
+export const useInMailStore = create<InMailState & InMailActions>((set, _get) => ({
   conversations: [],
   activeConversationId: null,
   messages: {},
@@ -487,13 +487,13 @@ interface ProfessionalState {
 }
 
 interface ProfessionalActions {
-  endorseSkill: (targetUserId: string, skill: string) => Promise<void>;
-  requestRecommendation: (receiverId: string, message: string) => Promise<void>;
-  writeRecommendation: (receiverId: string, text: string) => Promise<void>;
-  approveRecommendation: (id: string) => Promise<void>;
+  endorseSkill: (_targetUserId: string, _skill: string) => Promise<void>;
+  requestRecommendation: (_receiverId: string, _message: string) => Promise<void>;
+  writeRecommendation: (_receiverId: string, _text: string) => Promise<void>;
+  approveRecommendation: (_id: string) => Promise<void>;
   fetchArticles: () => Promise<void>;
-  createArticle: (title: string, content: string, coverImage?: string) => Promise<void>;
-  fetchProfileMetadata: (userId: string) => Promise<void>;
+  createArticle: (_title: string, _content: string, _coverImage?: string) => Promise<void>;
+  fetchProfileMetadata: (_userId: string) => Promise<void>;
 }
 
 export const useProfessionalStore = create<ProfessionalState & ProfessionalActions>((set) => ({

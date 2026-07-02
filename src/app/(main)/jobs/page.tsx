@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useJobStore, Job } from "@/store/professionalStore";
-import { useAuthStore } from "@/store/authStore";
+import { _useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
-import { Briefcase, MapPin, DollarSign, Search, Plus, FileText, CheckCircle, Tag, Building, Info } from "lucide-react";
+import { _Briefcase, MapPin, _DollarSign, Search, Plus, _FileText, CheckCircle, _Tag, Building, _Info } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function JobsPage() {

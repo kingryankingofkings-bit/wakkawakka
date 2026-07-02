@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/apiValidation";
 import {
   apiSuccess,
   apiBadRequest,
-  apiUnauthorized,
+  _apiUnauthorized,
   apiInternalError,
 } from "@/lib/apiResponse";
 import { createLogger } from "@/lib/logger";

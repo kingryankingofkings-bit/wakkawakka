@@ -22,7 +22,7 @@ export function useVoice(channelId?: string) {
       );
     };
 
-    const handleStateChanged = (data: any) => {
+    const handleStateChanged = (_data: any) => {
       // Handles remote state updates
     };
 

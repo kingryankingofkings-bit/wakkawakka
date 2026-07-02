@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, _useRouter } from "next/navigation";
 import { useForumStore } from "@/store/forumStore";
 import { useAuthStore } from "@/store/authStore";
 import { CURRENT_USER } from "@/lib/mockData";

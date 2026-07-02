@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/Button";
 interface EducationSectionProps {
   profileData: any;
   isOwnProfile: boolean;
-  setEducationModalOpen: (open: boolean) => void;
+  setEducationModalOpen: (_open: boolean) => void;
 }
 
 export function EducationSection({ profileData, isOwnProfile, setEducationModalOpen }: EducationSectionProps) {

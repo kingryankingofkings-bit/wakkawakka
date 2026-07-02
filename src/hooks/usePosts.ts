@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Post, ReactionType } from "@/types";
+import { _Post, ReactionType } from "@/types";
 import { useFeedStore } from "@/store/feedStore";
 import toast from "react-hot-toast";
 import { apiFetch } from "@/lib/apiClient";
 
 export function usePosts() {
   const { posts, updatePost, removePost } = useFeedStore();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, _setIsSubmitting] = useState(false);
 
   const reactToPost = useCallback(
     async (postId: string, reaction: ReactionType) => {

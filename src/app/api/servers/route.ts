@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
       });
 
       // 1. Create Default @everyone Role (Position 0)
-      const everyoneRole = await tx.serverRole.create({
+      const _everyoneRole = await tx.serverRole.create({
         data: {
           serverId: server.id,
           name: "@everyone",

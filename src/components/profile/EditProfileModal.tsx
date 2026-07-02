@@ -8,12 +8,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
   Camera,
-  Globe,
-  MapPin,
-  Link2,
+  _Globe,
+  _MapPin,
+  _Link2,
   User as UserIcon,
-  FileText,
-  Calendar,
+  _FileText,
+  _Calendar,
   Palette,
   LayoutDashboard,
   Settings2,
@@ -64,7 +64,7 @@ const PROFILE_THEMES = [
   },
 ];
 
-const LANGUAGES = [
+const _LANGUAGES = [
   { code: "en", label: "English" },
   { code: "es", label: "Español" },
   { code: "fr", label: "Français" },
@@ -184,7 +184,7 @@ export function EditProfileModal({ user, onClose }: EditProfileModalProps) {
   const watchedTheme = watch("profileTheme");
   const watchedTabs = watch("profileTabOrder") ?? ALL_TABS;
   const watchedSoundtrack = watch("profileSoundtrack");
-  const watchedSoundtrackVisible = watch("profileSoundtrackVisible") ?? true;
+  const _watchedSoundtrackVisible = watch("profileSoundtrackVisible") ?? true;
 
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

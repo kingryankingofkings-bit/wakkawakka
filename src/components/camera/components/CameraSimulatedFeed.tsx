@@ -1,7 +1,7 @@
 import { RotateCw } from "lucide-react";
 
 interface CameraSimulatedFeedProps {
-  setHasCameraPermission: (val: boolean) => void;
+  setHasCameraPermission: (_val: boolean) => void;
 }
 
 export function CameraSimulatedFeed({ setHasCameraPermission }: CameraSimulatedFeedProps) {

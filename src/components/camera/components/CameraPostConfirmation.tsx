@@ -18,7 +18,7 @@ interface CameraPostConfirmationProps {
   conversations: Conversation[];
   user: User | null;
   selectedConversationId: string;
-  setSelectedConversationId: (id: string) => void;
+  setSelectedConversationId: (_id: string) => void;
   isPosting: boolean;
   handleDiscard: () => void;
   handleConfirmPost: () => void;

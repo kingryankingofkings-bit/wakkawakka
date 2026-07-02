@@ -79,7 +79,7 @@ export async function resetPassword(email: string) {
   return sendPasswordResetEmail(auth, email);
 }
 
-export function onAuthChange(callback: (user: FirebaseUser | null) => void) {
+export function onAuthChange(callback: (_user: FirebaseUser | null) => void) {
   return onAuthStateChanged(auth, callback);
 }
 

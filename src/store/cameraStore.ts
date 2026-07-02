@@ -16,9 +16,9 @@ interface CameraState {
 }
 
 interface CameraActions {
-  setActiveLensId: (id: string | null) => void;
-  setCameraMode: (mode: CameraMode) => void;
-  addCapturedMediaUrl: (url: string) => void;
+  setActiveLensId: (_id: string | null) => void;
+  setCameraMode: (_mode: CameraMode) => void;
+  addCapturedMediaUrl: (_url: string) => void;
   clearCapturedMediaUrls: () => void;
 }
 

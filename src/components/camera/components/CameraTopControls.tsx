@@ -4,7 +4,7 @@ interface CameraTopControlsProps {
   capturedImage: string | null;
   hasCameraPermission: boolean | null;
   showGeofilter: boolean;
-  setShowGeofilter: (fn: (prev: boolean) => boolean) => void;
+  setShowGeofilter: (_fn: (_prev: boolean) => boolean) => void;
   toggleCamera: () => void;
   handleDiscard: () => void;
 }

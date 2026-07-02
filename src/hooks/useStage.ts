@@ -36,7 +36,7 @@ export function useStage(channelId: string) {
       userId: currentUser.id,
     });
 
-    const handleJoined = (data: any) => {
+    const handleJoined = (_data: any) => {
       fetchStageQueue();
     };
 

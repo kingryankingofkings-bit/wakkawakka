@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/Button";
 interface ExperienceSectionProps {
   profileData: any;
   isOwnProfile: boolean;
-  setExperienceModalOpen: (open: boolean) => void;
+  setExperienceModalOpen: (_open: boolean) => void;
 }
 
 export function ExperienceSection({ profileData, isOwnProfile, setExperienceModalOpen }: ExperienceSectionProps) {

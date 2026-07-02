@@ -7,7 +7,7 @@ interface SkillsSectionProps {
   authUser: any;
   isOwnProfile: boolean;
   profileUserId: string;
-  endorseSkill: (userId: string, skill: string) => Promise<void>;
+  endorseSkill: (_userId: string, _skill: string) => Promise<void>;
   fetchProfile: () => void;
 }
 

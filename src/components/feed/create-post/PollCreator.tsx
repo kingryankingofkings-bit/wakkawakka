@@ -5,9 +5,9 @@ interface PollCreatorProps {
   show: boolean;
   onClose: () => void;
   question: string;
-  onQuestionChange: (q: string) => void;
+  onQuestionChange: (_q: string) => void;
   options: string[];
-  onOptionsChange: (opts: string[]) => void;
+  onOptionsChange: (_opts: string[]) => void;
 }
 
 export function PollCreator({

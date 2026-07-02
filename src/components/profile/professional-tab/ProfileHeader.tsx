@@ -6,9 +6,9 @@ interface ProfileHeaderProps {
   profileData: any;
   isOwnProfile: boolean;
   authUser: any;
-  setEditProfileOpen: (open: boolean) => void;
-  setInMailOpen: (open: boolean) => void;
-  setWriteRecOpen: (open: boolean) => void;
+  setEditProfileOpen: (_open: boolean) => void;
+  setInMailOpen: (_open: boolean) => void;
+  setWriteRecOpen: (_open: boolean) => void;
 }
 
 export function ProfileHeader({

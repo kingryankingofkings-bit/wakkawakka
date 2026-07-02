@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { 
-  PlusCircle, Search, Calendar as CalendarIcon, MapPin, Users, Filter, 
-  Clock, MoreHorizontal, UserCheck, X, Globe, Plus, Star, Check, 
+  _PlusCircle, _Search, Calendar as CalendarIcon, MapPin, Users, _Filter, 
+  _Clock, _MoreHorizontal, _UserCheck, _X, Globe, Plus, Star, Check, 
   ChevronLeft, ChevronRight 
 } from "lucide-react";
-import { format, isSameDay } from "date-fns";
+import { _format, _isSameDay } from "date-fns";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -725,7 +725,7 @@ function CreateEventModal({
     startsAt: "",
     category: "",
   });
-  const [saving, setSaving] = useState(false);
+  const [_saving, setSaving] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();

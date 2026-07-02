@@ -35,7 +35,7 @@ export default function CommunitiesPage() {
 
   // Database-backed state
   const [communities, setCommunities] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
 
   useEffect(() => {
     loadCommunities();

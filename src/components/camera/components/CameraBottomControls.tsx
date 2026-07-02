@@ -11,8 +11,8 @@ interface CameraBottomControlsProps {
   availableLenses: Lens[];
   activeLensId: string | null;
   cameraMode: CameraMode;
-  setActiveLensId: (id: string | null) => void;
-  setCameraMode: (mode: CameraMode) => void;
+  setActiveLensId: (_id: string | null) => void;
+  setCameraMode: (_mode: CameraMode) => void;
   handleCapture: () => void;
 }
 

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Company, Job, useJobStore } from "@/store/professionalStore";
+import { _Company, _Job, useJobStore } from "@/store/professionalStore";
 import { Button } from "@/components/ui/Button";
-import { Building, MapPin, LinkIcon, Users, Calendar, Briefcase, FileText } from "lucide-react";
+import { _Building, _MapPin, LinkIcon, Users, _Calendar, _Briefcase, _FileText } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 

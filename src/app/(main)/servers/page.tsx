@@ -72,7 +72,7 @@ export default function DiscoverServersPage() {
       });
 
       if (joinRes.ok) {
-        const joinData = await joinRes.json();
+        const _joinData = await joinRes.json();
         addServer(serverMatch);
         // Navigate to server general channel (which was returned when creating or detail API)
         router.push(`/servers/${serverMatch.id}`);
@@ -98,7 +98,7 @@ export default function DiscoverServersPage() {
         body: JSON.stringify({ inviteCode: inviteCodeStr }),
       });
       if (res.ok) {
-        const data = await res.json();
+        const _data = await res.json();
         // Refresh servers state and redirect
         const serversRes = await apiFetch("/api/servers");
         if (serversRes.ok) {

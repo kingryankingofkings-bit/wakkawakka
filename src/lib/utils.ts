@@ -146,10 +146,10 @@ export function computeFeedScore(post: {
   );
 }
 
-export function debounce<T extends (...args: unknown[]) => unknown>(
+export function debounce<T extends (..._args: unknown[]) => unknown>(
   fn: T,
   delay: number,
-): (...args: Parameters<T>) => void {
+): (..._args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout;
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);
@@ -157,10 +157,10 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
   };
 }
 
-export function throttle<T extends (...args: unknown[]) => unknown>(
+export function throttle<T extends (..._args: unknown[]) => unknown>(
   fn: T,
   limit: number,
-): (...args: Parameters<T>) => void {
+): (..._args: Parameters<T>) => void {
   let inThrottle = false;
   return (...args: Parameters<T>) => {
     if (!inThrottle) {

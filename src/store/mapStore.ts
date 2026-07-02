@@ -17,11 +17,11 @@ interface MapState {
 }
 
 interface MapActions {
-  setUserLocation: (location: { latitude: number; longitude: number } | null) => void;
-  setSharingLocation: (share: boolean) => void;
-  updateFriendLocation: (userId: string, latitude: number, longitude: number) => void;
-  fetchFriendsLocations: (userId: string) => Promise<void>;
-  updateUserLocation: (userId: string, latitude: number, longitude: number, shareLocation: boolean) => Promise<void>;
+  setUserLocation: (_location: { latitude: number; longitude: number } | null) => void;
+  setSharingLocation: (_share: boolean) => void;
+  updateFriendLocation: (_userId: string, _latitude: number, _longitude: number) => void;
+  fetchFriendsLocations: (_userId: string) => Promise<void>;
+  updateUserLocation: (_userId: string, _latitude: number, _longitude: number, _shareLocation: boolean) => Promise<void>;
 }
 
 type MapStore = MapState & MapActions;

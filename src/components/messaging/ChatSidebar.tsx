@@ -14,9 +14,9 @@ interface ChatSidebarProps {
   messages: Message[];
   onlineUsers: Set<string>;
   onClose: () => void;
-  onSearchMembers: (query: string) => void;
+  onSearchMembers: (_query: string) => void;
   searchResults: Array<{ id: string; displayName: string; username: string }>;
-  onAddMember: (userId: string) => void;
+  onAddMember: (_userId: string) => void;
   isAddingMember: boolean;
   searchQuery: string;
 }

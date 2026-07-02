@@ -19,13 +19,13 @@ interface UIState {
 }
 
 interface UIActions {
-  setTheme: (theme: Theme) => void;
-  setAccentColor: (color: string) => void;
+  setTheme: (_theme: Theme) => void;
+  setAccentColor: (_color: string) => void;
   toggleSidebar: () => void;
-  setSidebarOpen: (open: boolean) => void;
-  setActiveModal: (modal: ActiveModal) => void;
+  setSidebarOpen: (_open: boolean) => void;
+  setActiveModal: (_modal: ActiveModal) => void;
   closeModal: () => void;
-  setUserLocation: (location: { latitude: number; longitude: number } | null) => void;
+  setUserLocation: (_location: { latitude: number; longitude: number } | null) => void;
 }
 
 type UIStore = UIState & UIActions;

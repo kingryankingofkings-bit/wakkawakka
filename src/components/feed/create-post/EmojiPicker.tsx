@@ -20,7 +20,7 @@ const POPULAR_EMOJIS = [
 
 interface EmojiPickerProps {
   show: boolean;
-  onEmojiSelect: (emoji: string) => void;
+  onEmojiSelect: (_emoji: string) => void;
 }
 
 export function EmojiPicker({ show, onEmojiSelect }: EmojiPickerProps) {

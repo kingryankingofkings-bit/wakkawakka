@@ -126,88 +126,88 @@ export interface ServerStoreState {
 }
 
 export interface ServerStoreActions {
-  setServers: (servers: Server[]) => void;
-  setActiveServerId: (id: string | null) => void;
-  setActiveChannelId: (id: string | null) => void;
-  setPublicServers: (servers: Server[]) => void;
-  setLoading: (isLoading: boolean) => void;
+  setServers: (_servers: Server[]) => void;
+  setActiveServerId: (_id: string | null) => void;
+  setActiveChannelId: (_id: string | null) => void;
+  setPublicServers: (_servers: Server[]) => void;
+  setLoading: (_isLoading: boolean) => void;
 
   // Server Management
-  addServer: (server: Server) => void;
-  updateServer: (serverId: string, updates: Partial<Server>) => void;
-  removeServer: (serverId: string) => void;
+  addServer: (_server: Server) => void;
+  updateServer: (_serverId: string, _updates: Partial<Server>) => void;
+  removeServer: (_serverId: string) => void;
 
   // Channel Management
-  setChannels: (serverId: string, channels: ServerChannel[]) => void;
-  addChannel: (serverId: string, channel: ServerChannel) => void;
+  setChannels: (_serverId: string, _channels: ServerChannel[]) => void;
+  addChannel: (_serverId: string, _channel: ServerChannel) => void;
   updateChannel: (
-    serverId: string,
-    channelId: string,
-    updates: Partial<ServerChannel>,
+    _serverId: string,
+    _channelId: string,
+    _updates: Partial<ServerChannel>,
   ) => void;
-  removeChannel: (serverId: string, channelId: string) => void;
+  removeChannel: (_serverId: string, _channelId: string) => void;
 
   // Member Management
-  setMembers: (serverId: string, members: ServerMember[]) => void;
-  addMember: (serverId: string, member: ServerMember) => void;
+  setMembers: (_serverId: string, _members: ServerMember[]) => void;
+  addMember: (_serverId: string, _member: ServerMember) => void;
   updateMember: (
-    serverId: string,
-    userId: string,
-    updates: Partial<ServerMember>,
+    _serverId: string,
+    _userId: string,
+    _updates: Partial<ServerMember>,
   ) => void;
-  removeMember: (serverId: string, userId: string) => void;
+  removeMember: (_serverId: string, _userId: string) => void;
 
   // Role Management
-  setRoles: (serverId: string, roles: ServerRole[]) => void;
-  addRole: (serverId: string, role: ServerRole) => void;
+  setRoles: (_serverId: string, _roles: ServerRole[]) => void;
+  addRole: (_serverId: string, _role: ServerRole) => void;
   updateRole: (
-    serverId: string,
-    roleId: string,
-    updates: Partial<ServerRole>,
+    _serverId: string,
+    _roleId: string,
+    _updates: Partial<ServerRole>,
   ) => void;
-  removeRole: (serverId: string, roleId: string) => void;
+  removeRole: (_serverId: string, _roleId: string) => void;
 
   // Message Management
-  setMessages: (channelId: string, messages: ServerMessage[]) => void;
-  addMessage: (channelId: string, message: ServerMessage) => void;
+  setMessages: (_channelId: string, _messages: ServerMessage[]) => void;
+  addMessage: (_channelId: string, _message: ServerMessage) => void;
   updateMessage: (
-    channelId: string,
-    messageId: string,
-    updates: Partial<ServerMessage>,
+    _channelId: string,
+    _messageId: string,
+    _updates: Partial<ServerMessage>,
   ) => void;
-  removeMessage: (channelId: string, messageId: string) => void;
+  removeMessage: (_channelId: string, _messageId: string) => void;
 
   // Transient Voice Actions
-  joinVoice: (serverId: string, channelId: string, userId: string) => void;
-  leaveVoice: (userId: string) => void;
-  setMute: (isMuted: boolean) => void;
-  setDeafen: (isDeafened: boolean) => void;
-  setScreenShare: (isScreenSharing: boolean) => void;
-  setSpeakers: (speakers: string[]) => void;
-  setVoiceConnectedUsers: (userIds: string[]) => void;
+  joinVoice: (_serverId: string, _channelId: string, _userId: string) => void;
+  leaveVoice: (_userId: string) => void;
+  setMute: (_isMuted: boolean) => void;
+  setDeafen: (_isDeafened: boolean) => void;
+  setScreenShare: (_isScreenSharing: boolean) => void;
+  setSpeakers: (_speakers: string[]) => void;
+  setVoiceConnectedUsers: (_userIds: string[]) => void;
 
   // Transient Stage Actions
   joinStage: (
-    serverId: string,
-    channelId: string,
-    isSpeaker: boolean,
-    userId: string,
+    _serverId: string,
+    _channelId: string,
+    _isSpeaker: boolean,
+    _userId: string,
   ) => void;
-  leaveStage: (userId: string) => void;
-  setStageQueue: (queue: {
+  leaveStage: (_userId: string) => void;
+  setStageQueue: (_queue: {
     speakers: string[];
     listeners: string[];
     requestedToSpeak: string[];
   }) => void;
   updateStageUserRole: (
-    userId: string,
-    role: "SPEAKER" | "LISTENER" | "REQUESTED",
+    _userId: string,
+    _role: "SPEAKER" | "LISTENER" | "REQUESTED",
   ) => void;
 }
 
 type ServerStore = ServerStoreState & ServerStoreActions;
 
-export const useServerStore = create<ServerStore>((set, get) => ({
+export const useServerStore = create<ServerStore>((set, _get) => ({
   // Initial state
   servers: [],
   activeServerId: null,

@@ -5,15 +5,15 @@ import { X } from "lucide-react";
 
 interface EditProfileModalProps {
   editProfileOpen: boolean;
-  setEditProfileOpen: (open: boolean) => void;
+  setEditProfileOpen: (_open: boolean) => void;
   headline: string;
-  setHeadline: (headline: string) => void;
+  setHeadline: (_headline: string) => void;
   skills: string[];
   newSkill: string;
-  setNewSkill: (skill: string) => void;
+  setNewSkill: (_skill: string) => void;
   addSkillTag: () => void;
-  removeSkillTag: (index: number) => void;
-  handleUpdateProfile: (e: React.FormEvent) => void;
+  removeSkillTag: (_index: number) => void;
+  handleUpdateProfile: (_e: React.FormEvent) => void;
 }
 
 export function EditProfileModal({

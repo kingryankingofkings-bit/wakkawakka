@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, _AnimatePresence } from "framer-motion";
 import {
   BadgeCheck,
   Shield,
@@ -414,7 +414,7 @@ function PollWidget({
   onVote,
 }: {
   poll: NonNullable<Post["poll"]>;
-  onVote: (optionId: string) => void;
+  onVote: (_optionId: string) => void;
 }) {
   const hasVoted = poll.userVotes && poll.userVotes.length > 0;
   const totalVotes =

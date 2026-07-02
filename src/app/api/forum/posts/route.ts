@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
     });
 
     // Post processing for JSON fields
-    let formattedPosts = posts.map((p) => {
+    const formattedPosts = posts.map((p) => {
       let mediaUrlsParsed = [];
       try {
         mediaUrlsParsed = p.mediaUrls ? JSON.parse(p.mediaUrls) : [];

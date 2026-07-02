@@ -123,35 +123,35 @@ interface ForumState {
 }
 
 interface ForumActions {
-  fetchSubforums: (query?: string) => Promise<void>;
-  fetchSubforumByName: (nameOrSlug: string) => Promise<Subforum | null>;
-  createSubforum: (data: { name: string; description?: string; rules?: string[]; customTheme?: any; isNSFW?: boolean; isSpoiler?: boolean }) => Promise<Subforum>;
-  joinSubforum: (subforumId: string) => Promise<void>;
-  leaveSubforum: (subforumId: string) => Promise<void>;
-  setSocket: (socket: any) => void;
+  fetchSubforums: (_query?: string) => Promise<void>;
+  fetchSubforumByName: (_nameOrSlug: string) => Promise<Subforum | null>;
+  createSubforum: (_data: { name: string; description?: string; rules?: string[]; customTheme?: any; isNSFW?: boolean; isSpoiler?: boolean }) => Promise<Subforum>;
+  joinSubforum: (_subforumId: string) => Promise<void>;
+  leaveSubforum: (_subforumId: string) => Promise<void>;
+  setSocket: (_socket: any) => void;
   
-  fetchPosts: (filters?: { subforumId?: string; sort?: string; query?: string }) => Promise<void>;
-  fetchPostById: (id: string) => Promise<SubforumPost | null>;
-  createPost: (data: { title: string; content?: string; type: string; mediaUrls?: string[]; pollOptions?: string[]; isSpoiler?: boolean; isNSFW?: boolean; isAMA?: boolean; subforumId: string }) => Promise<SubforumPost>;
-  crosspost: (postId: string, targetSubforumId: string) => Promise<SubforumPost>;
-  toggleAMA: (postId: string, isAMA: boolean) => Promise<void>;
-  votePost: (postId: string, type: "UPVOTE" | "DOWNVOTE" | null) => Promise<void>;
-  voteComment: (commentId: string, type: "UPVOTE" | "DOWNVOTE" | null) => Promise<void>;
-  giveAward: (postIdOrCommentId: string, targetType: "POST" | "COMMENT", data: { name: string; price: number; icon: string }) => Promise<void>;
+  fetchPosts: (_filters?: { subforumId?: string; sort?: string; query?: string }) => Promise<void>;
+  fetchPostById: (_id: string) => Promise<SubforumPost | null>;
+  createPost: (_data: { title: string; content?: string; type: string; mediaUrls?: string[]; pollOptions?: string[]; isSpoiler?: boolean; isNSFW?: boolean; isAMA?: boolean; subforumId: string }) => Promise<SubforumPost>;
+  crosspost: (_postId: string, _targetSubforumId: string) => Promise<SubforumPost>;
+  toggleAMA: (_postId: string, _isAMA: boolean) => Promise<void>;
+  votePost: (_postId: string, _type: "UPVOTE" | "DOWNVOTE" | null) => Promise<void>;
+  voteComment: (_commentId: string, _type: "UPVOTE" | "DOWNVOTE" | null) => Promise<void>;
+  giveAward: (_postIdOrCommentId: string, _targetType: "POST" | "COMMENT", _data: { name: string; price: number; icon: string }) => Promise<void>;
   
-  fetchComments: (postId: string) => Promise<void>;
-  createComment: (postId: string, content: string, parentId?: string) => Promise<SubforumComment>;
+  fetchComments: (_postId: string) => Promise<void>;
+  createComment: (_postId: string, _content: string, _parentId?: string) => Promise<SubforumComment>;
   
-  moderatePost: (postId: string, action: "LOCK_POST" | "REMOVE_POST", reason?: string, subforumId?: string) => Promise<void>;
-  moderateComment: (commentId: string, action: "REMOVE_COMMENT", reason?: string, subforumId?: string) => Promise<void>;
-  moderateUser: (subforumId: string, targetUserId: string, action: "BAN_USER" | "MUTE_USER", reason?: string) => Promise<void>;
+  moderatePost: (_postId: string, _action: "LOCK_POST" | "REMOVE_POST", _reason?: string, _subforumId?: string) => Promise<void>;
+  moderateComment: (_commentId: string, _action: "REMOVE_COMMENT", _reason?: string, _subforumId?: string) => Promise<void>;
+  moderateUser: (_subforumId: string, _targetUserId: string, _action: "BAN_USER" | "MUTE_USER", _reason?: string) => Promise<void>;
   
   // Local real-time setters
-  addCommentLocal: (comment: SubforumComment) => void;
-  updatePostScoreLocal: (postId: string, upvotes: number, downvotes: number, score: number) => void;
-  updateCommentScoreLocal: (commentId: string, upvotes: number, downvotes: number, score: number) => void;
-  addAwardLocal: (award: ForumAward) => void;
-  applyModActionLocal: (action: any) => void;
+  addCommentLocal: (_comment: SubforumComment) => void;
+  updatePostScoreLocal: (_postId: string, _upvotes: number, _downvotes: number, _score: number) => void;
+  updateCommentScoreLocal: (_commentId: string, _upvotes: number, _downvotes: number, _score: number) => void;
+  addAwardLocal: (_award: ForumAward) => void;
+  applyModActionLocal: (_action: any) => void;
   clearActiveData: () => void;
 }
 

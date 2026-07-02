@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { _useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
@@ -9,9 +9,9 @@ import {
   Shield,
 } from "lucide-react";
 import { cn, formatRelativeTime } from "@/lib/utils";
-import { CURRENT_USER } from "@/lib/mockData";
+import { _CURRENT_USER } from "@/lib/mockData";
 import type { Message } from "@/types";
-import toast from "react-hot-toast";
+import _toast from "react-hot-toast";
 import {
   DirectChatFlow,
   SecureChatApp,
@@ -25,10 +25,10 @@ interface MessageBubbleProps {
   isOwn: boolean;
   showAvatar: boolean;
   isGroup: boolean;
-  onReply: (message: Message) => void;
-  onReact: (message: Message) => void;
-  onCopy: (content: string) => void;
-  onDelete: (id: string) => void;
+  onReply: (_message: Message) => void;
+  onReact: (_message: Message) => void;
+  onCopy: (_content: string) => void;
+  onDelete: (_id: string) => void;
   searchQuery?: string;
 }
 

@@ -51,7 +51,7 @@ export default function DatingPage() {
   const [bio, setBio] = useState("");
   const [lookingFor, setLookingFor] = useState("ANY");
   const [prompts, setPrompts] = useState<any[]>([]);
-  const [myProfile, setMyProfile] = useState<any>(null);
+  const [_myProfile, setMyProfile] = useState<any>(null);
 
   // Crush States
   const [crushUsername, setCrushUsername] = useState("");

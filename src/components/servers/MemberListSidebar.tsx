@@ -3,7 +3,7 @@
 import { useServer } from "@/hooks/useServer";
 import { useSocket } from "@/hooks/useSocket";
 import { Avatar } from "@/components/ui/Avatar";
-import { cn } from "@/lib/utils";
+import { _cn } from "@/lib/utils";
 
 interface MemberListSidebarProps {
   serverId: string;
@@ -19,7 +19,7 @@ export function MemberListSidebar({ serverId }: MemberListSidebarProps) {
 
   // Group members into categories
   // Let's sort roles by position descending
-  const sortedRoles = [...roles].sort((a, b) => b.position - a.position);
+  const _sortedRoles = [...roles].sort((a, b) => b.position - a.position);
 
   // Map members to their highest role
   const membersWithHighestRole = members.map((member) => {

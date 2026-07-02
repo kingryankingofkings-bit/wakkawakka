@@ -4,16 +4,16 @@ import { Button } from "@/components/ui/Button";
 
 interface EducationModalProps {
   educationModalOpen: boolean;
-  setEducationModalOpen: (open: boolean) => void;
+  setEducationModalOpen: (_open: boolean) => void;
   eduSchool: string;
-  setEduSchool: (school: string) => void;
+  setEduSchool: (_school: string) => void;
   eduDegree: string;
-  setEduDegree: (degree: string) => void;
+  setEduDegree: (_degree: string) => void;
   eduStartDate: string;
-  setEduStartDate: (date: string) => void;
+  setEduStartDate: (_date: string) => void;
   eduEndDate: string;
-  setEduEndDate: (date: string) => void;
-  handleAddEducation: (e: React.FormEvent) => void;
+  setEduEndDate: (_date: string) => void;
+  handleAddEducation: (_e: React.FormEvent) => void;
 }
 
 export function EducationModal({

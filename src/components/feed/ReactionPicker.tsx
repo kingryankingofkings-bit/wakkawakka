@@ -7,7 +7,7 @@ import { REACTION_EMOJIS } from "@/lib/utils";
 
 interface ReactionPickerProps {
   isVisible: boolean;
-  onReact: (type: ReactionType) => void;
+  onReact: (_type: ReactionType) => void;
   currentReaction?: ReactionType;
 }
 

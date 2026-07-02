@@ -151,9 +151,9 @@ function _generateMockComments(postId: string): Comment[] {
 
 interface CommentItemProps {
   comment: Comment;
-  onReply: (commentId: string, authorName: string) => void;
-  onDelete: (commentId: string) => void;
-  onLike: (commentId: string) => void;
+  onReply: (_commentId: string, _authorName: string) => void;
+  onDelete: (_commentId: string) => void;
+  onLike: (_commentId: string) => void;
   isReply?: boolean;
 }
 

@@ -4,18 +4,18 @@ import { Button } from "@/components/ui/Button";
 
 interface ExperienceModalProps {
   experienceModalOpen: boolean;
-  setExperienceModalOpen: (open: boolean) => void;
+  setExperienceModalOpen: (_open: boolean) => void;
   expCompany: string;
-  setExpCompany: (company: string) => void;
+  setExpCompany: (_company: string) => void;
   expRole: string;
-  setExpRole: (role: string) => void;
+  setExpRole: (_role: string) => void;
   expStartDate: string;
-  setExpStartDate: (date: string) => void;
+  setExpStartDate: (_date: string) => void;
   expEndDate: string;
-  setExpEndDate: (date: string) => void;
+  setExpEndDate: (_date: string) => void;
   expDescription: string;
-  setExpDescription: (desc: string) => void;
-  handleAddExperience: (e: React.FormEvent) => void;
+  setExpDescription: (_desc: string) => void;
+  handleAddExperience: (_e: React.FormEvent) => void;
 }
 
 export function ExperienceModal({

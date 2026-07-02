@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/Button";
 
 interface WriteRecommendationModalProps {
   writeRecOpen: boolean;
-  setWriteRecOpen: (open: boolean) => void;
+  setWriteRecOpen: (_open: boolean) => void;
   recRelationship: string;
-  setRecRelationship: (relationship: string) => void;
+  setRecRelationship: (_relationship: string) => void;
   recText: string;
-  setRecText: (text: string) => void;
-  handleWriteRecommendation: (e: React.FormEvent) => void;
+  setRecText: (_text: string) => void;
+  handleWriteRecommendation: (_e: React.FormEvent) => void;
 }
 
 export function WriteRecommendationModal({
@@ -57,10 +57,10 @@ export function WriteRecommendationModal({
 
 interface RequestRecommendationModalProps {
   requestRecOpen: boolean;
-  setRequestRecOpen: (open: boolean) => void;
+  setRequestRecOpen: (_open: boolean) => void;
   reqMessage: string;
-  setReqMessage: (message: string) => void;
-  handleRequestRecommendation: (e: React.FormEvent) => void;
+  setReqMessage: (_message: string) => void;
+  handleRequestRecommendation: (_e: React.FormEvent) => void;
 }
 
 export function RequestRecommendationModal({

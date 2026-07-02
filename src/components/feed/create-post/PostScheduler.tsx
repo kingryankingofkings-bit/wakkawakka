@@ -5,7 +5,7 @@ interface PostSchedulerProps {
   show: boolean;
   onClose: () => void;
   scheduledAt: Date | null;
-  onScheduledAtChange: (date: Date | null) => void;
+  onScheduledAtChange: (_date: Date | null) => void;
 }
 
 export function PostScheduler({

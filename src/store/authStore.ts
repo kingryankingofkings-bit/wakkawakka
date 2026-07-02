@@ -11,11 +11,11 @@ interface AuthState {
 }
 
 interface AuthActions {
-  setUser: (user: User | null) => void;
+  setUser: (_user: User | null) => void;
   logout: () => void;
-  updateUser: (updates: Partial<User>) => void;
-  setLoading: (isLoading: boolean) => void;
-  setToken: (token: string | null) => void;
+  updateUser: (_updates: Partial<User>) => void;
+  setLoading: (_isLoading: boolean) => void;
+  setToken: (_token: string | null) => void;
   incrementStreak: () => void;
   resetStreak: () => void;
 }

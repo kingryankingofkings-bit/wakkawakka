@@ -20,7 +20,7 @@ interface PostActionsBarProps {
   currentReaction: ReactionType | null | undefined;
   showComments: boolean;
   onLikeClick: () => void;
-  onReact: (type: ReactionType) => void;
+  onReact: (_type: ReactionType) => void;
   onToggleComments: () => void;
   onShareClick: () => void;
 }
