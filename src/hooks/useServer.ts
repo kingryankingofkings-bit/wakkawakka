@@ -2,14 +2,17 @@ import { useEffect, useState, useCallback } from "react";
 import { useServerStore } from "@/store/serverStore";
 
 export function useServer(serverId?: string) {
-  const store = useServerStore();
-  const targetServerId = serverId || store.activeServerId;
+  const activeServerId = useServerStore((s) => s.activeServerId);
+  const targetServerId = serverId || activeServerId;
   const [loading, setLoading] = useState(false);
 
-  const server = store.servers.find((s) => s.id === targetServerId) || null;
-  const channels = store.channels[targetServerId || ""] || [];
-  const members = store.members[targetServerId || ""] || [];
-  const roles = store.roles[targetServerId || ""] || [];
+  const server = useServerStore((s) => s.servers.find((srv) => srv.id === targetServerId)) || null;
+  const channels = useServerStore((s) => s.channels[targetServerId || ""]) || [];
+  const members = useServerStore((s) => s.members[targetServerId || ""]) || [];
+  const roles = useServerStore((s) => s.roles[targetServerId || ""]) || [];
+  
+  const activeChannelId = useServerStore((s) => s.activeChannelId);
+  const setActiveChannelId = useServerStore((s) => s.setActiveChannelId);
 
   const fetchServerDetails = useCallback(async () => {
     if (!targetServerId) return;
@@ -19,6 +22,7 @@ export function useServer(serverId?: string) {
       if (res.ok) {
         const data = await res.json();
         const s = data.data;
+        const store = useServerStore.getState();
         store.setChannels(targetServerId, s.channels || []);
         store.setMembers(targetServerId, s.members || []);
         store.setRoles(targetServerId, s.roles || []);
@@ -28,7 +32,7 @@ export function useServer(serverId?: string) {
     } finally {
       setLoading(false);
     }
-  }, [targetServerId, store]);
+  }, [targetServerId]);
 
   useEffect(() => {
     if (targetServerId) {
@@ -50,11 +54,11 @@ export function useServer(serverId?: string) {
       });
       if (res.ok) {
         const data = await res.json();
-        store.addChannel(targetServerId, data.channel);
+        useServerStore.getState().addChannel(targetServerId, data.channel);
         return data.channel;
       }
     },
-    [targetServerId, store],
+    [targetServerId],
   );
 
   const leaveServer = useCallback(async () => {
@@ -62,8 +66,8 @@ export function useServer(serverId?: string) {
     const res = await fetch(`/api/servers/${targetServerId}/members`, {
       method: "DELETE",
     });
-    if (res.ok) store.removeServer(targetServerId);
-  }, [targetServerId, store]);
+    if (res.ok) useServerStore.getState().removeServer(targetServerId);
+  }, [targetServerId]);
 
   return {
     server,
@@ -74,7 +78,7 @@ export function useServer(serverId?: string) {
     leaveServer,
     loading,
     refresh: fetchServerDetails,
-    activeChannelId: store.activeChannelId,
-    setActiveChannelId: store.setActiveChannelId,
+    activeChannelId,
+    setActiveChannelId,
   };
 }

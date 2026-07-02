@@ -8,7 +8,7 @@ export default function ServerPageRedirect() {
   const router = useRouter();
   const params = useParams();
   const serverId = params?.id as string;
-  const { setActiveServerId } = useServerStore();
+  const setActiveServerId = useServerStore((s) => s.setActiveServerId);
 
   useEffect(() => {
     if (!serverId) {

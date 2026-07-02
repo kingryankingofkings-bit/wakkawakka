@@ -14,7 +14,8 @@ export default function ServerChannelWorkspacePage() {
   const serverId = params?.id as string;
   const channelId = params?.channelId as string;
 
-  const { setActiveServerId, setActiveChannelId } = useServerStore();
+  const setActiveServerId = useServerStore((s) => s.setActiveServerId);
+  const setActiveChannelId = useServerStore((s) => s.setActiveChannelId);
 
   const [isLeftDrawerOpen, setIsLeftDrawerOpen] = useState(false);
   const [isRightDrawerOpen, setIsRightDrawerOpen] = useState(false);

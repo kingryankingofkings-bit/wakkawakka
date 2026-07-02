@@ -9,7 +9,7 @@ import { apiFetch } from "@/lib/apiClient";
 
 export default function DiscoverServersPage() {
   const router = useRouter();
-  const { addServer } = useServerStore();
+  const addServer = useServerStore((s) => s.addServer);
   const [publicServers, setPublicServers] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [inviteCode, setInviteCode] = useState("");

@@ -14,14 +14,12 @@ import { apiFetch } from "@/lib/apiClient";
 export function ServerListSidebar({ className }: { className?: string }) {
   const router = useRouter();
   const pathname = usePathname();
-  const {
-    servers,
-    setServers,
-    addServer,
-    activeServerId,
-    setActiveServerId,
-    removeServer,
-  } = useServerStore();
+  const servers = useServerStore(s => s.servers);
+  const setServers = useServerStore(s => s.setServers);
+  const addServer = useServerStore(s => s.addServer);
+  const activeServerId = useServerStore(s => s.activeServerId);
+  const setActiveServerId = useServerStore(s => s.setActiveServerId);
+  const removeServer = useServerStore(s => s.removeServer);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [serverName, setServerName] = useState("");
   const [serverDesc, setServerDesc] = useState("");
