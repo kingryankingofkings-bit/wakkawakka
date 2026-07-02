@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -33,7 +33,7 @@ const accountSchema = z
 
 type AccountFormValues = z.infer<typeof accountSchema>;
 
-export default function SignupAccountPage() {
+function SignupAccountContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const profilesCount = searchParams.get("count") || "1";
@@ -144,5 +144,13 @@ export default function SignupAccountPage() {
         </button>
       </form>
     </div>
+  );
+}
+
+export default function SignupAccountPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>}>
+      <SignupAccountContent />
+    </Suspense>
   );
 }

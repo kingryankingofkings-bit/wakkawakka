@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +26,7 @@ const PROFILE_TYPES = [
   { id: "PROFESSIONAL", label: "Professional", icon: Briefcase, desc: "Networking and career growth" },
 ] as const;
 
-export default function SignupProfilesPage() {
+function SignupProfilesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const count = parseInt(searchParams.get("count") || "1", 10);
@@ -145,5 +145,13 @@ export default function SignupProfilesPage() {
         </button>
       </form>
     </div>
+  );
+}
+
+export default function SignupProfilesPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>}>
+      <SignupProfilesContent />
+    </Suspense>
   );
 }
