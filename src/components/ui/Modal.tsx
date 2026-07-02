@@ -72,10 +72,10 @@ export function Modal({
     [onClose],
   );
 
+  // Manage focus and overflow (runs only when isOpen changes)
   useEffect(() => {
     if (isOpen) {
       previousFocusRef.current = document.activeElement as HTMLElement;
-      document.addEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "hidden";
 
       // Small delay to let rendering complete before focusing
@@ -94,11 +94,20 @@ export function Modal({
 
       return () => {
         clearTimeout(timer);
-        document.removeEventListener("keydown", handleKeyDown);
         document.body.style.overflow = "";
         if (previousFocusRef.current) {
           previousFocusRef.current.focus();
         }
+      };
+    }
+  }, [isOpen]);
+
+  // Manage keydown event listener
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown);
       };
     }
   }, [isOpen, handleKeyDown]);

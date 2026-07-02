@@ -9,6 +9,7 @@ import { PostCard } from "@/components/feed/PostCard";
 import { SponsoredAd } from "@/components/ads/SponsoredAd";
 import { CreatePostCard } from "@/components/feed/CreatePostCard";
 import { CreatePostModal } from "@/components/feed/CreatePostModal";
+import { ContentFeedConsole } from "@/components/feed/ContentFeedConsole";
 import { useFeedStore } from "@/store/feedStore";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
@@ -175,6 +176,10 @@ function FeedPageInner() {
         <CreatePostCard onOpenModal={() => setActiveModal("createPost")} />
       </div>
 
+      <div className="p-4">
+        <ContentFeedConsole />
+      </div>
+
       {/* Posts feed */}
       <div>
         <AnimatePresence mode="popLayout">
@@ -209,12 +214,11 @@ function FeedPageInner() {
                     : "Be the first to share something with your friends!"}
               </p>
               {feedType === "following" && (
-                <button
+                <Button
                   onClick={() => setFeedType("forYou")}
-                  className="px-6 py-2 bg-primary text-primary-foreground font-semibold rounded-full hover:bg-primary/90 transition"
                 >
                   Explore For You
-                </button>
+                </Button>
               )}
             </motion.div>
           )}

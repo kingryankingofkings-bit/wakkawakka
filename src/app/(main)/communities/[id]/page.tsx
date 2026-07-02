@@ -14,6 +14,8 @@ import {
   Edit3,
   MapPin,
 } from "lucide-react";
+import { PostInteractionBar } from "@/components/feed/PostInteractionBar";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
 import { Card } from "@/components/ui/Card";
@@ -268,6 +270,7 @@ export default function CommunityPage() {
 
       if (res.ok) {
         toast.success("Post published successfully!");
+        localStorage.removeItem(`communityPostDraft_${id}`);
         setIsCreatePostOpen(false);
         setNewPostContent("");
         setPostFlairText("");
@@ -281,6 +284,16 @@ export default function CommunityPage() {
       toast.error("An error occurred");
     }
   }
+
+  // Load draft when modal opens
+  useEffect(() => {
+    if (isCreatePostOpen && id) {
+      const draft = localStorage.getItem(`communityPostDraft_${id}`);
+      if (draft && !newPostContent) {
+        setNewPostContent(draft);
+      }
+    }
+  }, [isCreatePostOpen, id]);
 
   async function handleSaveAbout(e: React.FormEvent) {
     e.preventDefault();
@@ -356,8 +369,17 @@ export default function CommunityPage() {
 
   if (loading) {
     return (
-      <div className="p-8 text-center text-sm text-muted-foreground">
-        Loading community details...
+      <div className="flex-1 w-full max-w-4xl mx-auto px-4 py-6 space-y-6">
+        <Skeleton className="h-48 w-full rounded-2xl" />
+        <div className="flex gap-6">
+          <div className="flex-1 space-y-4">
+            <Skeleton className="h-32 w-full rounded-xl" />
+            <Skeleton className="h-32 w-full rounded-xl" />
+          </div>
+          <div className="w-80 hidden md:block space-y-4">
+            <Skeleton className="h-64 w-full rounded-xl" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -956,6 +978,29 @@ export default function CommunityPage() {
               className="w-full rounded-xl border border-border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-primary resize-none h-28 text-sm"
               required
             />
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setNewPostContent(prev => prev + "**bold**")}
+                className="text-xs text-muted-foreground hover:text-foreground bg-muted px-2 py-1 rounded"
+              >
+                Bold
+              </button>
+              <button
+                type="button"
+                onClick={() => setNewPostContent(prev => prev + "*italic*")}
+                className="text-xs text-muted-foreground hover:text-foreground bg-muted px-2 py-1 rounded"
+              >
+                Italic
+              </button>
+              <button
+                type="button"
+                onClick={() => setNewPostContent(prev => prev + "[link](url)")}
+                className="text-xs text-muted-foreground hover:text-foreground bg-muted px-2 py-1 rounded"
+              >
+                Link
+              </button>
+            </div>
           </div>
 
           <div className="border border-border p-3 rounded-xl space-y-3">
@@ -1013,9 +1058,28 @@ export default function CommunityPage() {
             )}
           </div>
 
-          <Button type="submit" className="w-full mt-2">
-            Publish Post
-          </Button>
+          <div className="flex gap-2 mt-2">
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="flex-1"
+              onClick={() => {
+                if (newPostContent.trim()) {
+                  localStorage.setItem(`communityPostDraft_${id}`, newPostContent);
+                  toast.success("Draft saved to browser");
+                  setIsCreatePostOpen(false);
+                } else {
+                  toast.error("Nothing to save");
+                }
+              }}
+              disabled={!newPostContent.trim()}
+            >
+              Save Draft
+            </Button>
+            <Button type="submit" className="flex-1">
+              Publish Post
+            </Button>
+          </div>
         </form>
       </Modal>
 

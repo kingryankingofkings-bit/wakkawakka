@@ -9,6 +9,7 @@ import {
   ChannelForumView,
   ChannelStageView,
 } from "./views";
+import { ServerFeaturesConsole } from "./ServerFeaturesConsole";
 
 interface ActiveChannelPanelProps {
   serverId: string;
@@ -84,6 +85,9 @@ export function ActiveChannelPanel({
       </div>
 
       {/* View Content */}
+      <div className="px-6">
+        <ServerFeaturesConsole />
+      </div>
       {channel.type === "TEXT" && <ChannelTextView channelId={channelId} />}
       {channel.type === "VOICE" && (
         <ChannelVoiceView serverId={serverId} channelId={channelId} />

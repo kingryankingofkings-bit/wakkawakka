@@ -71,15 +71,15 @@
 
   .dark {
     /* Background & Foreground */
-    --background: 222 47% 7%;
+    --background: 240 10% 4%;
     --foreground: 210 40% 98%;
 
     /* Card */
-    --card: 222 47% 10%;
+    --card: 240 10% 8%;
     --card-foreground: 210 40% 98%;
 
     /* Popover */
-    --popover: 222 47% 10%;
+    --popover: 240 10% 8%;
     --popover-foreground: 210 40% 98%;
 
     /* Primary (Blue) */
@@ -97,15 +97,15 @@
     --primary-900: 213 97% 87%;
 
     /* Secondary */
-    --secondary: 217 33% 17%;
+    --secondary: 240 10% 12%;
     --secondary-foreground: 210 40% 98%;
 
     /* Muted */
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 240 10% 12%;
+    --muted-foreground: 240 5% 65%;
 
     /* Accent */
-    --accent: 217 33% 17%;
+    --accent: 240 10% 12%;
     --accent-foreground: 210 40% 98%;
 
     /* Destructive */
@@ -125,8 +125,8 @@
     --info-foreground: 199 89% 90%;
 
     /* Border / Input / Ring */
-    --border: 217 33% 20%;
-    --input: 217 33% 20%;
+    --border: 240 10% 16%;
+    --input: 240 10% 16%;
     --ring: 217 91% 60%;
   }
 
@@ -167,6 +167,7 @@
   h5,
   h6 {
     @apply font-semibold tracking-tight;
+    font-family: var(--font-display), "Inter", sans-serif;
   }
 
   /* Focus visible ring */

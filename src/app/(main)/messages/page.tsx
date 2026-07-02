@@ -14,6 +14,7 @@ import { SponsoredAd } from "@/components/ads/SponsoredAd";
 import toast from "react-hot-toast";
 
 import { NewMessageModal } from "@/components/messaging/NewMessageModal";
+import { MessagingFeaturesConsole } from "@/components/messaging/MessagingFeaturesConsole";
 import { useSocket } from "@/hooks/useSocket";
 
 export default function MessagesPage() {
@@ -119,6 +120,10 @@ export default function MessagesPage() {
         isOpen={showNewMessage} 
         onClose={() => setShowNewMessage(false)} 
       />
+
+      <div className="px-4 mt-4">
+        <MessagingFeaturesConsole />
+      </div>
 
       {/* DirectChat sub-tabs */}
       <div className="flex bg-muted rounded-2xl p-1 border border-border mx-4 my-2 shrink-0">

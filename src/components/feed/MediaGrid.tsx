@@ -3,6 +3,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import Image from "next/image";
 
 interface MediaGridProps {
   urls: string[];
@@ -40,11 +41,15 @@ export function MediaGrid({ urls, type }: MediaGridProps) {
           onClick={handleVideoToggle}
         >
           {urls[0] && (
-            <img
-              src={urls[0]}
-              alt="Video thumbnail"
-              className="w-full h-full object-cover opacity-80"
-            />
+            <div className="relative w-full h-full">
+              <Image
+                src={urls[0]}
+                alt="Video thumbnail"
+                fill
+                className="object-cover opacity-80"
+                unoptimized
+              />
+            </div>
           )}
           {/* Play button overlay */}
           <div className="absolute inset-0 flex items-center justify-center">
@@ -101,12 +106,13 @@ export function MediaGrid({ urls, type }: MediaGridProps) {
 
   if (urls.length === 1) {
     return (
-      <div className="rounded-xl overflow-hidden">
-        <img
+      <div className="rounded-xl overflow-hidden relative min-h-[300px]">
+        <Image
           src={urls[0]}
           alt="Post media"
-          className="w-full object-cover max-h-[500px]"
-          loading="lazy"
+          fill
+          className="object-cover max-h-[500px]"
+          unoptimized
         />
       </div>
     );
@@ -114,15 +120,17 @@ export function MediaGrid({ urls, type }: MediaGridProps) {
 
   if (urls.length === 2) {
     return (
-      <div className="grid grid-cols-2 gap-0.5 rounded-xl overflow-hidden">
+      <div className="grid grid-cols-2 gap-0.5 rounded-xl overflow-hidden relative h-64">
         {urls.map((url, i) => (
-          <img
-            key={i}
-            src={url}
-            alt={`Media ${i + 1}`}
-            className="w-full h-64 object-cover"
-            loading="lazy"
-          />
+          <div key={i} className="relative w-full h-full">
+            <Image
+              src={url}
+              alt={`Media ${i + 1}`}
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          </div>
         ))}
       </div>
     );
@@ -131,24 +139,33 @@ export function MediaGrid({ urls, type }: MediaGridProps) {
   if (urls.length === 3) {
     return (
       <div className="grid grid-cols-2 gap-0.5 rounded-xl overflow-hidden">
-        <img
-          src={urls[0]}
-          alt="Media 1"
-          className="w-full h-72 object-cover row-span-2"
-          loading="lazy"
-        />
-        <img
-          src={urls[1]}
-          alt="Media 2"
-          className="w-full h-[142px] object-cover"
-          loading="lazy"
-        />
-        <img
-          src={urls[2]}
-          alt="Media 3"
-          className="w-full h-[142px] object-cover"
-          loading="lazy"
-        />
+        <div className="relative w-full h-72 row-span-2">
+          <Image
+            src={urls[0]}
+            alt="Media 1"
+            fill
+            className="object-cover"
+            unoptimized
+          />
+        </div>
+        <div className="relative w-full h-[142px]">
+          <Image
+            src={urls[1]}
+            alt="Media 2"
+            fill
+            className="object-cover"
+            unoptimized
+          />
+        </div>
+        <div className="relative w-full h-[142px]">
+          <Image
+            src={urls[2]}
+            alt="Media 3"
+            fill
+            className="object-cover"
+            unoptimized
+          />
+        </div>
       </div>
     );
   }
@@ -157,13 +174,15 @@ export function MediaGrid({ urls, type }: MediaGridProps) {
     return (
       <div className="grid grid-cols-2 gap-0.5 rounded-xl overflow-hidden">
         {urls.map((url, i) => (
-          <img
-            key={i}
-            src={url}
-            alt={`Media ${i + 1}`}
-            className="w-full h-48 object-cover"
-            loading="lazy"
-          />
+          <div key={i} className="relative w-full h-48">
+            <Image
+              src={url}
+              alt={`Media ${i + 1}`}
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          </div>
         ))}
       </div>
     );
@@ -172,19 +191,23 @@ export function MediaGrid({ urls, type }: MediaGridProps) {
   // 5+ images: mosaic
   return (
     <div className="grid grid-cols-3 gap-0.5 rounded-xl overflow-hidden">
-      <img
-        src={urls[0]}
-        alt="Media 1"
-        className="col-span-2 row-span-2 w-full h-64 object-cover"
-        loading="lazy"
-      />
+      <div className="relative col-span-2 row-span-2 w-full h-64">
+        <Image
+          src={urls[0]}
+          alt="Media 1"
+          fill
+          className="object-cover"
+          unoptimized
+        />
+      </div>
       {urls.slice(1, 5).map((url, i) => (
-        <div key={i} className="relative">
-          <img
+        <div key={i} className="relative w-full h-32">
+          <Image
             src={url}
             alt={`Media ${i + 2}`}
-            className="w-full h-32 object-cover"
-            loading="lazy"
+            fill
+            className="object-cover"
+            unoptimized
           />
           {i === 3 && urls.length > 5 && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">

@@ -1,17 +1,13 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import {
-  Calendar as CalendarIcon,
-  MapPin,
-  Globe,
-  Plus,
-  Star,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Users,
+import { 
+  PlusCircle, Search, Calendar as CalendarIcon, MapPin, Users, Filter, 
+  Clock, MoreHorizontal, UserCheck, X, Globe, Plus, Star, Check, 
+  ChevronLeft, ChevronRight 
 } from "lucide-react";
+import { format, isSameDay } from "date-fns";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
@@ -20,6 +16,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { apiFetch, apiGet } from "@/lib/apiClient";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
+import { z } from "zod";
 
 interface EventRow {
   id: string;
@@ -177,7 +174,7 @@ export default function EventsPage() {
     setSelectedDateEvents([]);
   };
 
-  async function rsvp(eventId: string, status: "GOING" | "INTERESTED") {
+  async function rsvp(eventId: string, status: "GOING" | "INTERESTED" | "MAYBE") {
     let selectedStatus: string | undefined = status;
     setEvents((prev) =>
       prev.map((e) => {
@@ -190,10 +187,10 @@ export default function EventsPage() {
 
           const oldStatus = e.attendees?.[0]?.status;
           if (oldStatus === "GOING") goingOffset--;
-          if (oldStatus === "INTERESTED") interestedOffset--;
+          if (oldStatus === "INTERESTED" || oldStatus === "MAYBE") interestedOffset--; // Combine maybe/interested for counts if needed, but let's just use interested count
 
           if (selectedStatus === "GOING") goingOffset++;
-          if (selectedStatus === "INTERESTED") interestedOffset++;
+          if (selectedStatus === "INTERESTED" || selectedStatus === "MAYBE") interestedOffset++;
 
           return {
             ...e,
@@ -305,9 +302,20 @@ export default function EventsPage() {
       {viewMode === "list" ? (
         <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {loading && (
-            <p className="col-span-full text-center text-muted-foreground py-12">
-              Loading events…
-            </p>
+            <>
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex flex-col gap-3 rounded-2xl border border-border p-4">
+                  <Skeleton className="h-40 w-full rounded-xl" />
+                  <div className="flex justify-between mt-2">
+                    <div className="space-y-2">
+                      <Skeleton className="h-5 w-40" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                    <Skeleton className="h-10 w-12 rounded-lg" />
+                  </div>
+                </div>
+              ))}
+            </>
           )}
           {!loading && filteredEvents.length === 0 && (
             <div className="col-span-full flex flex-col items-center py-20 text-center bg-card border border-border border-dashed rounded-3xl space-y-4">
@@ -405,6 +413,14 @@ export default function EventsPage() {
                         onClick={() => rsvp(e.id, "INTERESTED")}
                       >
                         <Star className="h-3.5 w-3.5" /> Interested
+                      </Button>
+                      <Button
+                        size="xs"
+                        variant={myStatus === "MAYBE" ? "primary" : "outline"}
+                        className="flex-1 text-xs py-1.5 h-8 font-semibold rounded-xl"
+                        onClick={() => rsvp(e.id, "MAYBE")}
+                      >
+                        Maybe
                       </Button>
                     </div>
                   </div>
@@ -567,6 +583,18 @@ export default function EventsPage() {
                             >
                               Interested
                             </Button>
+                            <Button
+                              size="xs"
+                              variant={
+                                myStatus === "MAYBE"
+                                  ? "primary"
+                                  : "outline"
+                              }
+                              className="text-[10px] py-1 px-3 h-7 font-bold rounded-lg"
+                              onClick={() => rsvp(e.id, "MAYBE")}
+                            >
+                              Maybe
+                            </Button>
                           </div>
                         </div>
                       </Card>
@@ -593,8 +621,16 @@ export default function EventsPage() {
         title="Event Attendees"
       >
         {loadingAttendees ? (
-          <div className="p-4 text-center text-xs text-muted-foreground">
-            Loading attendees...
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="space-y-4 p-1 max-h-[60vh] overflow-y-auto">
@@ -693,7 +729,21 @@ function CreateEventModal({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.title || !form.startsAt) return;
+
+    const eventSchema = z.object({
+      title: z.string().min(1, "Event title is required").max(100, "Title is too long"),
+      startsAt: z.string().min(1, "Start date and time is required"),
+      description: z.string().max(500, "Description cannot exceed 500 characters").optional(),
+      location: z.string().max(100, "Location is too long").optional(),
+    });
+
+    const validation = eventSchema.safeParse(form);
+
+    if (!validation.success) {
+      toast.error(validation.error.errors[0].message);
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -800,6 +850,18 @@ function CreateEventModal({
               onChange={(e) => setForm({ ...form, category: e.target.value })}
             />
           </div>
+        </div>
+
+        <div className="space-y-1.5 pt-2 border-t border-border mt-2">
+          <label className="text-[10px] uppercase font-bold text-muted-foreground">
+            Recurring Event
+          </label>
+          <select className="w-full rounded-2xl border border-border bg-background p-3 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary">
+            <option value="none">Does not repeat</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
         </div>
 
         <div className="flex justify-end gap-2 pt-3">

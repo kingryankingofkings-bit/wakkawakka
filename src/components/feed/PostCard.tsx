@@ -27,6 +27,7 @@ import { ReportPostModal } from "./ReportPostModal";
 import { EditPostModal } from "./EditPostModal";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
+import { Avatar } from "@/components/ui/Avatar";
 import toast from "react-hot-toast";
 
 // ---------------------------------------------------------------------------
@@ -151,20 +152,12 @@ export function PostCard({ post }: PostCardProps) {
       <div className="flex items-start justify-between px-4 pt-4 pb-3">
         <div className="flex items-center gap-3">
           {/* Avatar */}
-          <div className="relative flex-shrink-0">
-            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-border">
-              {post.author.avatar ? (
-                <img
-                  src={post.author.avatar}
-                  alt={post.author.displayName}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                  {post.author.displayName[0]}
-                </div>
-              )}
-            </div>
+          <div className="relative flex-shrink-0 cursor-pointer">
+            <Avatar 
+              src={post.author.avatar} 
+              name={post.author.displayName} 
+              size="md" 
+            />
           </div>
 
           {/* Author info */}

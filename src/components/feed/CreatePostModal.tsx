@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import {
   Image as ImageIcon,
@@ -25,6 +25,7 @@ import { useFeedStore } from "@/store/feedStore";
 import { CURRENT_USER } from "@/lib/mockData";
 import { extractHashtags, cn } from "@/lib/utils";
 import toast from "react-hot-toast";
+import { z } from "zod";
 import { Visibility } from "@/types";
 import { apiFetch } from "@/lib/apiClient";
 
@@ -58,6 +59,14 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const [visibility, setVisibility] = useState<Visibility>("PUBLIC");
   const [showVisibility, setShowVisibility] = useState(false);
   const [previews, setPreviews] = useState<{ url: string; altText: string }[]>([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const draft = localStorage.getItem("postDraft");
+      if (draft) setContent(draft);
+    }
+  }, [isOpen]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [scheduledAt, setScheduledAt] = useState<Date | null>(null);
   const [showScheduler, setShowScheduler] = useState(false);
@@ -108,7 +117,42 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   };
 
   async function handleSubmit() {
-    if (!content.trim() && previews.length === 0 && !showPollCreator) return;
+    if (!content.trim() && previews.length === 0 && !showPollCreator) {
+      toast.error("Post cannot be empty.");
+      return;
+    }
+
+    const postSchema = z.object({
+      content: z.string().max(2200, "Post content cannot exceed 2200 characters").optional(),
+      mediaCount: z.number().max(10, "Cannot upload more than 10 media files"),
+    });
+
+    const validation = postSchema.safeParse({
+      content: content.trim(),
+      mediaCount: previews.length,
+    });
+
+    if (!validation.success) {
+      toast.error(validation.error.errors[0].message);
+      return;
+    }
+
+    if (showPollCreator) {
+      const filteredOptions = pollOptions.filter((o) => o.trim() !== "");
+      if (pollQuestion.trim() === "") {
+        toast.error("Poll question is required.");
+        return;
+      }
+      if (filteredOptions.length < 2) {
+        toast.error("Poll must have at least 2 options.");
+        return;
+      }
+      if (filteredOptions.length > 4) {
+        toast.error("Poll can have at most 4 options.");
+        return;
+      }
+    }
+
     setIsLoading(true);
 
     try {
@@ -170,6 +214,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
         if (json.data) {
           addPost(json.data);
           toast.success("Post published!");
+          localStorage.removeItem("postDraft");
           setContent("");
           setPreviews([]);
           setShowPollCreator(false);
@@ -395,7 +440,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
 
         {/* Action bar */}
         <div className="flex items-center gap-2 pt-1 border-t border-border">
-          <div className="flex-1 flex gap-2">
+            <div className="flex-1 flex gap-2">
             <button
               onClick={() => {
                 setShowPollCreator(!showPollCreator);
@@ -410,22 +455,16 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
               <BarChart2 className="h-4 w-4" />
             </button>
             {[
-              { icon: Hash, label: "Tag" },
-              { icon: AtSign, label: "Mention" },
-              { icon: Music, label: "Music" },
-              { icon: Tag, label: "Product" },
-              { icon: Clock, label: "Schedule" },
-            ].map(({ icon: Icon, label }) => (
+              { icon: Hash, label: "Tag", action: () => { setContent(prev => prev + " #"); textareaRef.current?.focus(); } },
+              { icon: AtSign, label: "Mention", action: () => { setContent(prev => prev + " @"); textareaRef.current?.focus(); } },
+              { icon: Music, label: "Music", action: () => setIsMusicPost(!isMusicPost) },
+              { icon: Tag, label: "Product", action: () => {} },
+              { icon: Clock, label: "Schedule", action: () => setShowScheduler(!showScheduler) },
+            ].map(({ icon: Icon, label, action }) => (
               <button
                 key={label}
                 title={label}
-                onClick={() => {
-                  if (label === "Schedule") {
-                    setShowScheduler(!showScheduler);
-                  } else if (label === "Music") {
-                    setIsMusicPost(!isMusicPost);
-                  }
-                }}
+                onClick={action}
                 className={cn(
                   "p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-colors",
                   label === "Schedule" && showScheduler && "text-primary bg-muted",
@@ -436,16 +475,35 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
               </button>
             ))}
           </div>
-          <Button
-            onClick={handleSubmit}
-            isLoading={isLoading}
-            disabled={
-              !content.trim() && previews.length === 0 && !showPollCreator
-            }
-            size="sm"
-          >
-            {tab === "Story" ? "Share Story" : "Post"}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                // Save to local storage as a draft
+                if (content.trim()) {
+                  localStorage.setItem("postDraft", content);
+                  toast.success("Draft saved to browser");
+                  onClose();
+                } else {
+                  toast.error("Nothing to save");
+                }
+              }}
+              disabled={!content.trim()}
+              size="sm"
+            >
+              Save Draft
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              isLoading={isLoading}
+              disabled={
+                !content.trim() && previews.length === 0 && !showPollCreator
+              }
+              size="sm"
+            >
+              {tab === "Story" ? "Share Story" : "Post"}
+            </Button>
+          </div>
         </div>
       </div>
     </Modal>
