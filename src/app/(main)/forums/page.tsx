@@ -216,7 +216,7 @@ export default function ForumGlobalFeed() {
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
                       {post.subforum && (
                         <Link
-                          href={`/forum/r/${post.subforum.slug}`}
+                          href={`/forums/r/${post.subforum.slug}`}
                           className="font-bold text-foreground hover:underline"
                         >
                           r/{post.subforum.name}
@@ -228,7 +228,7 @@ export default function ForumGlobalFeed() {
                       <span>{new Date(post.createdAt).toLocaleDateString()}</span>
                     </div>
 
-                    <Link href={`/forum/r/${post.subforum?.slug}/comments/${post.id}`} className="block group mt-2">
+                    <Link href={`/forums/r/${post.subforum?.slug}/comments/${post.id}`} className="block group mt-2">
                       <h2 className="text-base font-bold text-foreground group-hover:text-primary transition-all">
                         {maskText(post.title)}
                       </h2>
@@ -284,7 +284,7 @@ export default function ForumGlobalFeed() {
                     {/* Actions Row */}
                     <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-border/40 text-xs font-bold text-muted-foreground">
                       <Link
-                        href={`/forum/r/${post.subforum?.slug}/comments/${post.id}`}
+                        href={`/forums/r/${post.subforum?.slug}/comments/${post.id}`}
                         className="flex items-center gap-1.5 hover:text-foreground transition-all"
                       >
                         💬 Comments
@@ -350,7 +350,7 @@ export default function ForumGlobalFeed() {
               <div key={sub.id} className="flex items-center justify-between gap-2 text-sm">
                 <div className="min-w-0">
                   <Link
-                    href={`/forum/r/${sub.slug}`}
+                    href={`/forums/r/${sub.slug}`}
                     className="font-bold text-foreground hover:underline block truncate"
                   >
                     r/{sub.name}

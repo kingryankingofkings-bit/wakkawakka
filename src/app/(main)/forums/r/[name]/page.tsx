@@ -278,7 +278,7 @@ export default function SubforumCommunityView() {
                         Posted by u/{post.author?.username} • {new Date(post.createdAt).toLocaleDateString()}
                       </div>
 
-                      <Link href={`/forum/r/${activeSubforum.slug}/comments/${post.id}`} className="block group mt-1.5">
+                      <Link href={`/forums/r/${activeSubforum.slug}/comments/${post.id}`} className="block group mt-1.5">
                         <h2 className="text-base font-bold text-foreground group-hover:text-primary transition-all">
                           {post.title}
                         </h2>
@@ -331,7 +331,7 @@ export default function SubforumCommunityView() {
 
                       <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border/40 text-xs font-bold text-muted-foreground">
                         <Link
-                          href={`/forum/r/${activeSubforum.slug}/comments/${post.id}`}
+                          href={`/forums/r/${activeSubforum.slug}/comments/${post.id}`}
                           className="flex items-center gap-1.5 hover:text-foreground transition-all"
                         >
                           💬 Comments

@@ -306,7 +306,7 @@ export default function ForumPostDetails() {
     if (!activePost) return;
     if (confirm("Are you sure you want to remove this post?")) {
       await moderatePost(activePost.id, "REMOVE_POST", "Moderator remove", activePost.subforumId);
-      router.push(`/forum/r/${activePost.subforum?.slug}`);
+      router.push(`/forums/r/${activePost.subforum?.slug}`);
     }
   };
 
@@ -349,7 +349,7 @@ export default function ForumPostDetails() {
   return (
     <div className="max-w-3xl mx-auto p-4 space-y-6 w-full">
       {/* Back button */}
-      <Link href={`/forum/r/${activePost.subforum?.slug}`} className="text-xs font-bold text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
+      <Link href={`/forums/r/${activePost.subforum?.slug}`} className="text-xs font-bold text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
         ← Back to r/{activePost.subforum?.name}
       </Link>
 
