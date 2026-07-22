@@ -56,8 +56,19 @@ export function extractMentions(text: string): string[] {
     : [];
 }
 
+export function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export function highlightText(text: string): string {
-  return text
+  if (!text) return "";
+  const safeText = escapeHtml(text);
+  return safeText
     .replace(
       /#([a-zA-Z0-9_]+)/g,
       '<a href="/explore?tag=$1" class="text-primary hover:underline">#$1</a>',
