@@ -37,7 +37,7 @@ export default function AccountPage() {
       profile: {
         username: CURRENT_USER.username,
         displayName: CURRENT_USER.displayName,
-        email: CURRENT_USER.email,
+        email: (CURRENT_USER as any).email || 'user@example.com',
         followers: CURRENT_USER.followersCount,
         following: CURRENT_USER.followingCount,
       },
