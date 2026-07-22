@@ -91,8 +91,8 @@ export default function AccountPage() {
       {/* Connected accounts */}
       <section className="space-y-2">
         <h2 className="flex items-center gap-2 text-sm font-bold"><Link2 className="h-4 w-4 text-primary" /> Connected accounts</h2>
-        {LOGIN_PROVIDERS.map((p) => {
-          const on = mounted ? account.connected[p] : false;
+        {LOGIN_PROVIDERS.map((p: any) => {
+          const on = mounted ? (account.connected as any)[p] : false;
           return (
             <div key={p} className="flex items-center justify-between rounded-xl border border-border bg-card/60 p-3">
               <div>
@@ -125,7 +125,7 @@ export default function AccountPage() {
             <Plus className="h-4 w-4" /> Generate
           </button>
         </div>
-        {mounted && account.appPasswords.map((pw) => (
+        {mounted && account.appPasswords.map((pw: any) => (
           <div key={pw.id} className="flex items-center gap-2 rounded-xl border border-border bg-card/60 p-3">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold">{pw.label}</p>
@@ -148,7 +148,7 @@ export default function AccountPage() {
           <Toggle on={mounted ? account.loginAlerts : false} onClick={() => account.setLoginAlerts(!account.loginAlerts)} />
         </div>
         <p className="text-xs text-muted-foreground">Get notified about logins from unrecognized devices.</p>
-        {RECENT_LOGINS.map((l) => (
+        {RECENT_LOGINS.map((l: any) => (
           <div key={l.id} className="flex items-center gap-3 rounded-xl border border-border bg-card/60 p-3">
             <MapPin className={cn('h-4 w-4 flex-shrink-0', l.trusted ? 'text-muted-foreground' : 'text-destructive')} />
             <div className="flex-1 min-w-0">

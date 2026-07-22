@@ -102,7 +102,7 @@ function ApiKeysTab() {
           className="w-full h-9 px-3 rounded-lg border border-border bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-primary"
         />
         <div className="flex flex-wrap gap-1.5">
-          {ALL_SCOPES.map((s) => (
+          {ALL_SCOPES.map((s: any) => (
             <button
               key={s}
               onClick={() => toggleScope(s)}
@@ -123,7 +123,7 @@ function ApiKeysTab() {
       {apiKeys.length === 0 ? (
         <p className="text-sm text-muted-foreground">No API keys yet.</p>
       ) : (
-        apiKeys.map((k) => {
+        apiKeys.map((k: any) => {
           const isRevealed = revealed.has(k.id);
           return (
             <div key={k.id} className="rounded-xl border border-border bg-card/60 p-3 space-y-2">
@@ -146,7 +146,7 @@ function ApiKeysTab() {
                 </button>
               </div>
               <div className="flex flex-wrap gap-1">
-                {k.scopes.map((s) => (
+                {k.scopes.map((s: any) => (
                   <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono">{s}</span>
                 ))}
               </div>
@@ -186,7 +186,7 @@ function WebhooksTab() {
           className="w-full h-9 px-3 rounded-lg border border-border bg-transparent text-sm font-mono focus:outline-none focus:ring-1 focus:ring-primary"
         />
         <div className="flex flex-wrap gap-1.5">
-          {ALL_WEBHOOK_EVENTS.map((e) => (
+          {ALL_WEBHOOK_EVENTS.map((e: any) => (
             <button
               key={e}
               onClick={() => toggleEvent(e)}
@@ -207,7 +207,7 @@ function WebhooksTab() {
       {webhooks.length === 0 ? (
         <p className="text-sm text-muted-foreground">No webhooks configured.</p>
       ) : (
-        webhooks.map((w) => (
+        webhooks.map((w: any) => (
           <div key={w.id} className="rounded-xl border border-border bg-card/60 p-3 space-y-2">
             <div className="flex items-center gap-2">
               <span className={cn('h-2 w-2 rounded-full flex-shrink-0', w.active ? 'bg-green-500' : 'bg-muted-foreground')} />
@@ -223,7 +223,7 @@ function WebhooksTab() {
               </button>
             </div>
             <div className="flex flex-wrap gap-1">
-              {w.events.map((e) => (
+              {w.events.map((e: any) => (
                 <span key={e} className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono">{e}</span>
               ))}
             </div>
@@ -241,7 +241,7 @@ function ConnectedAppsTab() {
       {connectedApps.length === 0 ? (
         <p className="text-sm text-muted-foreground">No connected apps.</p>
       ) : (
-        connectedApps.map((a) => (
+        connectedApps.map((a: any) => (
           <div key={a.id} className="rounded-xl border border-border bg-card/60 p-3 flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold flex-shrink-0">
               {a.name[0]}

@@ -23,7 +23,7 @@ export default function SafetyPage() {
   const [mutedDraft, setMutedDraft] = useState('');
   const [revoked, setRevoked] = useState<Set<string>>(new Set());
 
-  const reasonLabel = (v: string) => REPORT_REASONS.find(r => r.value === v)?.label ?? v;
+  const reasonLabel = (v: string) => REPORT_REASONS.find((r: any) => r.value === v)?.label ?? v;
 
   return (
     <div className="px-4 py-5 space-y-6">
@@ -44,7 +44,7 @@ export default function SafetyPage() {
         {!mounted ? null : blocked.length === 0 ? (
           <p className="text-sm text-muted-foreground">You haven’t blocked anyone. Block from a post’s menu to hide their content.</p>
         ) : (
-          blocked.map(b => (
+          blocked.map((b: any) => (
             <div key={b.id} className="flex items-center justify-between rounded-xl border border-border bg-card/60 p-3">
               <div>
                 <p className="text-sm font-semibold">{b.displayName}</p>
@@ -129,7 +129,7 @@ export default function SafetyPage() {
         {!mounted ? null : reports.length === 0 ? (
           <p className="text-sm text-muted-foreground">No reports submitted.</p>
         ) : (
-          reports.map(r => (
+          reports.map((r: any) => (
             <div key={r.id} className="rounded-xl border border-border bg-card/60 p-3">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold">{r.targetLabel}</p>

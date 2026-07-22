@@ -27,6 +27,8 @@ import { ProfileCustomizerModal } from "@/components/profile/ProfileCustomizerMo
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { useAuthStore } from "@/store/authStore";
+import toast from "react-hot-toast";
 import { ProfessionalTab } from "@/components/profile/ProfessionalTab";
 import { CreatorSupportCard } from "@/components/profile/CreatorSupportCard";
 import { EndorsementsCard } from "@/components/profile/EndorsementsCard";
@@ -214,11 +216,13 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
         <div className="px-4 py-2 space-y-3">
           <CreatorSupportCard
-            profileUser={profileUser}
+            creatorId={profileUser.id}
+            creatorName={profileUser.displayName || (profileUser as any).name || profileUser.username}
             isOwnProfile={isOwnProfile}
           />
           <EndorsementsCard
-            profileUserId={profileUser.id}
+            userId={profileUser.id}
+            displayName={profileUser.displayName || (profileUser as any).name || profileUser.username}
             isOwnProfile={isOwnProfile}
           />
         </div>
