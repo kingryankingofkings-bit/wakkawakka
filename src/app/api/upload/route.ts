@@ -25,6 +25,22 @@ const ALLOWED_MIME_TYPES = [
 
 const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
 
+const ALLOWED_EXTENSIONS: Record<string, string[]> = {
+  "image/jpeg": [".jpg", ".jpeg"],
+  "image/png": [".png"],
+  "image/gif": [".gif"],
+  "image/webp": [".webp"],
+  "image/avif": [".avif"],
+  "video/mp4": [".mp4"],
+  "video/webm": [".webm"],
+  "video/ogg": [".ogv", ".ogg"],
+  "video/quicktime": [".mov"],
+  "audio/mpeg": [".mp3"],
+  "audio/ogg": [".ogg"],
+  "audio/wav": [".wav"],
+  "audio/webm": [".webm"],
+};
+
 /**
  * Magic byte signatures for file type verification.
  * Prevents MIME spoofing attacks by checking actual file content.
@@ -108,7 +124,17 @@ export async function POST(req: NextRequest) {
       return apiBadRequest("File content does not match declared type");
     }
 
-    // 5. Sanitize filename to prevent path traversal
+    // 5. Verify file extension matches declared MIME type
+    const ext = path.extname(file.name).toLowerCase();
+    const validExts = ALLOWED_EXTENSIONS[file.type];
+    if (validExts && !validExts.includes(ext)) {
+      log.warn("File extension mismatch", {
+        data: { claimedType: file.type, ext, fileName: file.name },
+      });
+      return apiBadRequest("File extension does not match declared content type");
+    }
+
+    // 6. Sanitize filename to prevent path traversal
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
     const subDir = file.type.startsWith("audio/")
       ? "audio"
