@@ -27,9 +27,9 @@ import { ProfileCustomizerModal } from "@/components/profile/ProfileCustomizerMo
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { useAuthStore } from "@/store/authStore";
-import toast from "react-hot-toast";
 import { ProfessionalTab } from "@/components/profile/ProfessionalTab";
+import { CreatorSupportCard } from "@/components/profile/CreatorSupportCard";
+import { EndorsementsCard } from "@/components/profile/EndorsementsCard";
 
 const PROFILE_TABS = [
   { id: "posts", label: "Posts", icon: Grid3X3 },
@@ -206,12 +206,22 @@ export default function ProfilePage({ params }: ProfilePageProps) {
       )}
 
       <div className="max-w-2xl mx-auto min-h-screen">
-        {/* Profile Header */}
         <ProfileHeader
           user={profileUser}
           isOwnProfile={isOwnProfile}
           onEditProfile={() => setCustomizerOpen(true)}
         />
+
+        <div className="px-4 py-2 space-y-3">
+          <CreatorSupportCard
+            profileUser={profileUser}
+            isOwnProfile={isOwnProfile}
+          />
+          <EndorsementsCard
+            profileUserId={profileUser.id}
+            isOwnProfile={isOwnProfile}
+          />
+        </div>
 
         {/* Private account lock screen */}
         {isPrivateLocked ? (

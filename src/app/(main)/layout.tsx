@@ -6,6 +6,8 @@ import { RightPanel } from "@/components/layout/RightPanel";
 import { CreatePostModalWrapper } from "@/components/layout/CreatePostModalWrapper";
 import { cn } from "@/lib/utils";
 
+import { ScheduledPublisher } from "@/components/feed/ScheduledPublisher";
+
 export default function MainLayout({
   children,
   sidebar,
@@ -58,6 +60,7 @@ export default function MainLayout({
 
       {/* Global Modals */}
       <CreatePostModalWrapper />
+      <ScheduledPublisher />
     </div>
   );
 }

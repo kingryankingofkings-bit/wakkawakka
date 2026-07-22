@@ -36,8 +36,10 @@ import {
   Newspaper,
   MessageSquare,
   Camera,
-  Map,
   Music,
+  Layers,
+  PackageCheck,
+  Code2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/Avatar";
@@ -69,7 +71,6 @@ const ALL_NAV_ITEMS: NavItem[] = [
   { href: "/brand-pages", icon: Flag, label: "Pages" },
   { href: "/communities", icon: Users, label: "Communities" },
   { href: "/camera", icon: Camera, label: "Camera" },
-  { href: "/map", icon: Map, label: "Snap Map" },
   { href: "/marketplace", icon: Store, label: "Marketplace" },
   { href: "/memories", icon: Clock, label: "Memories" },
   { href: "/audio-rooms", icon: Mic, label: "Audio Rooms" },
@@ -77,6 +78,12 @@ const ALL_NAV_ITEMS: NavItem[] = [
   { href: "/analytics", icon: BarChart2, label: "Analytics" },
   { href: "/bookmarks", icon: BookMarked, label: "Bookmarks" },
   { href: "/scheduling", icon: Calendar, label: "Scheduling" },
+  { href: "/scheduled", icon: Calendar, label: "Scheduled Posts" },
+  { href: "/feature-hub", icon: Layers, label: "Feature Hub" },
+  { href: "/orders", icon: PackageCheck, label: "Orders" },
+  { href: "/safety", icon: Shield, label: "Safety Center" },
+  { href: "/account", icon: User, label: "Account" },
+  { href: "/developer", icon: Code2, label: "Developer Portal" },
 ];
 
 function getNavItemsForProfile(type?: string): NavItem[] {
@@ -96,7 +103,7 @@ function getNavItemsForProfile(type?: string): NavItem[] {
       return ["/learning", "/articles", "/forums", "/events"].includes(item.href);
     }
     if (t === "SOCIALIZING" || t === "PERSONAL") {
-      return ["/explore", "/friends", "/communities", "/map", "/memories", "/marketplace", "/events", "/servers", "/music", "/shop"].includes(item.href);
+      return ["/explore", "/friends", "/communities", "/memories", "/marketplace", "/events", "/servers", "/music", "/shop", "/feature-hub", "/orders", "/scheduled", "/safety", "/account", "/developer"].includes(item.href);
     }
     if (t === "ANONYMOUS") {
       return ["/forums", "/explore", "/audio-rooms"].includes(item.href);
